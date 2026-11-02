@@ -7,10 +7,18 @@
 Откройте PowerShell в папке проекта и выполните:
 
 ```powershell
+cd frontend
 py -m http.server 8000
 ```
 
 Откройте <http://localhost:8000>. Если команда `py` недоступна, запустите `python -m http.server 8000`. Камера, микрофон и захват экрана доступны через localhost или защищённый HTTPS-сайт; браузер запросит разрешение после нажатия соответствующей кнопки.
+
+## Структура проекта
+
+- `frontend/src/client/` — клиентские ES-модули: состояние и локальное хранение, общие утилиты, шаблоны экранов, формы, геометрия доски и видеокомната.
+- `frontend/` — исходники статического сайта и точка входа браузерного приложения.
+- `cloudflare/worker.js` и `cloudflare/livekit-token.js` — маршрутизация Cloudflare Worker и выпуск временных токенов LiveKit.
+- `backend/` — независимый Go HTTP-сервис. Сейчас он предоставляет только `GET /healthz`; инструкции запуска находятся в [backend/README.md](backend/README.md).
 
 ## Сборка сайта для публикации
 
@@ -29,7 +37,7 @@ node .\build.mjs
 3. Укажите настройки: **Framework preset — None**, **Build command — `node build.mjs`**, **Build output directory — `dist`**, **Root directory — `/`**.
 4. Запустите публикацию. Cloudflare выдаст адрес вида `имя-проекта.pages.dev` и будет обновлять сайт после новых коммитов в production-ветку.
 
-Файл `build.mjs` собирает статические файлы в `dist`. `wrangler.jsonc` настраивает Cloudflare Worker, который раздаёт эти файлы и обрабатывает серверный маршрут `/api/livekit/token`. Секреты LiveKit Worker читает только во время запроса; локальный `.dev.vars` исключён из Git.
+Файл `build.mjs` собирает статические файлы из `frontend/` в `dist`. `wrangler.jsonc` настраивает Cloudflare Worker из `cloudflare/worker.js`, который раздаёт эти файлы и обрабатывает серверный маршрут `/api/livekit/token`. Секреты LiveKit Worker читает только во время запроса; локальный `.dev.vars` исключён из Git.
 
 ## Что работает в демо
 

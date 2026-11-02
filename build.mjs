@@ -1,8 +1,9 @@
-import { copyFile, mkdir } from 'node:fs/promises';
+import { cp, mkdir, copyFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
+const frontendDirectory = join(projectRoot, 'frontend');
 const outputDirectory = join(projectRoot, 'dist');
 const publicFiles = [
   'index.html',
@@ -15,5 +16,6 @@ const publicFiles = [
 ];
 
 await mkdir(outputDirectory, { recursive: true });
-await Promise.all(publicFiles.map((file) => copyFile(join(projectRoot, file), join(outputDirectory, file))));
+await Promise.all(publicFiles.map((file) => copyFile(join(frontendDirectory, file), join(outputDirectory, file))));
+await cp(join(frontendDirectory, 'src/client'), join(outputDirectory, 'src/client'), { recursive: true });
 console.log(`Готово: статический сайт собран в ${outputDirectory}`);

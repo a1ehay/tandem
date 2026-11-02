@@ -1,0 +1,11 @@
+export const pageNames = { overview: 'Обзор', students: 'Ученики', lessons: 'Занятия', board: 'Интерактивная доска', tasks: 'Задания', subscription: 'Тарифы', room: 'Видеокомната' };
+export const initialsByColor = ['avatar--mint', 'avatar--lilac', 'avatar--sky', 'avatar--rose', 'avatar--gold'];
+export const pad = (value) => String(value).padStart(2, '0');
+export const dateToISO = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+export const addDaysISO = (days) => { const date = new Date(); date.setDate(date.getDate() + days); return dateToISO(date); };
+export const escapeHTML = (value = '') => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+export const useIcon = (name, cls = '') => `<svg${cls ? ` class="${cls}"` : ''}><use href="#i-${name}"/></svg>`;
+export const initials = (name = '') => name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
+export const formatDate = (iso, options = { day: 'numeric', month: 'long' }) => new Intl.DateTimeFormat('ru-RU', options).format(new Date(`${iso}T12:00:00`));
+export const dateLabel = (iso) => { const today = addDaysISO(0); const tomorrow = addDaysISO(1); if (iso === today) return 'Сегодня'; if (iso === tomorrow) return 'Завтра'; const formatted = new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(`${iso}T12:00:00`)); return formatted.charAt(0).toUpperCase() + formatted.slice(1); };
+export const dueLabel = (iso) => { if (!iso) return 'Без срока'; const days = Math.round((new Date(`${iso}T12:00:00`) - new Date(`${addDaysISO(0)}T12:00:00`)) / 86400000); if (days < 0) return 'Просрочено'; if (days === 0) return 'Сегодня'; if (days === 1) return 'Завтра'; return formatDate(iso, { day: 'numeric', month: 'short' }); };
