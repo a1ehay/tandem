@@ -1,0 +1,29 @@
+server:
+  address: ${HTTP_HOST:0.0.0.0}
+  port: ${HTTP_PORT:8080}
+  shutdown: graceful
+
+spring:
+  application:
+    name: tandem-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/tandem}
+    username: ${DB_USER:tandem}
+    password: ${DB_PASSWORD:tandem}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      connection-timeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+info:
+  app:
+    name: Tandem API
+    version: 0.1.0-SNAPSHOT

@@ -12,6 +12,14 @@ py -m http.server 8000
 
 Откройте <http://localhost:8000>. Если команда `py` недоступна, запустите `python -m http.server 8000`. Камера, микрофон и захват экрана доступны через localhost или защищённый HTTPS-сайт; браузер запросит разрешение после нажатия соответствующей кнопки.
 
+## Структура проекта
+
+- `frontend/src/client/` — клиентские ES-модули: состояние и локальное хранение, общие утилиты, шаблоны экранов, формы, геометрия доски и видеокомната.
+- `frontend/` — исходники статического сайта и точка входа браузерного приложения.
+- `cloudflare/worker.js` и `cloudflare/livekit-token.js` — маршрутизация Cloudflare Worker и выпуск временных токенов LiveKit.
+- `backend/` — независимый Java/Spring Boot API на Java 25 LTS. Инструкции запуска — в [backend/README.md](backend/README.md).
+- `database/` — отдельный Java/Maven-проект миграций PostgreSQL с Flyway; инструкции запуска — в [database/README.md](database/README.md), проект схемы — в [docs/database/database.md](docs/database/database.md).
+- `compose.yaml` — единый Compose для PostgreSQL; переменные описаны в `.env.example`, а значения для каждого окружения задаются в локальном `.env` или в секретах production-сервера.
 ## Сборка сайта для публикации
 
 Установите Node.js, если он ещё не установлен, затем из папки проекта выполните:
