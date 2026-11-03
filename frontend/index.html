@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f5f6f4" />
-    <meta name="description" content="Tandem — демо-пространство для занятий с репетитором: интерактивная доска, задания, планер и личные кабинеты." />
+    <meta name="description" content="Tutdesk — рабочее пространство репетитора и ученика: занятия, интерактивная доска, задания и планер." />
     <meta name="robots" content="noindex, nofollow" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Tandem — пространство для занятий с репетитором" />
-    <meta property="og:description" content="Интерактивная доска, задания и планер для занятий. Посмотрите демо Tandem." />
+    <meta property="og:title" content="Tutdesk — пространство для занятий" />
+    <meta property="og:description" content="Занятия, интерактивная доска, задания и планер в одном рабочем пространстве." />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <title>Tandem — пространство для занятий с репетитором</title>
+    <title>Tutdesk — пространство для занятий</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -45,53 +45,53 @@
       <symbol id="i-square" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/></symbol>
       <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></symbol>
       <symbol id="i-sticky" viewBox="0 0 24 24"><path d="M5 3h14v12l-6 6H5zM13 21v-6h6"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></symbol>
     </svg>
 
     <div class="app-shell">
       <aside class="sidebar" id="sidebar">
-        <a class="brand" href="#overview" data-view="overview" aria-label="tandem — на главную">
+        <a class="brand" href="#overview" data-view="overview" aria-label="Tutdesk — на главную">
           <span class="brand-mark"><span></span><span></span></span>
-          <span class="brand-name">tandem<span>.</span></span>
+          <span class="brand-name">Tutdesk</span>
         </a>
         <div class="workspace-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
-        <nav class="main-nav" aria-label="Главная навигация">
+        <nav class="main-nav" id="mainNav" aria-label="Главная навигация" hidden>
           <button class="nav-item active" data-view="overview"><svg><use href="#i-grid"/></svg><span>Обзор</span></button>
-          <button class="nav-item" data-view="students" data-nav-tutor><svg><use href="#i-users"/></svg><span>Ученики</span><span class="nav-count" id="studentCount">3</span></button>
+          <button class="nav-item" data-view="students" data-nav-tutor><svg><use href="#i-users"/></svg><span>Ученики</span><span class="nav-count" id="studentCount">0</span></button>
           <button class="nav-item" data-view="lessons" data-nav-tutor><svg><use href="#i-calendar"/></svg><span>Занятия</span><span class="nav-count nav-count--extra" id="lessonTier">EXT</span></button>
           <button class="nav-item" data-view="board"><svg><use href="#i-board"/></svg><span>Интерактивная доска</span></button>
-          <button class="nav-item" data-view="tasks"><svg><use href="#i-check"/></svg><span id="taskNavLabel">Задания</span><span class="nav-count nav-count--warm" id="taskCount">2</span></button>
+          <button class="nav-item" data-view="tasks"><svg><use href="#i-check"/></svg><span id="taskNavLabel">Задания</span><span class="nav-count nav-count--warm" id="taskCount">0</span></button>
         </nav>
         <div class="sidebar-bottom">
-          <div class="sidebar-plan" id="sidebarPlan">
+          <div class="sidebar-plan" id="sidebarPlan" hidden>
             <div class="sidebar-plan-top"><span class="plan-mini-icon"><svg><use href="#i-spark"/></svg></span><span class="eyebrow">ВАШ ТАРИФ</span><span class="plan-status-dot"></span></div>
             <div class="sidebar-plan-name" id="sidePlanName">Light</div>
             <p id="sidePlanDescription">Созвоны и интерактивная доска</p>
             <button class="text-link" data-view="subscription">Сравнить тарифы <svg><use href="#i-arrow"/></svg></button>
           </div>
           <button class="profile-button" data-action="profile">
-            <span class="avatar avatar--profile" id="profileInitials">А</span>
-            <span class="profile-copy"><strong id="profileName">Анна Петрова</strong><small id="profileRole">Репетитор</small></span>
+            <span class="avatar avatar--profile" id="profileInitials">?</span>
+            <span class="profile-copy"><strong id="profileName">Гость</strong><small id="profileRole">Войти в кабинет</small></span>
             <svg class="profile-more"><use href="#i-more"/></svg>
           </button>
         </div>
       </aside>
 
       <main class="main-area">
-        <div class="demo-disclosure" role="note">
-          <strong>Демо-версия.</strong> Не вводите реальные персональные данные: информация хранится только в этом браузере. Совместные звонки, Google-вход и оплата пока не подключены.
-        </div>
         <header class="topbar">
           <button class="icon-button mobile-menu" data-action="menu" aria-label="Открыть меню"><span class="hamburger"></span></button>
           <div class="breadcrumbs"><span id="topbarSpaceLabel">Пространство репетитора</span><span class="crumb-slash">/</span><strong id="currentPageLabel">Обзор</strong></div>
           <div class="topbar-actions">
             <span class="today-label" id="todayLabel"></span>
+            <button class="icon-button theme-toggle" id="themeToggle" data-action="toggle-theme" aria-label="Включить тёмную тему" title="Включить тёмную тему"><svg><use href="#i-moon"/></svg></button>
             <button class="icon-button notification-button" aria-label="Уведомления"><svg><use href="#i-bell"/></svg><i></i></button>
             <span class="topbar-divider"></span>
-            <span class="avatar avatar--top" id="topAvatar">А</span>
+            <span class="avatar avatar--top" id="topAvatar">?</span>
           </div>
         </header>
         <div class="page-content" id="pageContent"></div>
-        <footer class="app-footer"><span>tandem<span class="footer-dot">.</span> <span id="footerYear"></span></span><span>Всё для хорошего урока — в одном месте</span></footer>
+        <footer class="app-footer"><span>Tutdesk <span id="footerYear"></span></span><span>Всё для хорошего урока — в одном месте</span></footer>
       </main>
     </div>
 

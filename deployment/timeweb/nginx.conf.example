@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name example.ru www.example.ru;
+
+    root /var/www/tutdesk;
+    index index.html;
+
+    # Keep the Worker and D1 API on Cloudflare, but present it under the
+    # Tutdesk domain so browser sessions remain same-origin.
+    location /api/ {
+        proxy_pass https://tandem.aleksejgladkih4.workers.dev;
+        proxy_ssl_server_name on;
+        proxy_set_header Host tandem.aleksejgladkih4.workers.dev;
+        proxy_set_header Origin https://tandem.aleksejgladkih4.workers.dev;
+        proxy_set_header Cookie $http_cookie;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

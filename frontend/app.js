@@ -6,70 +6,44 @@
   const pad = (value) => String(value).padStart(2, '0');
   const dateToISO = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   const addDaysISO = (days) => { const date = new Date(); date.setDate(date.getDate() + days); return dateToISO(date); };
+  const PROFILE_RESET_KEY = 'tutdesk-profile-reset-v1';
   const sampleState = () => ({
-    plan: 'light',
-    students: [
-      { id: 'student-masha', name: 'Маша Крылова', email: 'masha@example.com', subject: 'Математика', grade: '8 класс', note: 'Готовимся к контрольной по дробям и уравнениям.', lessons: 12, progress: 72, color: 0 },
-      { id: 'student-ilya', name: 'Илья Соколов', email: 'ilya@example.com', subject: 'Физика', grade: '9 класс', note: 'Разбираем механику и готовимся к ОГЭ.', lessons: 8, progress: 58, color: 1 },
-      { id: 'student-sasha', name: 'Саша Миронова', email: 'sasha@example.com', subject: 'Английский', grade: '7 класс', note: 'Расширяем словарный запас и практикуем времена.', lessons: 16, progress: 86, color: 2 }
-    ],
-    lessons: [
-      { id: 'lesson-masha', tutorId: 'tutor-demo', studentId: 'student-masha', boardId: 'board-masha', title: 'Дроби и действия с ними', date: addDaysISO(1), time: '16:00', duration: 60, status: 'scheduled' },
-      { id: 'lesson-ilya', tutorId: 'tutor-demo', studentId: 'student-ilya', title: 'Законы Ньютона', date: addDaysISO(1), time: '17:30', duration: 60, status: 'scheduled' },
-      { id: 'lesson-sasha', tutorId: 'tutor-demo', studentId: 'student-sasha', title: 'Past Simple и Past Continuous', date: addDaysISO(2), time: '15:00', duration: 45, status: 'scheduled' },
-      { id: 'lesson-masha-other', tutorId: 'tutor-demo-2', studentId: 'student-masha', title: 'Практика по дробям', date: addDaysISO(3), time: '18:00', duration: 45, status: 'scheduled' }
-    ],
-    tasks: [
-      { id: 'task-masha', kind: 'homework', tutorId: 'tutor-demo', studentId: 'student-masha', title: 'Действия с обыкновенными дробями', description: 'Решить номера 214, 218 и 221 из учебника.', subject: 'Математика', due: addDaysISO(2), status: 'todo' },
-      { id: 'task-ilya', kind: 'homework', tutorId: 'tutor-demo', studentId: 'student-ilya', title: 'Задачи по законам Ньютона', description: 'Разобрать задачу с наклонной плоскостью.', subject: 'Физика', due: addDaysISO(0), status: 'submitted' },
-      { id: 'task-sasha', kind: 'homework', tutorId: 'tutor-demo', studentId: 'student-sasha', title: 'Слова и короткий рассказ', description: 'Выучить слова из урока и написать 5 предложений.', subject: 'Английский', due: addDaysISO(3), status: 'todo' },
-      { id: 'task-prep', kind: 'personal', tutorId: 'tutor-demo', studentId: null, title: 'Подготовить примеры к уроку', description: 'Подобрать три задачи на действия с дробями.', subject: 'Личное', due: addDaysISO(1), status: 'todo' }
-    ],
-    currentAccountId: 'tutor-demo',
-    accounts: [
-      { id: 'tutor-demo', role: 'tutor', name: 'Анна Петрова', email: 'anna@example.com', studentId: null, plan: 'light' },
-      { id: 'student-account-masha', role: 'student', name: 'Маша Крылова', email: 'masha@example.com', studentId: 'student-masha' },
-      { id: 'student-account-ilya', role: 'student', name: 'Илья Соколов', email: 'ilya@example.com', studentId: 'student-ilya' },
-      { id: 'student-account-sasha', role: 'student', name: 'Саша Миронова', email: 'sasha@example.com', studentId: 'student-sasha' },
-      { id: 'tutor-demo-2', role: 'tutor', name: 'Дмитрий Волков', email: 'dmitry@example.com', studentId: null, plan: 'light' }
-    ],
-    tutorLinks: [
-      { tutorId: 'tutor-demo', studentId: 'student-masha', note: 'Готовимся к контрольной по дробям и уравнениям.', progress: 72 }, { tutorId: 'tutor-demo', studentId: 'student-ilya', note: 'Разбираем механику и готовимся к ОГЭ.', progress: 58 }, { tutorId: 'tutor-demo', studentId: 'student-sasha', note: 'Расширяем словарный запас и практикуем времена.', progress: 86 },
-      { tutorId: 'tutor-demo-2', studentId: 'student-masha', note: 'Отдельный курс практики дробей.', progress: 34 }
-    ],
-    boards: [
-      { id: 'board-masha', tutorId: 'tutor-demo', name: 'Дроби и действия с ними', lessonIds: ['lesson-masha'], elements: [], updatedAt: Date.now() },
-      { id: 'board-notes', tutorId: 'tutor-demo', name: 'Новая доска', lessonIds: [], elements: [], updatedAt: Date.now() }
-    ],
-    currentBoardId: 'board-masha',
-    plannerByTutor: {
-      'tutor-demo': { title: 'План на неделю', blocks: [
-        { id: 'block-title', type: 'heading', text: 'План на неделю' },
-        { id: 'block-note', type: 'paragraph', text: 'Соберите мысли, подготовку и задания в одном рабочем пространстве.' },
-        { id: 'block-todo', type: 'todo', text: 'Подготовить разогрев по дробям', checked: false },
-        { id: 'block-callout', type: 'callout', text: 'После урока с Машей продолжить работу на той же доске.' }
-      ] }
-    }
+    plan: 'light', students: [], lessons: [], tasks: [], currentAccountId: null,
+    accounts: [], tutorLinks: [], boards: [], currentBoardId: null, plannerByTutor: {},
   });
   const loadState = () => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (!stored) return sampleState();
       const value = JSON.parse(stored);
-      const defaults = sampleState();
-      const upgraded = { ...defaults, ...value, students: Array.isArray(value.students) ? value.students : defaults.students, lessons: Array.isArray(value.lessons) ? value.lessons : defaults.lessons, tasks: Array.isArray(value.tasks) ? value.tasks : defaults.tasks };
-      upgraded.accounts = Array.isArray(value.accounts) ? value.accounts : defaults.accounts;
-      if (!Array.isArray(value.accounts) && value.plan) upgraded.accounts[0].plan = value.plan;
-      upgraded.tutorLinks = Array.isArray(value.tutorLinks) ? value.tutorLinks : defaults.tutorLinks;
-      upgraded.boards = Array.isArray(value.boards) ? value.boards : defaults.boards;
-      upgraded.plannerByTutor = value.plannerByTutor && typeof value.plannerByTutor === 'object' ? value.plannerByTutor : defaults.plannerByTutor;
-      if (!value.plannerByTutor && Array.isArray(value.plannerBlocks)) upgraded.plannerByTutor['tutor-demo'] = { title: value.plannerTitle || 'План на неделю', blocks: value.plannerBlocks };
-      if (!upgraded.lessons.some((lesson) => lesson.boardId)) upgraded.lessons[0].boardId = upgraded.boards[0]?.id;
-      upgraded.currentBoardId = upgraded.boards.some((board) => board.id === value.currentBoardId) ? value.currentBoardId : upgraded.boards[0]?.id;
-      return upgraded;
+      const fresh = sampleState();
+      return {
+        ...fresh, ...value,
+        students: Array.isArray(value.students) ? value.students : [],
+        lessons: Array.isArray(value.lessons) ? value.lessons : [],
+        tasks: Array.isArray(value.tasks) ? value.tasks : [],
+        accounts: Array.isArray(value.accounts) ? value.accounts : [],
+        tutorLinks: Array.isArray(value.tutorLinks) ? value.tutorLinks : [],
+        boards: Array.isArray(value.boards) ? value.boards : [],
+        plannerByTutor: value.plannerByTutor && typeof value.plannerByTutor === 'object' ? value.plannerByTutor : {},
+        currentAccountId: typeof value.currentAccountId === 'string' ? value.currentAccountId : null,
+        currentBoardId: typeof value.currentBoardId === 'string' ? value.currentBoardId : null,
+      };
     } catch (_) { return sampleState(); }
   };
+  try {
+    if (!localStorage.getItem(PROFILE_RESET_KEY)) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      localStorage.setItem(PROFILE_RESET_KEY, 'done');
+    }
+  } catch (_) { /* storage can be disabled */ }
   const state = loadState();
+  let authenticatedAccountId = null;
+  let accountDataReady = false;
+  let accountSyncTimer = null;
+  let accountSyncFailed = false;
+  let activeConferenceId = null;
   let currentView = 'overview';
   let taskFilter = 'all';
   let boardTool = 'pen';
@@ -100,19 +74,239 @@
 
   const escapeHTML = (value = '') => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const useIcon = (name, cls = '') => `<svg${cls ? ` class="${cls}"` : ''}><use href="#i-${name}"/></svg>`;
+  function applyTheme(theme, save = true) {
+    const dark = theme === 'dark';
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.content = dark ? '#121815' : '#f5f6f4';
+    const button = document.getElementById('themeToggle');
+    const label = dark ? 'Включить светлую тему' : 'Включить тёмную тему';
+    if (button) {
+      button.setAttribute('aria-label', label);
+      button.title = label;
+      button.innerHTML = useIcon(dark ? 'sun' : 'moon');
+    }
+    if (save) { try { localStorage.setItem('tutdesk-theme', dark ? 'dark' : 'light'); } catch (_) { /* storage can be disabled */ } }
+  }
   const persist = () => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) { /* storage can be disabled */ }
+    let serialized;
+    try { serialized = JSON.stringify(state); } catch (_) { return; }
+    if (authenticatedAccountId) {
+      if (!accountDataReady) return;
+      window.clearTimeout(accountSyncTimer);
+      accountSyncTimer = window.setTimeout(async () => {
+        try {
+          const response = await fetch('/api/account-data', {
+            method: 'PUT',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: JSON.parse(serialized) }),
+          });
+          if (!response.ok) throw new Error('Account data save failed');
+          accountSyncFailed = false;
+        } catch {
+          if (!accountSyncFailed) toast('Не удалось сохранить данные кабинета', 'Проверьте соединение и войдите в аккаунт снова.');
+          accountSyncFailed = true;
+        }
+      }, 400);
+      return;
+    }
+    try { localStorage.setItem(STORAGE_KEY, serialized); } catch (_) { /* storage can be disabled */ }
   };
   const getStudent = (id) => state.students.find((student) => student.id === id);
   const getAccount = (id) => state.accounts.find((account) => account.id === id);
-  const currentAccount = () => getAccount(state.currentAccountId) || state.accounts[0];
+  const currentAccount = () => getAccount(state.currentAccountId) || null;
+  function accountModel(account) {
+    return {
+      id: account.id,
+      role: account.role,
+      name: account.name || 'Пользователь',
+      email: account.email || '',
+      studentId: account.role === 'student' ? (account.studentId || `student-${account.id}`) : null,
+      ...(account.role === 'tutor' ? { plan: account.plan || 'light' } : {}),
+    };
+  }
+  function emptyAccountData(account) {
+    const model = accountModel(account);
+    return {
+      ...sampleState(),
+      plan: model.plan || 'light',
+      students: model.role === 'student' ? [{
+        id: model.studentId, name: model.name, email: model.email, subject: '', grade: '', note: '',
+        lessons: 0, progress: 0, color: 0,
+      }] : [],
+      lessons: [],
+      tasks: [],
+      accounts: [model],
+      currentAccountId: model.id,
+      tutorLinks: [],
+      boards: [],
+      currentBoardId: null,
+      plannerByTutor: model.role === 'tutor' ? { [model.id]: { title: 'План на неделю', blocks: [] } } : {},
+    };
+  }
+  function useAccountData(savedData, account) {
+    const defaults = emptyAccountData(account);
+    const restored = savedData && typeof savedData === 'object' && !Array.isArray(savedData)
+      ? { ...defaults, ...savedData }
+      : defaults;
+    for (const key of ['students', 'lessons', 'tasks', 'tutorLinks', 'boards']) {
+      restored[key] = Array.isArray(restored[key])
+        ? restored[key].filter((item) => item && typeof item === 'object' && !Array.isArray(item))
+        : [];
+    }
+    restored.boards = restored.boards.map((board) => ({
+      ...board,
+      lessonIds: Array.isArray(board.lessonIds) ? board.lessonIds.filter((id) => typeof id === 'string') : [],
+      elements: Array.isArray(board.elements) ? board.elements.filter((element) => element && typeof element === 'object' && !Array.isArray(element)) : [],
+    }));
+    if (!restored.plannerByTutor || typeof restored.plannerByTutor !== 'object' || Array.isArray(restored.plannerByTutor)) {
+      restored.plannerByTutor = {};
+    } else {
+      restored.plannerByTutor = Object.fromEntries(Object.entries(restored.plannerByTutor).map(([id, planner]) => [
+        id,
+        planner && typeof planner === 'object' && !Array.isArray(planner)
+          ? { ...planner, blocks: Array.isArray(planner.blocks) ? planner.blocks.filter((block) => block && typeof block === 'object' && !Array.isArray(block)) : [] }
+          : { title: 'План на неделю', blocks: [] },
+      ]));
+    }
+    const model = accountModel(account);
+    const savedAccounts = Array.isArray(restored.accounts)
+      ? restored.accounts.filter((item) => item && typeof item === 'object' && !Array.isArray(item))
+      : [];
+    restored.accounts = [{ ...savedAccounts.find((item) => item.id === model.id), ...model }];
+    restored.currentAccountId = model.id;
+    if (model.role === 'student' && !restored.students.some((student) => student.id === model.studentId)) {
+      restored.students.push({ id: model.studentId, name: model.name, email: model.email, subject: '', grade: '', note: '', lessons: 0, progress: 0, color: 0 });
+    }
+    for (const key of Object.keys(state)) delete state[key];
+    Object.assign(state, restored);
+  }
+  async function activateAccount(account) {
+    if (!account?.id) throw new Error('account_missing');
+    authenticatedAccountId = account.id;
+    accountDataReady = false;
+    let savedData = null;
+    try {
+      const response = await fetch('/api/account-data', { credentials: 'same-origin', cache: 'no-store' });
+      if (!response.ok) throw new Error('account_data_load_failed');
+      savedData = (await response.json()).data;
+      accountDataReady = true;
+    } catch {
+      toast('Не удалось загрузить данные кабинета', 'Изменения не будут сохранены, пока связь с базой данных не восстановится.');
+    }
+    useAccountData(savedData, account);
+    currentView = activeConferenceId ? 'room' : 'overview';
+    closeModal();
+    render();
+    if (!account.role) openAccountRoleForm(account);
+    else if (accountDataReady && !savedData) persist();
+  }
+  function openAccountRoleForm(account) {
+    showModal('Настроить личный кабинет', 'Выберите роль — её можно будет использовать для настройки рабочего пространства.', `<form class="form-grid" data-form="auth-role"><div class="form-field"><label for="authAccountName">Имя</label><input class="form-control" id="authAccountName" name="name" value="${escapeHTML(account.name || '')}" required maxlength="80" /></div><div class="form-field"><label for="authAccountRole">Я в Tutdesk</label><select class="form-control" id="authAccountRole" name="role" required><option value="tutor">Репетитор</option><option value="student">Ученик</option></select></div><div class="account-note">Профиль будет связан с этим способом входа. Пароль Tutdesk не хранит.</div><div class="form-actions"><button class="button button-primary" type="submit">Продолжить</button></div></form>`);
+  }
+  async function completeAccountSetup(form) {
+    const data = Object.fromEntries(new FormData(form).entries());
+    try {
+      const response = await fetch('/api/auth/role', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: data.role, name: String(data.name || '').trim() }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.account) throw new Error(result.error || 'profile_setup_failed');
+      useAccountData(null, result.account);
+      closeModal();
+      currentView = activeConferenceId ? 'room' : 'overview';
+      render();
+      persist();
+      toast('Личный кабинет готов', result.account.role === 'student' ? 'Роль: ученик' : 'Роль: репетитор');
+    } catch {
+      toast('Не удалось сохранить профиль', 'Попробуйте ещё раз.');
+    }
+  }
+  async function initializeAuth() {
+    const query = new URLSearchParams(window.location.search);
+    const authError = query.get('auth_error');
+    const passwordResetToken = query.get('reset');
+    const requestedConferenceId = query.get('conference') || '';
+    activeConferenceId = /^[A-Za-z0-9_-]{1,64}$/.test(requestedConferenceId) ? requestedConferenceId : null;
+    const verificationToken = query.get('verify');
+    if (verificationToken) {
+      try {
+        const verificationResponse = await fetch('/api/auth/verify', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: verificationToken }),
+        });
+        const verification = await verificationResponse.json().catch(() => ({}));
+        if (!verificationResponse.ok) toast(verification.message || 'Не удалось подтвердить email', 'Запросите новое письмо и откройте актуальную ссылку.');
+        else toast('Email подтверждён', 'Теперь можно войти в личный кабинет Tutdesk.');
+      } catch { toast('Не удалось подтвердить email', 'Проверьте подключение и попробуйте открыть ссылку ещё раз.'); }
+      query.delete('verify');
+      history.replaceState(null, document.title, `${location.pathname}${query.size ? `?${query}` : ''}${location.hash}`);
+    }
+    if (passwordResetToken) {
+      query.delete('reset');
+      history.replaceState(null, document.title, `${location.pathname}${query.size ? `?${query}` : ''}${location.hash}`);
+    }
+    try {
+      const response = await fetch('/api/auth/me', { credentials: 'same-origin', cache: 'no-store' });
+      if (response.ok) {
+        const result = await response.json();
+        if (result.account) {
+          authenticatedAccountId = result.account.id;
+          accountDataReady = false;
+          let savedData = null;
+          try {
+            const dataResponse = await fetch('/api/account-data', { credentials: 'same-origin', cache: 'no-store' });
+            if (!dataResponse.ok) throw new Error('account_data_load_failed');
+            savedData = (await dataResponse.json()).data;
+            accountDataReady = true;
+          } catch {
+            toast('Не удалось загрузить данные кабинета', 'Изменения не будут сохранены, пока связь с базой данных не восстановится.');
+          }
+          useAccountData(savedData, result.account);
+          if (activeConferenceId) currentView = 'room';
+          render();
+          if (!result.account.role) openAccountRoleForm(result.account);
+          else if (accountDataReady && !savedData) persist();
+        } else {
+          if (activeConferenceId) currentView = 'room';
+          render();
+        }
+      } else {
+        if (activeConferenceId) currentView = 'room';
+        render();
+      }
+    } catch {
+      if (activeConferenceId) currentView = 'room';
+      render();
+    }
+    if (authError) {
+      const errors = {
+        provider_not_configured: 'Сервис авторизации ещё не настроен. Попробуйте позже.',
+        oauth_state: 'Не удалось подтвердить запрос входа. Начните вход ещё раз.',
+        oauth_failed: 'Провайдер не завершил вход. Попробуйте ещё раз.',
+        oauth_cancelled: 'Вы отменили вход через провайдера.',
+      };
+      toast('Не удалось войти', errors[authError] || 'Проверьте подключение и попробуйте снова.');
+    }
+    if (query.has('auth') || authError) {
+      query.delete('auth');
+      query.delete('auth_error');
+      const search = query.toString();
+      history.replaceState(null, document.title, `${location.pathname}${search ? `?${search}` : ''}${location.hash}`);
+    }
+    if (passwordResetToken) openForm('password-reset', passwordResetToken);
+  }
   const currentPlan = () => currentAccount()?.plan || state.plan || 'light';
   const isStudentAccount = () => currentAccount()?.role === 'student';
   const currentTutorId = () => isStudentAccount() ? null : currentAccount()?.id;
   const linkedStudentIds = (tutorId = currentTutorId()) => state.tutorLinks.filter((link) => link.tutorId === tutorId).map((link) => link.studentId);
   const tutorLinkForStudent = (studentId, tutorId = currentTutorId()) => state.tutorLinks.find((link) => link.tutorId === tutorId && link.studentId === studentId);
   const currentTutorStudents = () => linkedStudentIds().map(getStudent).filter(Boolean);
-  const tasksForCurrentTutor = () => state.tasks.filter((task) => task.tutorId === currentTutorId() || (!task.tutorId && currentTutorId() === 'tutor-demo'));
+  const tasksForCurrentTutor = () => state.tasks.filter((task) => task.tutorId === currentTutorId());
   const tasksForCurrentStudent = () => state.tasks.filter((task) => task.kind !== 'personal' && task.studentId === currentAccount()?.studentId);
   const currentPlanner = () => { const tutorId = currentTutorId() || 'student-planner'; state.plannerByTutor ||= {}; return state.plannerByTutor[tutorId] ||= { title: 'План на неделю', blocks: [] }; };
   const currentBoard = () => state.boards.find((board) => board.id === state.currentBoardId) || state.boards[0];
@@ -162,7 +356,7 @@
     const studentIds = isStudentAccount() ? [currentAccount()?.studentId] : linkedStudentIds();
     return state.lessons.filter((lesson) => studentIds.includes(lesson.studentId) && lesson.date >= addDaysISO(0)).sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`))[0];
   };
-  const currentTutorLessons = () => state.lessons.filter((lesson) => linkedStudentIds().includes(lesson.studentId) && (lesson.tutorId === currentTutorId() || (!lesson.tutorId && currentTutorId() === 'tutor-demo')));
+  const currentTutorLessons = () => state.lessons.filter((lesson) => linkedStudentIds().includes(lesson.studentId) && lesson.tutorId === currentTutorId());
   const toast = (message, detail = '') => {
     const region = document.getElementById('toastRegion');
     const item = document.createElement('div');
@@ -184,11 +378,11 @@
   function renderLightOverview() {
     const today = new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
     const firstName = currentAccount()?.name.split(' ')[0] || 'Репетитор';
-    pageContent.innerHTML = `<div class="page-heading"><div><div class="heading-kicker">${escapeHTML(today)}</div><h1>Доброе утро, ${escapeHTML(firstName)} <span class="heading-wave">✳</span></h1><p>Комната и доска готовы к следующему занятию.</p></div><div class="heading-actions"><button class="button button-light" data-view="board">${useIcon('board')} Открыть доску</button><button class="button button-primary" data-action="start-lesson">${useIcon('video')} Начать созвон</button></div></div><section class="welcome-banner"><div class="welcome-copy"><div class="eyebrow-green">TANDEM LIGHT</div><h2>Ваше место для живых уроков.</h2><p>Встречайтесь с учеником по ссылке, включайте камеру и разбирайте задачи на интерактивной доске.</p></div><div class="welcome-action"><span class="banner-note">Созвон и доска включены</span><button class="button button-lime" data-action="start-lesson">Открыть комнату ${useIcon('arrow')}</button></div></section><section class="stats-grid"><article class="stat-card"><div><div class="stat-label">Видеокомната</div><div class="stat-value">Готова</div><div class="stat-hint">Созвон, камера и микрофон</div></div><span class="stat-icon">${useIcon('video')}</span></article><article class="stat-card"><div><div class="stat-label">Демонстрация экрана</div><div class="stat-value">Доступна</div><div class="stat-hint">Показывайте материалы ученику</div></div><span class="stat-icon stat-icon--blue">${useIcon('monitor')}</span></article><article class="stat-card"><div><div class="stat-label">Интерактивная доска</div><div class="stat-value">Сохранена</div><div class="stat-hint">Можно продолжить в любое время</div></div><span class="stat-icon stat-icon--orange">${useIcon('board')}</span></article></section><div class="overview-grid"><section class="panel"><div class="panel-heading"><div><h3>Начните занятие</h3><p>Откройте комнату и пригласите ученика по ссылке.</p></div>${useIcon('video')}</div><div class="light-feature-card"><div class="light-feature-icon">${useIcon('users')}</div><div><strong>Комната для урока</strong><span>Видео и экран включаются с вашего устройства</span></div><button class="button button-primary button-small" data-action="start-lesson">Войти</button></div></section><section class="panel"><div class="panel-heading"><div><h3>Работайте на доске</h3><p>Записи сохраняются в этом браузере.</p></div>${useIcon('board')}</div><div class="light-feature-card light-feature-card--board"><div class="light-feature-icon">${useIcon('edit')}</div><div><strong>Общая доска занятия</strong><span>Рисуйте и возвращайтесь к материалам</span></div><button class="button button-light button-small" data-view="board">Открыть</button></div></section></div><section class="students-strip plan-teaser"><div class="students-strip-head"><h3>Нужно больше инструментов?</h3><button class="subtle-link" data-view="subscription">Сравнить тарифы →</button></div><div class="plan-teaser-copy">В Extreme появятся карточки учеников, расписание и домашние задания с копированием для других подопечных.</div></section>`;
+    pageContent.innerHTML = `<div class="page-heading"><div><div class="heading-kicker">${escapeHTML(today)}</div><h1>Доброе утро, ${escapeHTML(firstName)} <span class="heading-wave">✳</span></h1><p>Комната и доска готовы к следующему занятию.</p></div><div class="heading-actions"><button class="button button-light" data-view="board">${useIcon('board')} Открыть доску</button><button class="button button-primary" data-action="start-lesson">${useIcon('video')} Начать созвон</button></div></div><section class="welcome-banner"><div class="welcome-copy"><div class="eyebrow-green">TUTDESK LIGHT</div><h2>Ваше место для живых уроков.</h2><p>Встречайтесь с учеником по ссылке, включайте камеру и разбирайте задачи на интерактивной доске.</p></div><div class="welcome-action"><span class="banner-note">Созвон и доска включены</span><button class="button button-lime" data-action="start-lesson">Открыть комнату ${useIcon('arrow')}</button></div></section><section class="stats-grid"><article class="stat-card"><div><div class="stat-label">Видеокомната</div><div class="stat-value">Готова</div><div class="stat-hint">Созвон, камера и микрофон</div></div><span class="stat-icon">${useIcon('video')}</span></article><article class="stat-card"><div><div class="stat-label">Демонстрация экрана</div><div class="stat-value">Доступна</div><div class="stat-hint">Показывайте материалы ученику</div></div><span class="stat-icon stat-icon--blue">${useIcon('monitor')}</span></article><article class="stat-card"><div><div class="stat-label">Интерактивная доска</div><div class="stat-value">Сохранена</div><div class="stat-hint">Можно продолжить в любое время</div></div><span class="stat-icon stat-icon--orange">${useIcon('board')}</span></article></section><div class="overview-grid"><section class="panel"><div class="panel-heading"><div><h3>Начните занятие</h3><p>Откройте комнату и пригласите ученика по ссылке.</p></div>${useIcon('video')}</div><div class="light-feature-card"><div class="light-feature-icon">${useIcon('users')}</div><div><strong>Комната для урока</strong><span>Видео и экран включаются с вашего устройства</span></div><button class="button button-primary button-small" data-action="start-lesson">Войти</button></div></section><section class="panel"><div class="panel-heading"><div><h3>Работайте на доске</h3><p>Материалы доски сохраняются в личном кабинете.</p></div>${useIcon('board')}</div><div class="light-feature-card light-feature-card--board"><div class="light-feature-icon">${useIcon('edit')}</div><div><strong>Общая доска занятия</strong><span>Рисуйте и возвращайтесь к материалам</span></div><button class="button button-light button-small" data-view="board">Открыть</button></div></section></div><section class="students-strip plan-teaser"><div class="students-strip-head"><h3>Нужно больше инструментов?</h3><button class="subtle-link" data-view="subscription">Сравнить тарифы →</button></div><div class="plan-teaser-copy">В Extreme появятся карточки учеников, расписание и домашние задания с копированием для других подопечных.</div></section>`;
   }
 
   function renderFeatureGate(title, description, items) {
-    pageContent.innerHTML = `${pageHeading('ВОЗМОЖНОСТИ EXTREME', title, description)}<section class="feature-gate"><span class="feature-gate-icon">${useIcon('spark')}</span><div><h2>Этот раздел входит в Extreme.</h2><p>Откройте инструменты для работы с учениками и занятиями. В демо можно переключить тариф и посмотреть раздел; оплата пока не подключена.</p></div><div class="feature-gate-list">${items.map((item) => `<span>${useIcon('check')}${escapeHTML(item)}</span>`).join('')}</div><div class="feature-gate-actions"><button class="button button-primary" data-action="choose-plan" data-plan="extreme">Посмотреть Extreme в демо</button><button class="button button-light" data-view="subscription">Сравнить тарифы</button></div></section>`;
+    pageContent.innerHTML = `${pageHeading('ВОЗМОЖНОСТИ EXTREME', title, description)}<section class="feature-gate"><span class="feature-gate-icon">${useIcon('spark')}</span><div><h2>Этот раздел входит в Extreme.</h2><p>Откройте инструменты для работы с учениками и занятиями. Раздел включён в план Extreme и доступен после его выбора.</p></div><div class="feature-gate-list">${items.map((item) => `<span>${useIcon('check')}${escapeHTML(item)}</span>`).join('')}</div><div class="feature-gate-actions"><button class="button button-primary" data-action="choose-plan" data-plan="extreme">Выбрать Extreme</button><button class="button button-light" data-view="subscription">Сравнить тарифы</button></div></section>`;
   }
 
   function renderOverview() {
@@ -294,16 +488,16 @@
 
   function renderSubscription() {
     const isExtreme = currentPlan() === 'extreme';
-    const planButton = (plan) => currentPlan() === plan ? `<button class="button button-light button-full" disabled>Выбран в демо</button>` : `<button class="button ${plan === 'extreme' ? 'button-primary' : 'button-light'} button-full" data-action="choose-plan" data-plan="${plan}">Выбрать ${plan === 'light' ? 'Light' : 'Extreme'}</button>`;
+    const planButton = (plan) => currentPlan() === plan ? `<button class="button button-light button-full" disabled>Выбран</button>` : `<button class="button ${plan === 'extreme' ? 'button-primary' : 'button-light'} button-full" data-action="choose-plan" data-plan="${plan}">Выбрать ${plan === 'light' ? 'Light' : 'Extreme'}</button>`;
     const feature = (text, included = true) => `<li class="${included ? '' : 'muted-feature'}"><span class="feature-check">${included ? useIcon('check') : useIcon('close')}</span>${text}</li>`;
-    pageContent.innerHTML = `<section class="pricing-intro"><span class="heading-kicker">ТАРИФЫ TANDEM</span><h1>Ваш формат. Ваш темп.</h1><p>Начните с созвонов и доски. Когда понадобится больше — добавьте инструменты для всей учебной работы.</p><div class="billing-switch"><span class="save-badge">Платная подписка: цены и период оплаты определим позже</span></div></section><div class="pricing-grid"><article class="price-card ${!isExtreme ? 'price-card--featured' : ''}">${!isExtreme ? '<span class="popular-badge">ТЕКУЩИЙ В ДЕМО</span>' : ''}<div class="price-plan-head"><h2 class="price-plan-title">Light</h2><span class="price-icon">${useIcon('video')}</span></div><p class="price-description">Всё необходимое, чтобы встретиться и провести хороший урок.</p><div class="price-value">—<small> · цена не задана</small></div><div class="price-period">Подписка Light будет платной</div><div class="price-divider"></div><div class="feature-heading">В тарифе</div><ul class="feature-list">${feature('Видеозвонки с учениками')}${feature('Камера, микрофон и демонстрация экрана')}${feature('Интерактивная доска для совместной работы')}${feature('Сохранение и редактирование доски')}${feature('Занятия по ссылке')}</ul>${planButton('light')}</article><article class="price-card ${isExtreme ? 'price-card--featured' : ''}">${isExtreme ? '<span class="popular-badge">ТЕКУЩИЙ В ДЕМО</span>' : '<span class="popular-badge">ВСЁ ДЛЯ РАБОТЫ</span>'}<div class="price-plan-head"><h2 class="price-plan-title">Extreme</h2><span class="price-icon">${useIcon('spark')}</span></div><p class="price-description">Все возможности Light плюс инструменты для ведения учеников и заданий.</p><div class="price-value">—<small> · цена не задана</small></div><div class="price-period">Подписка Extreme будет платной</div><div class="price-divider"></div><div class="feature-heading">Всё из Light, а ещё</div><ul class="feature-list">${feature('Карточки учеников и заметки')}${feature('Планирование занятий')}${feature('Менеджер личных задач и домашней работы')}${feature('Копирование задания для другого ученика')}${feature('Сроки, ответы, статусы и проверка')}</ul>${planButton('extreme')}</article></div><div class="included-strip"><span class="price-icon">${useIcon('card')}</span><span><strong>Две версии подписки: Light и Extreme.</strong> В демо можно переключить тариф, чтобы посмотреть доступные разделы.</span></div><p class="plan-footnote">Это демонстрация будущих тарифов. Оплата и подключение подписки пока не настроены.</p>`;
+    pageContent.innerHTML = `<section class="pricing-intro"><span class="heading-kicker">ТАРИФЫ TUTDESK</span><h1>Ваш формат. Ваш темп.</h1><p>Начните с созвонов и доски. Когда понадобится больше — добавьте инструменты для всей учебной работы.</p><div class="billing-switch"><span class="save-badge">Платная подписка: цены и период оплаты определим позже</span></div></section><div class="pricing-grid"><article class="price-card ${!isExtreme ? 'price-card--featured' : ''}">${!isExtreme ? '<span class="popular-badge">ТЕКУЩИЙ ПЛАН</span>' : ''}<div class="price-plan-head"><h2 class="price-plan-title">Light</h2><span class="price-icon">${useIcon('video')}</span></div><p class="price-description">Всё необходимое, чтобы встретиться и провести хороший урок.</p><div class="price-value">—<small> · цена не задана</small></div><div class="price-period">Подписка Light будет платной</div><div class="price-divider"></div><div class="feature-heading">В тарифе</div><ul class="feature-list">${feature('Видеозвонки с учениками')}${feature('Камера, микрофон и демонстрация экрана')}${feature('Интерактивная доска для совместной работы')}${feature('Сохранение и редактирование доски')}${feature('Занятия по ссылке')}</ul>${planButton('light')}</article><article class="price-card ${isExtreme ? 'price-card--featured' : ''}">${isExtreme ? '<span class="popular-badge">ТЕКУЩИЙ ПЛАН</span>' : '<span class="popular-badge">ВСЁ ДЛЯ РАБОТЫ</span>'}<div class="price-plan-head"><h2 class="price-plan-title">Extreme</h2><span class="price-icon">${useIcon('spark')}</span></div><p class="price-description">Все возможности Light плюс инструменты для ведения учеников и заданий.</p><div class="price-value">—<small> · цена не задана</small></div><div class="price-period">Подписка Extreme будет платной</div><div class="price-divider"></div><div class="feature-heading">Всё из Light, а ещё</div><ul class="feature-list">${feature('Карточки учеников и заметки')}${feature('Планирование занятий')}${feature('Менеджер личных задач и домашней работы')}${feature('Копирование задания для другого ученика')}${feature('Сроки, ответы, статусы и проверка')}</ul>${planButton('extreme')}</article></div><div class="included-strip"><span class="price-icon">${useIcon('card')}</span><span><strong>Две версии подписки: Light и Extreme.</strong> План Extreme открывает все инструменты для ведения учеников и занятий.</span></div><p class="plan-footnote">Стоимость планов и подключение оплаты будут настроены отдельно.</p>`;
   }
 
   function renderBoard() {
     if (!state.boards.length) createBoard('Новая доска');
     const boards = state.boards.filter((board) => isStudentAccount()
       ? board.lessonIds.some((lessonId) => state.lessons.some((lesson) => lesson.id === lessonId && lesson.studentId === currentAccount()?.studentId))
-      : board.tutorId === currentTutorId() || (!board.tutorId && currentTutorId() === 'tutor-demo'));
+      : board.tutorId === currentTutorId());
     if (!boards.length) { pageContent.innerHTML = isStudentAccount() ? `${pageHeading('ДОСКИ ЗАНЯТИЙ', 'Здесь появятся ваши доски.', 'Доска станет доступна, когда репетитор закрепит её за занятием.')}<div class="empty-state board-empty-state">${useIcon('board')}<strong>Пока нет доступных досок</strong>Попросите репетитора открыть или закрепить общую доску за вашим уроком.</div>` : `${pageHeading('ДОСКА ЗАНЯТИЯ', 'Создайте первую доску.', 'Каждая доска хранит собственные элементы и может быть привязана к одному или нескольким занятиям.', `<button class="button button-primary" data-action="board-new">${useIcon('plus')} Новая доска</button>`)}<div class="empty-state board-empty-state">${useIcon('board')}<strong>У вас пока нет досок</strong>Создайте доску, чтобы начать работу.</div>`; return; }
     const board = boards.find((item) => item.id === state.currentBoardId) || boards[0] || state.boards[0];
     if (board) state.currentBoardId = board.id;
@@ -317,39 +511,105 @@
 
   function renderRoom() {
     const studentMode = isStudentAccount();
-    let lesson = state._activeLesson || nextLesson();
-    if (studentMode && lesson?.studentId !== currentAccount()?.studentId) lesson = nextLesson();
-    if (!studentMode && lesson && !currentTutorLessons().some((item) => item.id === lesson.id)) lesson = nextLesson();
+    let lesson = activeConferenceId ? null : (state._activeLesson || nextLesson());
+    if (!activeConferenceId && studentMode && lesson?.studentId !== currentAccount()?.studentId) lesson = nextLesson();
+    if (!activeConferenceId && !studentMode && lesson && !currentTutorLessons().some((item) => item.id === lesson.id)) lesson = nextLesson();
     const student = lesson ? getStudent(lesson.studentId) : null;
     const ownName = currentAccount()?.name || 'Пользователь';
     const tutorName = getAccount(lesson?.tutorId)?.name || ownName;
-    const partner = studentMode ? tutorName : (student?.name || 'Ученик');
-    const lessonTitle = lesson?.title || 'Индивидуальное занятие';
-    const mediaNote = 'Для тестового звонка оба участника должны открыть это занятие и ввести один и тот же временный код доступа.';
-    const lessonId = lesson?.id || 'tandem-open-room';
+    const partner = activeConferenceId ? 'участниками' : (studentMode ? tutorName : (student?.name || 'Ученик'));
+    const lessonTitle = activeConferenceId ? 'Групповая конференция' : (lesson?.title || 'Индивидуальное занятие');
+    const mediaNote = activeConferenceId
+      ? (authenticatedAccountId
+        ? 'Передайте ссылку приглашённым участникам; для входа им понадобится аккаунт Tutdesk.'
+        : 'Передайте ссылку и временный код приглашённым участникам.')
+      : 'Для тестового звонка участники должны открыть одно занятие и ввести общий временный код.';
+    const lessonId = activeConferenceId || lesson?.id || 'tutdesk-open-room';
     const availableLessons = studentMode ? state.lessons.filter((item) => item.studentId === currentAccount()?.studentId && item.date >= addDaysISO(0)).sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`)) : currentTutorLessons().filter((item) => item.date >= addDaysISO(0)).sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
-    const lessonPicker = availableLessons.length > 1 ? `<label class="room-lesson-picker"><span>Выберите занятие</span><select id="roomLessonSelect" aria-label="Выберите занятие">${availableLessons.map((item) => `<option value="${escapeHTML(item.id)}" ${item.id === lesson?.id ? 'selected' : ''}>${escapeHTML(dateLabel(item.date))} · ${escapeHTML(item.time)} · ${escapeHTML(item.title)}${studentMode ? ` · ${escapeHTML(getAccount(item.tutorId)?.name || 'Репетитор')}` : ` · ${escapeHTML(studentName(item.studentId))}`}</option>`).join('')}</select></label>` : '';
-    pageContent.innerHTML = `<div class="room-page"><div class="room-topline"><div class="room-title-group"><div><h1>${escapeHTML(lessonTitle)}</h1><p>Занятие с ${escapeHTML(partner)} · ${escapeHTML(lesson?.date ? dateLabel(lesson.date) : 'Сейчас')} ${escapeHTML(lesson?.time || '')}</p></div><span class="demo-badge" id="roomConnectionStatus">НЕ ПОДКЛЮЧЕНО</span></div><div class="room-call-actions">${lessonPicker}<span class="room-clock" id="roomTimer">00:00</span><button class="button button-primary button-small" data-action="join-livekit">Подключиться к звонку</button></div></div><div class="room-layout"><section class="video-stage"><article class="video-tile" id="studentVideoTile"><div class="video-avatar">${escapeHTML(initials(partner))}</div><span class="video-name" id="remoteParticipantName">${escapeHTML(partner)}</span><span class="video-cam-state" id="remoteVideoState">${useIcon('cam-off')} Ожидает подключения</span></article><article class="video-tile video-tile--tutor" id="tutorVideoTile"><div class="video-avatar">${escapeHTML(initials(ownName))}</div><video id="localVideo" autoplay playsinline muted hidden></video><span class="video-name">Вы · ${escapeHTML(ownName)}</span><span class="video-cam-state" id="tutorVideoState">${useIcon('cam-off')} Камера выключена</span></article><div class="room-controls"><button class="room-control is-off" data-action="toggle-mic" title="Микрофон" aria-label="Микрофон">${useIcon('mic-off')}</button><button class="room-control is-off" data-action="toggle-camera" title="Камера" aria-label="Камера">${useIcon('cam-off')}</button><button class="room-control" data-action="share-screen" title="Показать экран" aria-label="Показать экран">${useIcon('monitor')}</button><span class="room-control-separator"></span><button class="room-control" data-action="open-board" title="Открыть доску" aria-label="Открыть доску">${useIcon('board')}</button><button class="room-control room-control--hangup" data-action="leave-room" title="Завершить" aria-label="Завершить">${useIcon('phone')}</button></div></section><aside class="room-aside"><h3>На занятии</h3><p>Пространство этой встречи</p><div class="room-info">${useIcon('users')}<div><strong>Участники</strong>Вы и ${escapeHTML(partner)}</div></div><div class="room-info">${useIcon('board')}<div><strong>Интерактивная доска</strong>Закреплена за занятием; работа сохранится для продолжения</div></div><div class="room-info">${useIcon('monitor')}<div><strong>Демонстрация экрана</strong>Поделитесь материалом ученику</div></div><div class="room-share-note">Код занятия: <strong>${escapeHTML(lessonId)}</strong><br />${escapeHTML(mediaNote)}</div></aside><div class="room-footer-note">Тестовая видеокомната LiveKit · общий код доступа передавайте только участнику этого урока</div></div></div>`;
+    const lessonPicker = !activeConferenceId && availableLessons.length > 1 ? `<label class="room-lesson-picker"><span>Выберите занятие</span><select id="roomLessonSelect" aria-label="Выберите занятие">${availableLessons.map((item) => `<option value="${escapeHTML(item.id)}" ${item.id === lesson?.id ? 'selected' : ''}>${escapeHTML(dateLabel(item.date))} · ${escapeHTML(item.time)} · ${escapeHTML(item.title)}${studentMode ? ` · ${escapeHTML(getAccount(item.tutorId)?.name || 'Репетитор')}` : ` · ${escapeHTML(studentName(item.studentId))}`}</option>`).join('')}</select></label>` : '';
+    const inviteAction = activeConferenceId
+      ? '<button class="button button-light button-small" data-action="copy-conference">Скопировать ссылку</button>'
+      : '<button class="button button-light button-small" data-action="create-conference">Создать конференцию</button>';
+    const attendeesDescription = activeConferenceId ? 'Вы и приглашённые участники' : `Вы и ${escapeHTML(partner)}`;
+    const roomSubtitle = activeConferenceId
+      ? 'Пригласите участников по ссылке'
+      : `Занятие с ${escapeHTML(partner)} · ${escapeHTML(lesson?.date ? dateLabel(lesson.date) : 'Сейчас')} ${escapeHTML(lesson?.time || '')}`;
+    const roomFooterNote = authenticatedAccountId
+      ? 'В конференции могут участвовать вошедшие в Tutdesk пользователи с приглашением.'
+      : 'Гостям понадобятся приглашение и временный код для входа.';
+    pageContent.innerHTML = `<div class="room-page"><div class="room-topline"><div class="room-title-group"><div><h1>${escapeHTML(lessonTitle)}</h1><p>${roomSubtitle}</p></div><span class="room-status-badge" id="roomConnectionStatus">НЕ ПОДКЛЮЧЕНО</span></div><div class="room-call-actions">${lessonPicker}${inviteAction}<span class="room-clock" id="roomTimer">00:00</span><button class="button button-primary button-small" data-action="join-livekit">Подключиться к звонку</button></div></div><div class="room-layout"><section class="video-stage"><article class="video-tile" id="studentVideoTile"><div class="video-avatar">${escapeHTML(initials(partner))}</div><span class="video-name" id="remoteParticipantName">${escapeHTML(activeConferenceId ? 'Ожидание участников' : partner)}</span><span class="video-cam-state" id="remoteVideoState">${useIcon('cam-off')} Ожидает подключения</span></article><article class="video-tile video-tile--tutor" id="tutorVideoTile"><div class="video-avatar">${escapeHTML(initials(ownName))}</div><video id="localVideo" autoplay playsinline muted hidden></video><span class="video-name">Вы · ${escapeHTML(ownName)}</span><span class="video-cam-state" id="tutorVideoState">${useIcon('cam-off')} Камера выключена</span></article><div class="room-controls"><button class="room-control is-off" data-action="toggle-mic" title="Микрофон" aria-label="Микрофон">${useIcon('mic-off')}</button><button class="room-control is-off" data-action="toggle-camera" title="Камера" aria-label="Камера">${useIcon('cam-off')}</button><button class="room-control" data-action="share-screen" title="Показать экран" aria-label="Показать экран">${useIcon('monitor')}</button><span class="room-control-separator"></span><button class="room-control" data-action="open-board" title="Открыть доску" aria-label="Открыть доску">${useIcon('board')}</button><button class="room-control room-control--hangup" data-action="leave-room" title="Завершить" aria-label="Завершить">${useIcon('phone')}</button></div></section><aside class="room-aside"><h3>${activeConferenceId ? 'Конференция' : 'На занятии'}</h3><p>Пространство этой встречи</p><div class="room-info">${useIcon('users')}<div><strong>Участники</strong>${attendeesDescription}</div></div><div class="room-info">${useIcon('board')}<div><strong>Интерактивная доска</strong>${activeConferenceId ? 'Эта конференция не связана с общей доской' : 'Закреплена за занятием; работа сохранится для продолжения'}</div></div><div class="room-info">${useIcon('monitor')}<div><strong>Демонстрация экрана</strong>Поделитесь материалом ученику</div></div><div class="room-share-note">Код встречи: <strong>${escapeHTML(lessonId)}</strong><br />${escapeHTML(mediaNote)}</div></aside><div class="room-footer-note">${roomFooterNote}</div></div></div>`;
     startRoomTimer();
+    updateParticipantCount();
   }
 
   function openLiveKitJoin() {
     const lesson = state._activeLesson || nextLesson();
-    const roomName = lesson?.id || 'tandem-open-room';
-    showModal('Подключиться к звонку', 'Для тестового доступа нужен общий код, который репетитор передал участнику урока.', `<form class="form-grid" data-form="livekit-join"><div class="account-demo-note">Комната занятия: <strong>${escapeHTML(roomName)}</strong>. Откройте это же занятие на втором устройстве.</div><div class="form-field"><label for="livekitRoomCode">Временный код доступа</label><input class="form-control" id="livekitRoomCode" name="roomCode" type="password" autocomplete="off" required minlength="8" /></div><div class="form-actions"><button type="button" class="button button-light" data-action="close-modal">Отмена</button><button type="submit" class="button button-primary">Подключиться</button></div></form>`);
+    const roomName = activeConferenceId || lesson?.id || 'tutdesk-open-room';
+    const accessForm = authenticatedAccountId
+      ? '<div class="account-note">Вход выполнен. Временный код не нужен.</div>'
+      : '<div class="form-field"><label for="livekitRoomCode">Временный код доступа</label><input class="form-control" id="livekitRoomCode" name="roomCode" type="password" autocomplete="off" required minlength="8" /></div>';
+    const accessPrompt = authenticatedAccountId
+      ? 'Войдите в аккаунт Tutdesk, чтобы подключиться.'
+      : 'Введите временный код, который организатор передал участникам.';
+    showModal('Подключиться к звонку', accessPrompt, `<form class="form-grid" data-form="livekit-join"><div class="account-note">Комната: <strong>${escapeHTML(roomName)}</strong>. ${activeConferenceId ? 'Вы подключитесь к общей конференции.' : 'Откройте это же занятие на втором устройстве.'}</div>${accessForm}<div class="form-actions"><button type="button" class="button button-light" data-action="close-modal">Отмена</button><button type="submit" class="button button-primary">Подключиться</button></div></form>`);
+  }
+
+  function setConferenceUrl(conferenceId) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('auth');
+    url.searchParams.delete('auth_error');
+    if (conferenceId) url.searchParams.set('conference', conferenceId);
+    else url.searchParams.delete('conference');
+    history.replaceState(null, document.title, `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  function conferenceInviteUrl() {
+    const url = new URL(window.location.href);
+    url.search = '';
+    url.hash = '';
+    url.searchParams.set('conference', activeConferenceId);
+    return url.toString();
+  }
+
+  async function copyConferenceLink() {
+    if (!activeConferenceId) return;
+    const inviteUrl = conferenceInviteUrl();
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+      toast('Ссылка скопирована', authenticatedAccountId
+        ? 'Отправьте её вошедшим в Tutdesk участникам.'
+        : 'Отправьте её участникам вместе с временным кодом доступа.');
+    } catch {
+      const inviteNote = authenticatedAccountId
+        ? 'Для подключения участникам нужно войти в Tutdesk.'
+        : 'Для подключения также нужен временный код доступа.';
+      showModal('Ссылка на конференцию', 'Скопируйте ссылку и отправьте её участникам.', `<div class="form-grid"><input class="form-control" id="conferenceInviteLink" value="${escapeHTML(inviteUrl)}" readonly /><div class="account-note">${inviteNote}</div><div class="form-actions"><button class="button button-primary" data-action="close-modal">Готово</button></div></div>`);
+      document.getElementById('conferenceInviteLink')?.select();
+    }
+  }
+
+  function createConference() {
+    stopRoomMedia();
+    activeConferenceId = `conference-${crypto.randomUUID()}`;
+    state._activeLesson = null;
+    meetingStartedAt = Date.now();
+    setConferenceUrl(activeConferenceId);
+    renderRoom();
+    copyConferenceLink();
   }
 
   async function joinLiveKit(data) {
     if (!window.LivekitClient?.Room) { toast('Не загрузился клиент LiveKit', 'Обновите страницу и попробуйте ещё раз.'); return; }
-    const lesson = state._activeLesson || nextLesson();
+    const lesson = activeConferenceId ? null : (state._activeLesson || nextLesson());
     const account = currentAccount();
-    const roomName = lesson?.id || 'tandem-open-room';
-    const identity = account?.id || `guest-${Date.now()}`;
+    const roomName = activeConferenceId || lesson?.id || 'tutdesk-open-room';
+    const identity = `participant-${crypto.randomUUID()}`;
     let tokenResponse;
     try {
       tokenResponse = await fetch('/api/livekit/token', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Tandem-Room-Code': String(data.roomCode || '') },
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'X-Tutdesk-Room-Code': String(data.roomCode || '') },
         body: JSON.stringify({ room: roomName, identity, name: account?.name || 'Участник' }),
       });
     } catch {
@@ -360,6 +620,7 @@
     if (!tokenResponse.ok) {
       const messages = {
         invalid_room_code: 'Проверьте код доступа у репетитора.',
+        authentication_required: 'Войдите в Tutdesk или попросите организатора дать временный код.',
         livekit_not_configured: 'В Cloudflare ещё не настроены runtime-переменные LiveKit.',
         origin_not_allowed: 'Адрес сайта не разрешён для этого Worker.',
       };
@@ -369,12 +630,13 @@
     const { Room, RoomEvent, Track } = window.LivekitClient;
     const room = new Room({ adaptiveStream: true, dynacast: true });
     room.on(RoomEvent.TrackSubscribed, (track, _publication, participant) => attachRemoteTrack(track, participant, Track));
-    room.on(RoomEvent.TrackUnsubscribed, (track) => detachRemoteTrack(track));
+    room.on(RoomEvent.TrackUnsubscribed, (track, _publication, participant) => detachRemoteTrack(track, participant));
     room.on(RoomEvent.ParticipantConnected, (participant) => updateRemoteParticipant(participant));
-    room.on(RoomEvent.ParticipantDisconnected, () => updateRemoteStatus());
+    room.on(RoomEvent.ParticipantDisconnected, (participant) => updateRemoteStatus(participant));
     room.on(RoomEvent.Disconnected, () => {
       if (liveKitRoom === room) {
         liveKitRoom = null; cameraEnabled = false; micEnabled = false; screenShareEnabled = false;
+        clearRemoteParticipants();
         updateRoomConnection(false); resetRoomMediaButtons();
       }
     });
@@ -384,9 +646,10 @@
       closeModal();
       updateRoomConnection(true);
       room.remoteParticipants.forEach(updateRemoteParticipant);
-      toast('Вы подключились к звонку', `Комната занятия «${lesson?.title || 'Индивидуальное занятие'}».`);
+      toast('Вы подключились к звонку', activeConferenceId ? 'Другие участники могут присоединиться по ссылке конференции.' : `Комната занятия «${lesson?.title || 'Индивидуальное занятие'}».`);
     } catch (error) {
       room.disconnect();
+      clearRemoteParticipants();
       toast('Не удалось подключиться к LiveKit', error.message || 'Проверьте адрес проекта и настройки ключей.');
     }
   }
@@ -396,45 +659,122 @@
     if (status) { status.textContent = connected ? 'НА СВЯЗИ' : 'НЕ ПОДКЛЮЧЕНО'; status.classList.toggle('is-connected', connected); }
   }
 
-  function updateRemoteParticipant(participant) {
-    const name = document.getElementById('remoteParticipantName');
-    const stateLabel = document.getElementById('remoteVideoState');
-    if (name) name.textContent = participant.name || participant.identity || 'Участник';
-    if (stateLabel) stateLabel.innerHTML = `${useIcon('cam')} Участник подключён`;
+  function remoteTileForParticipant(participant) {
+    const stage = document.querySelector('.video-stage');
+    if (!stage) return null;
+    const identity = String(participant.identity || '');
+    let tile = Array.from(stage.querySelectorAll('.video-tile[data-participant-id]'))
+      .find((item) => item.dataset.participantId === identity);
+    if (tile) return tile;
+
+    tile = document.getElementById('studentVideoTile');
+    if (!tile || tile.dataset.participantId) {
+      tile = document.createElement('article');
+      tile.className = 'video-tile';
+      tile.innerHTML = '<div class="video-avatar"></div><span class="video-name"></span><span class="video-cam-state"></span>';
+      stage.insertBefore(tile, stage.querySelector('.room-controls'));
+    }
+    tile.dataset.participantId = identity;
+    return tile;
   }
 
-  function updateRemoteStatus() {
-    const tile = document.getElementById('studentVideoTile');
-    const name = document.getElementById('remoteParticipantName');
-    const stateLabel = document.getElementById('remoteVideoState');
-    if (tile) tile.querySelectorAll('.livekit-remote-video,.livekit-remote-audio').forEach((element) => element.remove());
-    if (name) name.textContent = 'Участник';
-    if (stateLabel) stateLabel.innerHTML = `${useIcon('cam-off')} Ожидает подключения`;
-    const avatar = tile?.querySelector('.video-avatar'); if (avatar) avatar.hidden = false;
+  function updateParticipantCount() {
+    const target = document.querySelector('.room-aside .room-info > div');
+    if (!target) return;
+    const heading = target.querySelector('strong') || document.createElement('strong');
+    heading.textContent = '\u0423\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0438';
+    const count = 1 + (liveKitRoom?.remoteParticipants.size || 0);
+    target.replaceChildren(heading, document.createTextNode(`\u0412\u0441\u0435\u0433\u043e \u0432 \u043a\u043e\u043c\u043d\u0430\u0442\u0435: ${count}`));
+  }
+
+  function updateRemoteParticipant(participant) {
+    const tile = remoteTileForParticipant(participant);
+    if (!tile) return;
+    const participantName = participant.name || participant.identity || '\u0423\u0447\u0430\u0441\u0442\u043d\u0438\u043a';
+    const avatar = tile.querySelector('.video-avatar');
+    const name = tile.querySelector('.video-name');
+    const stateLabel = tile.querySelector('.video-cam-state');
+    if (avatar && !tile.querySelector('.livekit-remote-video')) {
+      avatar.textContent = initials(participantName);
+      avatar.hidden = false;
+    }
+    if (name) name.textContent = participantName;
+    if (stateLabel && !tile.querySelector('.livekit-remote-video')) {
+      stateLabel.innerHTML = `${useIcon('cam-off')} \u041a\u0430\u043c\u0435\u0440\u0430 \u0432\u044b\u043a\u043b\u044e\u0447\u0435\u043d\u0430`;
+    }
+    updateParticipantCount();
+  }
+
+  function resetRemoteParticipantTile(tile) {
+    if (!tile) return;
+    tile.querySelectorAll('.livekit-remote-video,.livekit-remote-audio').forEach((element) => element.remove());
+    tile.removeAttribute('data-participant-id');
+    tile.id = 'studentVideoTile';
+    const avatar = tile.querySelector('.video-avatar');
+    if (avatar) { avatar.textContent = '?'; avatar.hidden = false; }
+    const name = tile.querySelector('.video-name');
+    if (name) name.textContent = '\u0423\u0447\u0430\u0441\u0442\u043d\u0438\u043a';
+    const stateLabel = tile.querySelector('.video-cam-state');
+    if (stateLabel) stateLabel.innerHTML = `${useIcon('cam-off')} \u041e\u0436\u0438\u0434\u0430\u0435\u0442 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f`;
+  }
+
+  function clearRemoteParticipants() {
+    const stage = document.querySelector('.video-stage');
+    document.querySelectorAll('.livekit-remote-audio').forEach((element) => element.remove());
+    if (!stage) return;
+    const tiles = Array.from(stage.querySelectorAll('.video-tile[data-participant-id]'));
+    if (!tiles.length) return;
+    const placeholder = document.getElementById('studentVideoTile') || tiles[0];
+    tiles.filter((tile) => tile !== placeholder).forEach((tile) => tile.remove());
+    resetRemoteParticipantTile(placeholder);
+    updateParticipantCount();
+  }
+
+  function updateRemoteStatus(participant) {
+    const identity = String(participant?.identity || '');
+    const tile = Array.from(document.querySelectorAll('.video-tile[data-participant-id]'))
+      .find((item) => item.dataset.participantId === identity);
+    document.querySelectorAll('.livekit-remote-audio').forEach((element) => {
+      if (element.dataset.participantId === identity) element.remove();
+    });
+    if (!tile) { updateParticipantCount(); return; }
+    const remainingParticipants = liveKitRoom?.remoteParticipants.size || 0;
+    if (remainingParticipants === 0) resetRemoteParticipantTile(tile);
+    else tile.remove();
+    updateParticipantCount();
   }
 
   function attachRemoteTrack(track, participant, Track) {
     updateRemoteParticipant(participant);
+    const tile = remoteTileForParticipant(participant);
     if (track.kind === Track.Kind.Video) {
-      const tile = document.getElementById('studentVideoTile');
       if (!tile) return;
-      const avatar = tile.querySelector('.video-avatar'); if (avatar) avatar.hidden = true;
+      const avatar = tile.querySelector('.video-avatar');
+      if (avatar) avatar.hidden = true;
       const element = track.attach();
       element.classList.add('livekit-remote-video'); element.autoplay = true; element.playsInline = true;
+      element.dataset.participantId = String(participant.identity || '');
       tile.appendChild(element);
+      const stateLabel = tile.querySelector('.video-cam-state');
+      if (stateLabel) stateLabel.innerHTML = `${useIcon('cam')} \u041a\u0430\u043c\u0435\u0440\u0430 \u0432\u043a\u043b\u044e\u0447\u0435\u043d\u0430`;
     } else if (track.kind === Track.Kind.Audio) {
       const element = track.attach();
       element.classList.add('livekit-remote-audio'); element.autoplay = true;
+      element.dataset.participantId = String(participant.identity || '');
       document.body.appendChild(element);
     }
   }
 
-  function detachRemoteTrack(track) {
+  function detachRemoteTrack(track, participant) {
     track.detach().forEach((element) => element.remove());
     if (track.kind === 'video') {
-      const tile = document.getElementById('studentVideoTile');
+      const identity = String(participant?.identity || '');
+      const tile = Array.from(document.querySelectorAll('.video-tile[data-participant-id]'))
+        .find((item) => item.dataset.participantId === identity);
       const avatar = tile?.querySelector('.video-avatar');
-      if (avatar && !tile.querySelector('.livekit-remote-video')) avatar.hidden = false;
+      if (avatar) avatar.hidden = false;
+      const stateLabel = tile?.querySelector('.video-cam-state');
+      if (stateLabel) stateLabel.innerHTML = `${useIcon('cam-off')} \u041a\u0430\u043c\u0435\u0440\u0430 \u0432\u044b\u043a\u043b\u044e\u0447\u0435\u043d\u0430`;
     }
   }
 
@@ -452,9 +792,10 @@
     const label = pageNames[currentView] || pageNames.overview;
     const account = currentAccount(); const studentMode = account?.role === 'student'; const plan = currentPlan();
     document.getElementById('currentPageLabel').textContent = label;
+    document.getElementById('mainNav').hidden = !account;
     document.querySelectorAll('.nav-item').forEach((item) => item.classList.toggle('active', item.dataset.view === currentView));
     document.querySelectorAll('[data-nav-tutor]').forEach((item) => { item.hidden = studentMode; });
-    document.getElementById('sidebarPlan').hidden = studentMode;
+    document.getElementById('sidebarPlan').hidden = studentMode || !account;
     document.querySelector('.workspace-label').textContent = studentMode ? 'ЛИЧНЫЙ КАБИНЕТ' : 'РАБОЧЕЕ ПРОСТРАНСТВО';
     document.getElementById('studentCount').textContent = plan === 'extreme' ? String(currentTutorStudents().length) : 'EXT';
     document.getElementById('taskCount').textContent = studentMode ? String(tasksForCurrentStudent().filter((task) => task.status !== 'complete').length) : plan === 'extreme' ? String(tasksForCurrentTutor().filter((task) => task.status !== 'complete').length) : 'EXT';
@@ -463,17 +804,23 @@
     document.getElementById('sidePlanName').textContent = plan === 'extreme' ? 'Extreme' : 'Light';
     document.getElementById('sidePlanDescription').textContent = plan === 'extreme' ? 'Все инструменты для работы' : 'Созвоны и интерактивная доска';
     document.getElementById('profileName').textContent = account?.name || 'Гость';
-    document.getElementById('profileRole').textContent = studentMode ? 'Ученик' : 'Репетитор';
+    document.getElementById('profileRole').textContent = account ? (studentMode ? 'Ученик' : 'Репетитор') : 'Войти в кабинет';
     document.getElementById('profileInitials').textContent = initials(account?.name || '?');
     document.getElementById('topAvatar').textContent = initials(account?.name || '?');
-    document.getElementById('topbarSpaceLabel').textContent = studentMode ? 'Личный кабинет ученика' : 'Пространство репетитора';
+    document.getElementById('topbarSpaceLabel').textContent = account ? (studentMode ? 'Личный кабинет ученика' : 'Пространство репетитора') : 'Личный кабинет';
     document.getElementById('todayLabel').textContent = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }).format(new Date());
     document.getElementById('footerYear').textContent = new Date().getFullYear();
+    if (!account && currentView !== 'room') {
+      pageContent.innerHTML = `<section class="auth-welcome"><span class="heading-kicker">TUTDESK</span><h1>Учёба и занятия — в одном пространстве.</h1><p>Создайте личный кабинет репетитора или ученика, чтобы вести занятия, готовить задания и работать на общей доске.</p><div class="auth-welcome-actions"><button class="button button-primary" data-action="account-register">Создать аккаунт</button><button class="button button-light" data-action="account-login">Войти</button></div></section>`;
+      sidebar.classList.remove('is-open');
+      return;
+    }
     ({ overview: renderOverview, students: renderStudents, lessons: renderLessons, board: renderBoard, tasks: renderTasks, subscription: renderSubscription, room: renderRoom }[currentView] || renderOverview)();
     sidebar.classList.remove('is-open');
   }
   function navigate(view) {
     if (!pageNames[view]) return;
+    if (!currentAccount() && view !== 'room' && view !== 'overview') { openForm('account-login'); return; }
     if (currentView === 'room' && view !== 'room') stopRoomMedia();
     currentView = view;
     render();
@@ -489,15 +836,36 @@
   function closeModal() { modalBackdrop.hidden = true; modalCard.innerHTML = ''; }
   function openForm(type, id) {
     if (type === 'account-login') {
-      showModal('Войти в Tandem', 'Выберите созданный в этом браузере профиль.', `<form class="form-grid" data-form="account-login"><div class="form-field"><label for="accountProfile">Личный кабинет</label><select class="form-control" id="accountProfile" name="accountId" required>${state.accounts.map((account) => `<option value="${escapeHTML(account.id)}" ${account.id === state.currentAccountId ? 'selected' : ''}>${escapeHTML(account.name)} · ${account.role === 'student' ? 'ученик' : 'репетитор'}</option>`).join('')}</select></div><div class="account-demo-note">Демо вход хранит профили только в этом браузере. Пароли и настоящая авторизация пока не подключены.</div><div class="form-actions auth-actions"><button type="button" class="button button-light google-button" data-action="google-login">${useIcon('spark')} Продолжить с Google</button><button class="button button-primary" type="submit">Войти</button></div><button type="button" class="text-link" data-action="account-register">Создать новый аккаунт</button></form>`);
+      if (authenticatedAccountId) {
+        const account = currentAccount();
+        showModal('Ваш профиль Tutdesk', 'Данные личного кабинета синхронизируются с сервером.', `<div class="profile-details"><strong>${escapeHTML(account?.name || 'Пользователь')}</strong><span>${escapeHTML(account?.email || '')}</span><span>${account?.role === 'student' ? 'Ученик' : 'Репетитор'}</span></div><button type="button" class="button button-danger" data-action="auth-logout">Выйти из аккаунта</button>`);
+        return;
+      }
+      showModal('Войти в Tutdesk', 'Введите email и пароль от личного кабинета.', `<form class="form-grid" data-form="account-login"><div class="form-field"><label for="accountEmail">Электронная почта</label><input class="form-control" id="accountEmail" name="email" type="email" autocomplete="email" required /></div><div class="form-field"><label for="accountPassword">Пароль</label><input class="form-control" id="accountPassword" name="password" type="password" autocomplete="current-password" required /></div><div class="form-actions"><button type="button" class="button button-light" data-action="account-register">Создать аккаунт</button><button class="button button-primary" type="submit">Войти</button></div><button type="button" class="text-link" data-action="account-resend">Письмо подтверждения не пришло?</button><button type="button" class="text-link" data-action="password-forgot">Забыли пароль?</button></form>`);
+      return;
+    }
+    if (type === 'account-role') {
+      openAccountRoleForm(currentAccount());
       return;
     }
     if (type === 'account-register') {
-      showModal('Создать аккаунт', 'Выберите роль — профиль и разделы настроятся автоматически.', `<form class="form-grid" data-form="account-register"><div class="form-field"><label for="accountName">Имя</label><input class="form-control" id="accountName" name="name" placeholder="Имя и фамилия" required /></div><div class="form-field"><label for="accountEmail">Электронная почта</label><input class="form-control" id="accountEmail" name="email" type="email" placeholder="name@example.com" required /></div><div class="form-field"><label for="accountRole">Я регистрируюсь как</label><select class="form-control" id="accountRole" name="role"><option value="tutor">Репетитор</option><option value="student">Ученик</option></select></div><div class="form-grid form-grid--two"><div class="form-field"><label for="accountSubject">Предмет / класс</label><input class="form-control" id="accountSubject" name="subject" placeholder="Например, математика · 8 класс" /></div><div class="form-field"><label for="accountGrade">Уровень</label><input class="form-control" id="accountGrade" name="grade" placeholder="Например, 8 класс" /></div></div><div class="account-demo-note">Демо аккаунт будет сохранён локально. Для защищённого входа и Google OAuth понадобится серверная настройка.</div><div class="form-actions"><button type="button" class="button button-light" data-action="account-login">У меня уже есть аккаунт</button><button class="button button-primary" type="submit">Создать</button></div></form>`);
+      showModal('Создать аккаунт Tutdesk', 'После регистрации отправим ссылку для подтверждения email.', `<form class="form-grid" data-form="account-register"><div class="form-field"><label for="accountName">Имя</label><input class="form-control" id="accountName" name="name" autocomplete="name" minlength="2" maxlength="80" placeholder="Имя и фамилия" required /></div><div class="form-field"><label for="accountEmail">Электронная почта</label><input class="form-control" id="accountEmail" name="email" type="email" autocomplete="email" placeholder="name@example.com" required /></div><div class="form-field"><label for="accountRole">Я регистрируюсь как</label><select class="form-control" id="accountRole" name="role" required><option value="tutor">Репетитор</option><option value="student">Ученик</option></select></div><div class="form-field"><label for="accountPassword">Пароль</label><input class="form-control" id="accountPassword" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required /><span class="form-hint">Не менее 12 символов.</span></div><div class="form-field"><label for="accountPasswordConfirm">Повторите пароль</label><input class="form-control" id="accountPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="12" maxlength="128" required /></div><div class="form-actions"><button type="button" class="button button-light" data-action="account-login">У меня уже есть аккаунт</button><button class="button button-primary" type="submit">Зарегистрироваться</button></div></form>`);
+      return;
+    }
+    if (type === 'account-resend') {
+      showModal('Подтвердить email', 'Укажите адрес, на который отправляли письмо.', `<form class="form-grid" data-form="account-resend"><div class="form-field"><label for="resendEmail">Электронная почта</label><input class="form-control" id="resendEmail" name="email" type="email" autocomplete="email" value="${escapeHTML(id || '')}" required /></div><div class="form-actions"><button type="button" class="button button-light" data-action="account-login">Назад ко входу</button><button class="button button-primary" type="submit">Отправить письмо</button></div></form>`);
+      return;
+    }
+    if (type === 'password-forgot') {
+      showModal('Сбросить пароль', 'Отправим ссылку, если аккаунт зарегистрирован с этим email.', `<form class="form-grid" data-form="password-forgot"><div class="form-field"><label for="resetEmail">Электронная почта</label><input class="form-control" id="resetEmail" name="email" type="email" autocomplete="email" value="${escapeHTML(id || '')}" required /></div><div class="form-actions"><button type="button" class="button button-light" data-action="account-login">Назад ко входу</button><button class="button button-primary" type="submit">Отправить ссылку</button></div></form>`);
+      return;
+    }
+    if (type === 'password-reset') {
+      showModal('Новый пароль', 'Задайте новый пароль длиной не менее 12 символов.', `<form class="form-grid" data-form="password-reset"><input type="hidden" name="token" value="${escapeHTML(id || '')}" /><div class="form-field"><label for="newPassword">Новый пароль</label><input class="form-control" id="newPassword" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required /></div><div class="form-field"><label for="newPasswordConfirm">Повторите пароль</label><input class="form-control" id="newPasswordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" minlength="12" maxlength="128" required /></div><div class="form-actions"><button type="button" class="button button-light" data-action="account-login">Отмена</button><button class="button button-primary" type="submit">Сохранить пароль</button></div></form>`);
       return;
     }
     if (type === 'student') {
-      showModal('Добавить ученика', 'Укажите email. Если профиль уже есть, он свяжется с вами без дублирования.', `<form class="form-grid" data-form="student"><div class="form-field"><label for="studentEmail">Email ученика</label><input class="form-control" id="studentEmail" name="email" type="email" placeholder="student@example.com" required /></div><div class="form-field"><label for="studentName">Имя и фамилия</label><input class="form-control" id="studentName" name="name" placeholder="Например, Мария Иванова" required /></div><div class="form-field"><label for="studentSubject">Предмет</label><input class="form-control" id="studentSubject" name="subject" placeholder="Например, математика" required /></div><div class="form-field"><label for="studentGrade">Класс или уровень</label><input class="form-control" id="studentGrade" name="grade" placeholder="Например, 8 класс" /></div><div class="form-field"><label for="studentNote">Заметка для ваших уроков</label><textarea class="form-textarea" id="studentNote" name="note" placeholder="Цели, темы и важные детали"></textarea></div><div class="account-demo-note">Связь репетитора и ученика независимая: ученик может добавить несколько преподавателей.</div><div class="form-actions"><button type="button" class="button button-light" data-action="close-modal">Отмена</button><button class="button button-primary" type="submit">Добавить ученика</button></div></form>`);
+      showModal('Добавить ученика', 'Укажите email. Если профиль уже есть, он свяжется с вами без дублирования.', `<form class="form-grid" data-form="student"><div class="form-field"><label for="studentEmail">Email ученика</label><input class="form-control" id="studentEmail" name="email" type="email" placeholder="student@example.com" required /></div><div class="form-field"><label for="studentName">Имя и фамилия</label><input class="form-control" id="studentName" name="name" placeholder="Например, Мария Иванова" required /></div><div class="form-field"><label for="studentSubject">Предмет</label><input class="form-control" id="studentSubject" name="subject" placeholder="Например, математика" required /></div><div class="form-field"><label for="studentGrade">Класс или уровень</label><input class="form-control" id="studentGrade" name="grade" placeholder="Например, 8 класс" /></div><div class="form-field"><label for="studentNote">Заметка для ваших уроков</label><textarea class="form-textarea" id="studentNote" name="note" placeholder="Цели, темы и важные детали"></textarea></div><div class="account-note">Связь репетитора и ученика независимая: ученик может добавить несколько преподавателей.</div><div class="form-actions"><button type="button" class="button button-light" data-action="close-modal">Отмена</button><button class="button button-primary" type="submit">Добавить ученика</button></div></form>`);
       return;
     }
     if (type === 'lesson') {
@@ -549,32 +917,70 @@
     }
   }
 
-  function submitForm(form) {
+  async function submitForm(form) {
     const data = Object.fromEntries(new FormData(form).entries());
     const id = `${form.dataset.form}-${Date.now()}`;
-    if (form.dataset.form === 'livekit-join') {
+    if (form.dataset.form === 'auth-role') {
+      completeAccountSetup(form);
+    } else if (form.dataset.form === 'livekit-join') {
       joinLiveKit(data);
     } else if (form.dataset.form === 'account-login') {
-      const account = getAccount(data.accountId); if (!account) return;
-      state.currentAccountId = account.id; currentView = 'overview'; persist(); closeModal(); render(); toast('Вы вошли в демо-кабинет', account.role === 'student' ? 'Роль: ученик' : 'Роль: репетитор');
+      try {
+        const response = await fetch('/api/auth/login', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: data.email, password: data.password }) });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          if (result.error === 'email_not_verified') {
+            showModal('Подтвердите email', 'Сначала подтвердите адрес по ссылке из письма.', `<div class="form-actions"><button type="button" class="button button-light" data-action="account-login">Назад ко входу</button><button type="button" class="button button-primary" data-action="account-resend" data-id="${escapeHTML(data.email)}">Отправить письмо ещё раз</button></div>`);
+            return;
+          }
+          toast(result.message || 'Не удалось войти', result.error === 'auth_not_configured' ? 'Сервис аккаунтов ещё не настроен.' : 'Проверьте email и пароль.');
+          return;
+        }
+        await activateAccount(result.account);
+        toast('Вы вошли в Tutdesk', result.account.role === 'student' ? 'Личный кабинет ученика' : 'Личный кабинет репетитора');
+      } catch { toast('Сервис входа недоступен', 'Попробуйте ещё раз позже.'); }
     } else if (form.dataset.form === 'account-register') {
-      const email = data.email.trim().toLowerCase();
-      if (state.accounts.some((account) => account.email.toLowerCase() === email)) { toast('Этот email уже зарегистрирован', 'Выберите профиль через «Войти».'); return; }
-      const role = data.role === 'student' ? 'student' : 'tutor';
-      let studentId = null;
-      if (role === 'student') {
-        studentId = `student-${Date.now()}`;
-        state.students.push({ id: studentId, name: data.name.trim(), email, subject: data.subject.trim() || 'Предмет не указан', grade: data.grade.trim() || '', note: '', lessons: 0, progress: 0, color: state.students.length % initialsByColor.length });
-      }
-      state.accounts.push({ id, role, name: data.name.trim(), email, studentId, ...(role === 'tutor' ? { plan: 'light' } : {}) });
-      state.currentAccountId = id; currentView = 'overview'; persist(); closeModal(); render(); toast('Демо-аккаунт создан', role === 'student' ? 'Личный кабинет ученика готов.' : 'Личный кабинет репетитора готов.');
+      if (data.password !== data.passwordConfirm) { toast('Пароли не совпадают'); return; }
+      try {
+        const response = await fetch('/api/auth/register', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: data.name, email: data.email, role: data.role, password: data.password }) });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) { toast(result.message || 'Не удалось создать аккаунт', result.error === 'auth_not_configured' ? 'Сервис аккаунтов ещё не настроен.' : 'Проверьте данные и попробуйте ещё раз.'); return; }
+        const email = data.email.trim().toLowerCase();
+        showModal('Проверьте почту', `Если для адреса ${escapeHTML(email)} можно подтвердить аккаунт, письмо уже отправлено. Откройте ссылку в письме, чтобы завершить регистрацию.`, `<div class="form-actions"><button type="button" class="button button-light" data-action="account-login">Перейти ко входу</button><button type="button" class="button button-primary" data-action="account-resend" data-id="${escapeHTML(email)}">Отправить письмо ещё раз</button></div>`);
+      } catch { toast('Сервис регистрации недоступен', 'Попробуйте ещё раз позже.'); }
+    } else if (form.dataset.form === 'account-resend') {
+      try {
+        const response = await fetch('/api/auth/resend-verification', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: data.email }) });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) { toast(result.message || 'Не удалось отправить письмо'); return; }
+        closeModal(); toast('Если аккаунт ожидает подтверждения, письмо отправлено', 'Проверьте входящие и папку «Спам».');
+      } catch { toast('Не удалось связаться с сервисом регистрации'); }
+    } else if (form.dataset.form === 'password-forgot') {
+      try {
+        const response = await fetch('/api/auth/password-reset/request', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: data.email }) });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) { toast(result.message || 'Не удалось отправить ссылку', result.error === 'email_not_configured' ? 'Почтовый сервис ещё не настроен.' : 'Попробуйте позже.'); return; }
+        closeModal(); toast('Если аккаунт найден, ссылка уже отправлена', 'Проверьте почту и папку «Спам».');
+      } catch { toast('Не удалось связаться с сервисом сброса пароля'); }
+    } else if (form.dataset.form === 'password-reset') {
+      if (data.password !== data.passwordConfirm) { toast('Пароли не совпадают'); return; }
+      try {
+        const response = await fetch('/api/auth/password-reset/confirm', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: data.token, password: data.password }) });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) { toast(result.message || 'Не удалось изменить пароль'); return; }
+        authenticatedAccountId = null;
+        accountDataReady = false;
+        for (const key of Object.keys(state)) delete state[key];
+        Object.assign(state, sampleState());
+        closeModal(); render(); openForm('account-login'); toast('Пароль изменён', 'Войдите в Tutdesk с новым паролем.');
+      } catch { toast('Не удалось связаться с сервисом сброса пароля'); }
     } else if (form.dataset.form === 'student') {
       const email = (data.email || '').trim().toLowerCase();
       const existingAccount = email ? state.accounts.find((account) => account.email.toLowerCase() === email && account.role === 'student') : null;
       let profile = existingAccount ? getStudent(existingAccount.studentId) : (email ? state.students.find((student) => student.email?.toLowerCase() === email) : null);
       if (profile && state.tutorLinks.some((link) => link.tutorId === currentTutorId() && link.studentId === profile.id)) { toast('Ученик уже связан с вашим профилем'); return; }
       if (!profile) {
-        profile = { id: `student-${Date.now()}`, name: data.name.trim(), email: email || `student-${Date.now()}@tandem.local`, subject: data.subject.trim(), grade: data.grade.trim() || 'Новый ученик', note: data.note.trim(), lessons: 0, progress: 0, color: state.students.length % initialsByColor.length };
+        profile = { id: `student-${Date.now()}`, name: data.name.trim(), email: email || `student-${Date.now()}@tutdesk.local`, subject: data.subject.trim(), grade: data.grade.trim() || 'Новый ученик', note: data.note.trim(), lessons: 0, progress: 0, color: state.students.length % initialsByColor.length };
         state.students.push(profile);
       }
       if (!existingAccount) state.accounts.push({ id: `student-account-${Date.now()}`, role: 'student', name: profile.name, email: profile.email, studentId: profile.id });
@@ -632,11 +1038,13 @@
       toast('Это занятие недоступно', 'Откройте урок из своего расписания.');
       return;
     }
+    activeConferenceId = null;
+    setConferenceUrl(null);
     state._activeLesson = requestedLesson;
     if (state._activeLesson?.boardId) state.currentBoardId = state._activeLesson.boardId;
     meetingStartedAt = Date.now();
     navigate('room');
-    toast('Демо-комната готова', 'Включите камеру или покажите экран, когда будете готовы.');
+    toast('Комната готова', 'Включите камеру или покажите экран, когда будете готовы.');
   }
   function startRoomTimer() {
     window.clearInterval(meetingTimer);
@@ -680,7 +1088,7 @@
       const avatar = document.querySelector('#tutorVideoTile .video-avatar'); if (avatar) avatar.hidden = true;
       button.classList.remove('is-off'); button.classList.add('is-on'); button.innerHTML = useIcon('cam');
       const stateLabel = document.getElementById('tutorVideoState'); if (stateLabel) stateLabel.innerHTML = `${useIcon('cam')} Камера включена`;
-      toast('Камера включена', 'Изображение отображается только в этой демо-комнате.');
+      toast('Камера включена', 'Изображение будет передаваться участникам после подключения к звонку.');
     } catch (error) { toast('Не удалось включить камеру', error.message || 'Проверьте разрешения браузера.'); }
   }
   async function toggleMic(button) {
@@ -723,7 +1131,7 @@
       const stateLabel = document.getElementById('tutorVideoState'); if (stateLabel) stateLabel.innerHTML = `${useIcon('monitor')} Экран показывается`;
       button.classList.add('is-on');
       screenStream.getVideoTracks()[0]?.addEventListener('ended', () => { screenStream = null; button.classList.remove('is-on'); restoreLocalVideo(); });
-      toast('Демонстрация экрана включена', 'Она видна только в вашем окне прототипа.');
+      toast('Демонстрация экрана включена', 'Экран будет доступен участникам после подключения к звонку.');
     } catch (error) { toast('Не удалось показать экран', error.message || 'Выберите экран или окно для демонстрации.'); }
   }
   function restoreLocalVideo() {
@@ -887,7 +1295,7 @@
     const canvas = document.getElementById('whiteboard'); if (!canvas) return;
     const board = currentBoard(); const output = document.createElement('canvas'); output.width = canvas.clientWidth * (window.devicePixelRatio || 1); output.height = canvas.clientHeight * (window.devicePixelRatio || 1);
     const context = output.getContext('2d'); context.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1); context.fillStyle = '#ffffff'; context.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight); drawBoardElements(context, board, canvas.clientWidth, canvas.clientHeight);
-    const link = document.createElement('a'); link.download = `tandem-доска-${dateToISO(new Date())}.png`; link.href = output.toDataURL('image/png'); link.click();
+    const link = document.createElement('a'); link.download = `tutdesk-доска-${dateToISO(new Date())}.png`; link.href = output.toDataURL('image/png'); link.click();
   }
 
   document.addEventListener('click', async (event) => {
@@ -896,10 +1304,11 @@
     const button = event.target.closest('[data-action]'); if (!button) return;
     const { action, id } = button.dataset;
     if (action === 'menu') sidebar.classList.toggle('is-open');
+    else if (action === 'toggle-theme') applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
     else if (action === 'open-modal') openForm(button.dataset.modal);
     else if (action === 'close-modal') closeModal();
     else if (action === 'start-lesson') startLesson(id);
-    else if (action === 'choose-plan') { const account = currentAccount(); if (account) account.plan = button.dataset.plan; state.plan = button.dataset.plan; persist(); render(); toast(`${currentPlan() === 'light' ? 'Light' : 'Extreme'} выбран в демо-режиме`, 'Платёжный модуль пока не подключён.'); }
+    else if (action === 'choose-plan') { const account = currentAccount(); if (account) account.plan = button.dataset.plan; state.plan = button.dataset.plan; persist(); render(); toast(`Выбран план ${currentPlan() === 'light' ? 'Light' : 'Extreme'}`); }
     else if (action === 'task-filter') { taskFilter = button.dataset.filter; renderTasks(); }
     else if (action === 'task-status') { const task = state.tasks.find((item) => item.id === id); if (task) { task.status = task.kind === 'personal' ? (task.status === 'complete' ? 'todo' : 'complete') : (({ todo: 'submitted', submitted: 'complete', complete: 'todo' })[task.status] || 'todo'); persist(); render(); toast(task.kind === 'personal' ? (task.status === 'complete' ? 'Личная задача выполнена' : 'Личная задача возвращена в список') : `Статус: ${taskStatusLabel(task.status)}`, task.title); } }
     else if (action === 'student-task-status') { const task = state.tasks.find((item) => item.id === id); if (task && task.studentId === currentAccount()?.studentId) { task.status = task.status === 'submitted' ? 'todo' : 'submitted'; persist(); renderTasks(); toast(task.status === 'submitted' ? 'Задание отправлено репетитору' : 'Задание возвращено в работу'); } }
@@ -909,8 +1318,10 @@
     else if (action === 'toggle-mic') await toggleMic(button);
     else if (action === 'share-screen') await shareScreen(button);
     else if (action === 'join-livekit') openLiveKitJoin();
-    else if (action === 'open-board') { const lesson = state._activeLesson || nextLesson(); if (lesson) openLessonBoard(lesson); else navigate('board'); stopRoomMedia(); toast('Доска открыта', 'В этой доске можно продолжить работу на следующих занятиях.'); }
-    else if (action === 'leave-room') { stopRoomMedia(); navigate('overview'); toast('Вы вышли из комнаты'); }
+    else if (action === 'create-conference') createConference();
+    else if (action === 'copy-conference') copyConferenceLink();
+    else if (action === 'open-board') { const lesson = activeConferenceId ? null : (state._activeLesson || nextLesson()); if (lesson) openLessonBoard(lesson); else navigate('board'); stopRoomMedia(); toast('Доска открыта', 'В этой доске можно продолжить работу на следующих занятиях.'); }
+    else if (action === 'leave-room') { stopRoomMedia(); activeConferenceId = null; setConferenceUrl(null); navigate('overview'); toast('Вы вышли из комнаты'); }
     else if (action === 'board-tool') { boardTool = button.dataset.tool; boardSelectedId = null; document.querySelectorAll('[data-tool]').forEach((tool) => tool.classList.toggle('active', tool === button)); const canvas = document.getElementById('whiteboard'); if (canvas) { canvas.style.cursor = boardTool === 'select' ? 'default' : 'crosshair'; drawBoardElements(canvas.getContext('2d'), currentBoard(), canvas.clientWidth, canvas.clientHeight); } }
     else if (action === 'board-undo') undoBoard();
     else if (action === 'board-clear') clearBoard();
@@ -924,7 +1335,18 @@
     else if (action === 'planner-remove') deletePlannerBlock(id);
     else if (action === 'account-login') openForm('account-login');
     else if (action === 'account-register') openForm('account-register');
-    else if (action === 'google-login') toast('Нужна настройка Google OAuth', 'Подключение выполняется через OAuth Client ID и серверный callback.');
+    else if (action === 'account-resend') openForm('account-resend', id || document.getElementById('accountEmail')?.value || '');
+    else if (action === 'password-forgot') openForm('password-forgot', document.getElementById('accountEmail')?.value || '');
+    else if (action === 'auth-logout') {
+      window.clearTimeout(accountSyncTimer);
+      try {
+        const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+        if (!response.ok) throw new Error('logout_failed');
+        window.location.reload();
+      } catch {
+        toast('Не удалось выйти из аккаунта', 'Проверьте соединение и повторите попытку.');
+      }
+    }
     else if (action === 'student-note') { const student = getStudent(id); const link = tutorLinkForStudent(id); if (student) { showModal(escapeHTML(student.name), 'Заметка доступна только в вашем профиле преподавателя.', `<form class="form-grid" data-form="student-note" data-id="${escapeHTML(id)}"><div class="form-field"><label for="editNote">Личная заметка</label><textarea class="form-textarea" id="editNote" name="note">${escapeHTML(link?.note || '')}</textarea></div><div class="form-actions"><button type="button" class="button button-light" data-action="close-modal">Отмена</button><button type="submit" class="button button-primary">Сохранить заметку</button></div></form>`); } }
     else if (action === 'profile') openForm('account-login');
   });
@@ -960,5 +1382,8 @@
   });
   window.addEventListener('resize', () => { if (currentView === 'board') setupBoard(); });
 
-  render();
+  let savedTheme = 'light';
+  try { savedTheme = localStorage.getItem('tutdesk-theme') === 'dark' ? 'dark' : 'light'; } catch (_) { /* storage can be disabled */ }
+  applyTheme(savedTheme, false);
+  initializeAuth();
 })();
