@@ -8,7 +8,7 @@
 - `build.mjs` copies the frontend into `dist/`; `wrangler.jsonc` deploys the Worker and static assets.
 
 ## General rules
-
+#=>
 - Keep the frontend, Cloudflare Worker, and Go backend independently runnable and buildable. Do not couple the Go service into the static-site build.
 - Preserve the demo's current behavior and localStorage compatibility unless the task explicitly asks for product changes. Keep the existing storage keys and migration path intact.
 - Keep generated output (`dist/`) and local credentials out of source changes. Never commit secrets or real user data.
