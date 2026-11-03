@@ -1,4 +1,4 @@
-package com.tandem.api.health;
+package com.tandem.api.http.health;
 
 import java.util.Map;
 
