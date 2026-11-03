@@ -87,6 +87,8 @@
   let localCameraStream = null;
   let localMicStream = null;
   let screenStream = null;
+  let liveKitRoom = null;
+  let screenShareEnabled = false;
   let cameraEnabled = false;
   let micEnabled = false;
   let meetingTimer = null;
@@ -213,7 +215,10 @@
     const account = currentAccount(); const profile = getStudent(account.studentId); const tasks = tasksForCurrentStudent();
     const tutors = state.tutorLinks.filter((link) => link.studentId === account.studentId).map((link) => getAccount(link.tutorId)).filter(Boolean);
     const next = nextLesson();
-    pageContent.innerHTML = `${pageHeading('КАБИНЕТ УЧЕНИКА', `Здравствуйте, ${escapeHTML(account.name.split(' ')[0])}.`, 'Ваши занятия, доски и домашняя работа собраны здесь.')}<section class="welcome-banner"><div class="welcome-copy"><div class="eyebrow-green">МОЙ УЧЕБНЫЙ ПРОГРЕСС</div><h2>${escapeHTML(profile?.subject || 'Учёба')} — шаг за шагом.</h2><p>Открывайте сохранённые доски и следите за заданиями от разных репетиторов.</p></div><div class="welcome-action"><button class="button button-lime" data-view="tasks">Мои задания ${useIcon('arrow')}</button></div></section><section class="stats-grid"><article class="stat-card"><div><div class="stat-label">Мои репетиторы</div><div class="stat-value">${tutors.length}</div><div class="stat-hint">Каждый ведёт занятия отдельно</div></div><span class="stat-icon">${useIcon('users')}</span></article><article class="stat-card"><div><div class="stat-label">Нужно сдать</div><div class="stat-value">${tasks.filter((task) => task.status !== 'complete').length}</div><div class="stat-hint">Домашние задания</div></div><span class="stat-icon stat-icon--orange">${useIcon('check')}</span></article><article class="stat-card"><div><div class="stat-label">Следующий урок</div><div class="stat-value">${next ? escapeHTML(next.time) : '—'}</div><div class="stat-hint">${next ? escapeHTML(dateLabel(next.date)) : 'Расписание пока пусто'}</div></div><span class="stat-icon stat-icon--blue">${useIcon('calendar')}</span></article></section><div class="overview-grid"><section class="panel"><div class="panel-heading"><div><h3>Мои репетиторы</h3><p>Один ученик может заниматься у нескольких преподавателей</p></div></div><div class="deadline-list">${tutors.map((tutor) => `<div class="deadline-item"><span class="avatar avatar--mint">${escapeHTML(initials(tutor.name))}</span><div class="deadline-copy"><strong>${escapeHTML(tutor.name)}</strong><span>${escapeHTML(tutor.email)}</span></div><span class="status-pill">Репетитор</span></div>`).join('') || '<div class="empty-state"><strong>Пока нет связанных репетиторов</strong>Попросите преподавателя добавить ваш адрес электронной почты.</div>'}</div></section><section class="panel"><div class="panel-heading"><div><h3>Последние задания</h3><p>От всех ваших репетиторов</p></div><button class="subtle-link" data-view="tasks">Все задания →</button></div><div class="deadline-list">${tasks.slice(0, 3).map((task) => `<div class="deadline-item"><span class="deadline-mark">${useIcon('check')}</span><div class="deadline-copy"><strong>${escapeHTML(task.title)}</strong><span>${escapeHTML(getAccount(task.tutorId)?.name || 'Репетитор')} · ${escapeHTML(taskStatusLabel(task.status))}</span></div><span class="deadline-time">${escapeHTML(dueLabel(task.due))}</span></div>`).join('') || '<div class="empty-state"><strong>Заданий пока нет</strong></div>'}</div></section></div><section class="students-strip"><div class="students-strip-head"><h3>Доски занятий</h3><button class="subtle-link" data-view="board">Открыть доски →</button></div><div class="plan-teaser-copy">Сохранённые доски прикреплены к занятиям. Если у нескольких занятий одна доска, вы продолжите с того же места.</div></section>`;
+    const lessonPanel = next
+      ? `<section class="panel student-next-lesson"><div class="panel-heading"><div><h3>Следующее занятие</h3><p>${escapeHTML(dateLabel(next.date))} · ${escapeHTML(next.time)}</p></div>${useIcon('video')}</div><div class="light-feature-card"><div class="light-feature-icon">${useIcon('calendar')}</div><div><strong>${escapeHTML(next.title)}</strong><span>${escapeHTML(getAccount(next.tutorId)?.name || 'Репетитор')} · ${next.duration} мин</span></div><button class="button button-primary button-small" data-action="start-lesson" data-id="${escapeHTML(next.id)}">Подключиться</button></div></section>`
+      : `<section class="panel student-next-lesson"><div class="panel-heading"><div><h3>Следующее занятие</h3><p>Когда репетитор добавит урок, здесь появится кнопка входа.</p></div>${useIcon('video')}</div><div class="empty-state"><strong>Предстоящих занятий нет</strong>Попросите репетитора запланировать урок в вашем расписании.</div></section>`;
+    pageContent.innerHTML = `${pageHeading('КАБИНЕТ УЧЕНИКА', `Здравствуйте, ${escapeHTML(account.name.split(' ')[0])}.`, 'Ваши занятия, доски и домашняя работа собраны здесь.')}<section class="welcome-banner"><div class="welcome-copy"><div class="eyebrow-green">МОЙ УЧЕБНЫЙ ПРОГРЕСС</div><h2>${escapeHTML(profile?.subject || 'Учёба')} — шаг за шагом.</h2><p>Открывайте сохранённые доски и следите за заданиями от разных репетиторов.</p></div><div class="welcome-action"><button class="button button-lime" data-view="tasks">Мои задания ${useIcon('arrow')}</button></div></section><section class="stats-grid"><article class="stat-card"><div><div class="stat-label">Мои репетиторы</div><div class="stat-value">${tutors.length}</div><div class="stat-hint">Каждый ведёт занятия отдельно</div></div><span class="stat-icon">${useIcon('users')}</span></article><article class="stat-card"><div><div class="stat-label">Нужно сдать</div><div class="stat-value">${tasks.filter((task) => task.status !== 'complete').length}</div><div class="stat-hint">Домашние задания</div></div><span class="stat-icon stat-icon--orange">${useIcon('check')}</span></article><article class="stat-card"><div><div class="stat-label">Следующий урок</div><div class="stat-value">${next ? escapeHTML(next.time) : '—'}</div><div class="stat-hint">${next ? escapeHTML(dateLabel(next.date)) : 'Расписание пока пусто'}</div></div><span class="stat-icon stat-icon--blue">${useIcon('calendar')}</span></article></section>${lessonPanel}<div class="overview-grid"><section class="panel"><div class="panel-heading"><div><h3>Мои репетиторы</h3><p>Один ученик может заниматься у нескольких преподавателей</p></div></div><div class="deadline-list">${tutors.map((tutor) => `<div class="deadline-item"><span class="avatar avatar--mint">${escapeHTML(initials(tutor.name))}</span><div class="deadline-copy"><strong>${escapeHTML(tutor.name)}</strong><span>${escapeHTML(tutor.email)}</span></div><span class="status-pill">Репетитор</span></div>`).join('') || '<div class="empty-state"><strong>Пока нет связанных репетиторов</strong>Попросите преподавателя добавить ваш адрес электронной почты.</div>'}</div></section><section class="panel"><div class="panel-heading"><div><h3>Последние задания</h3><p>От всех ваших репетиторов</p></div><button class="subtle-link" data-view="tasks">Все задания →</button></div><div class="deadline-list">${tasks.slice(0, 3).map((task) => `<div class="deadline-item"><span class="deadline-mark">${useIcon('check')}</span><div class="deadline-copy"><strong>${escapeHTML(task.title)}</strong><span>${escapeHTML(getAccount(task.tutorId)?.name || 'Репетитор')} · ${escapeHTML(taskStatusLabel(task.status))}</span></div><span class="deadline-time">${escapeHTML(dueLabel(task.due))}</span></div>`).join('') || '<div class="empty-state"><strong>Заданий пока нет</strong></div>'}</div></section></div><section class="students-strip"><div class="students-strip-head"><h3>Доски занятий</h3><button class="subtle-link" data-view="board">Открыть доски →</button></div><div class="plan-teaser-copy">Сохранённые доски прикреплены к занятиям. Если у нескольких занятий одна доска, вы продолжите с того же места.</div></section>`;
   }
 
   function renderStudents() {
@@ -320,9 +325,126 @@
     const tutorName = getAccount(lesson?.tutorId)?.name || ownName;
     const partner = studentMode ? tutorName : (student?.name || 'Ученик');
     const lessonTitle = lesson?.title || 'Индивидуальное занятие';
-    const mediaNote = !navigator.mediaDevices ? 'Браузер не поддерживает доступ к камере. Интерфейс комнаты работает в демо-режиме.' : 'Камера и экран включаются на этом устройстве; для настоящего звонка участникам понадобится подключение сервера.';
-    pageContent.innerHTML = `<div class="room-page"><div class="room-topline"><div class="room-title-group"><div><h1>${escapeHTML(lessonTitle)}</h1><p>Занятие с ${escapeHTML(partner)} · ${escapeHTML(lesson?.date ? dateLabel(lesson.date) : 'Сейчас')} ${escapeHTML(lesson?.time || '')}</p></div><span class="demo-badge">ДЕМО-КОМНАТА</span></div><span class="room-clock" id="roomTimer">00:00</span></div><div class="room-layout"><section class="video-stage"><article class="video-tile" id="studentVideoTile"><div class="video-avatar">${escapeHTML(initials(partner))}</div><span class="video-name">${escapeHTML(partner)}</span><span class="video-cam-state">${useIcon('cam-off')} Ожидает подключения</span></article><article class="video-tile video-tile--tutor" id="tutorVideoTile"><div class="video-avatar">${escapeHTML(initials(ownName))}</div><video id="localVideo" autoplay playsinline muted hidden></video><span class="video-name">Вы · ${escapeHTML(ownName)}</span><span class="video-cam-state" id="tutorVideoState">${useIcon('cam-off')} Камера выключена</span></article><div class="room-controls"><button class="room-control is-off" data-action="toggle-mic" title="Микрофон" aria-label="Микрофон">${useIcon('mic-off')}</button><button class="room-control is-off" data-action="toggle-camera" title="Камера" aria-label="Камера">${useIcon('cam-off')}</button><button class="room-control" data-action="share-screen" title="Показать экран" aria-label="Показать экран">${useIcon('monitor')}</button><span class="room-control-separator"></span><button class="room-control" data-action="open-board" title="Открыть доску" aria-label="Открыть доску">${useIcon('board')}</button><button class="room-control room-control--hangup" data-action="leave-room" title="Завершить" aria-label="Завершить">${useIcon('phone')}</button></div></section><aside class="room-aside"><h3>На занятии</h3><p>Пространство этой встречи</p><div class="room-info">${useIcon('users')}<div><strong>Участники</strong>Вы и ${escapeHTML(partner)}</div></div><div class="room-info">${useIcon('board')}<div><strong>Интерактивная доска</strong>Закреплена за занятием; работа сохранится для продолжения</div></div><div class="room-info">${useIcon('monitor')}<div><strong>Демонстрация экрана</strong>Поделитесь материалом с учеником</div></div><div class="room-share-note">${escapeHTML(mediaNote)}</div></aside><div class="room-footer-note">Комната работает в демо-режиме · камера и показ экрана запускаются только по вашему нажатию</div></div></div>`;
+    const mediaNote = 'Для тестового звонка оба участника должны открыть это занятие и ввести один и тот же временный код доступа.';
+    const lessonId = lesson?.id || 'tandem-open-room';
+    const availableLessons = studentMode ? state.lessons.filter((item) => item.studentId === currentAccount()?.studentId && item.date >= addDaysISO(0)).sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`)) : currentTutorLessons().filter((item) => item.date >= addDaysISO(0)).sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`));
+    const lessonPicker = availableLessons.length > 1 ? `<label class="room-lesson-picker"><span>Выберите занятие</span><select id="roomLessonSelect" aria-label="Выберите занятие">${availableLessons.map((item) => `<option value="${escapeHTML(item.id)}" ${item.id === lesson?.id ? 'selected' : ''}>${escapeHTML(dateLabel(item.date))} · ${escapeHTML(item.time)} · ${escapeHTML(item.title)}${studentMode ? ` · ${escapeHTML(getAccount(item.tutorId)?.name || 'Репетитор')}` : ` · ${escapeHTML(studentName(item.studentId))}`}</option>`).join('')}</select></label>` : '';
+    pageContent.innerHTML = `<div class="room-page"><div class="room-topline"><div class="room-title-group"><div><h1>${escapeHTML(lessonTitle)}</h1><p>Занятие с ${escapeHTML(partner)} · ${escapeHTML(lesson?.date ? dateLabel(lesson.date) : 'Сейчас')} ${escapeHTML(lesson?.time || '')}</p></div><span class="demo-badge" id="roomConnectionStatus">НЕ ПОДКЛЮЧЕНО</span></div><div class="room-call-actions">${lessonPicker}<span class="room-clock" id="roomTimer">00:00</span><button class="button button-primary button-small" data-action="join-livekit">Подключиться к звонку</button></div></div><div class="room-layout"><section class="video-stage"><article class="video-tile" id="studentVideoTile"><div class="video-avatar">${escapeHTML(initials(partner))}</div><span class="video-name" id="remoteParticipantName">${escapeHTML(partner)}</span><span class="video-cam-state" id="remoteVideoState">${useIcon('cam-off')} Ожидает подключения</span></article><article class="video-tile video-tile--tutor" id="tutorVideoTile"><div class="video-avatar">${escapeHTML(initials(ownName))}</div><video id="localVideo" autoplay playsinline muted hidden></video><span class="video-name">Вы · ${escapeHTML(ownName)}</span><span class="video-cam-state" id="tutorVideoState">${useIcon('cam-off')} Камера выключена</span></article><div class="room-controls"><button class="room-control is-off" data-action="toggle-mic" title="Микрофон" aria-label="Микрофон">${useIcon('mic-off')}</button><button class="room-control is-off" data-action="toggle-camera" title="Камера" aria-label="Камера">${useIcon('cam-off')}</button><button class="room-control" data-action="share-screen" title="Показать экран" aria-label="Показать экран">${useIcon('monitor')}</button><span class="room-control-separator"></span><button class="room-control" data-action="open-board" title="Открыть доску" aria-label="Открыть доску">${useIcon('board')}</button><button class="room-control room-control--hangup" data-action="leave-room" title="Завершить" aria-label="Завершить">${useIcon('phone')}</button></div></section><aside class="room-aside"><h3>На занятии</h3><p>Пространство этой встречи</p><div class="room-info">${useIcon('users')}<div><strong>Участники</strong>Вы и ${escapeHTML(partner)}</div></div><div class="room-info">${useIcon('board')}<div><strong>Интерактивная доска</strong>Закреплена за занятием; работа сохранится для продолжения</div></div><div class="room-info">${useIcon('monitor')}<div><strong>Демонстрация экрана</strong>Поделитесь материалом ученику</div></div><div class="room-share-note">Код занятия: <strong>${escapeHTML(lessonId)}</strong><br />${escapeHTML(mediaNote)}</div></aside><div class="room-footer-note">Тестовая видеокомната LiveKit · общий код доступа передавайте только участнику этого урока</div></div></div>`;
     startRoomTimer();
+  }
+
+  function openLiveKitJoin() {
+    const lesson = state._activeLesson || nextLesson();
+    const roomName = lesson?.id || 'tandem-open-room';
+    showModal('Подключиться к звонку', 'Для тестового доступа нужен общий код, который репетитор передал участнику урока.', `<form class="form-grid" data-form="livekit-join"><div class="account-demo-note">Комната занятия: <strong>${escapeHTML(roomName)}</strong>. Откройте это же занятие на втором устройстве.</div><div class="form-field"><label for="livekitRoomCode">Временный код доступа</label><input class="form-control" id="livekitRoomCode" name="roomCode" type="password" autocomplete="off" required minlength="8" /></div><div class="form-actions"><button type="button" class="button button-light" data-action="close-modal">Отмена</button><button type="submit" class="button button-primary">Подключиться</button></div></form>`);
+  }
+
+  async function joinLiveKit(data) {
+    if (!window.LivekitClient?.Room) { toast('Не загрузился клиент LiveKit', 'Обновите страницу и попробуйте ещё раз.'); return; }
+    const lesson = state._activeLesson || nextLesson();
+    const account = currentAccount();
+    const roomName = lesson?.id || 'tandem-open-room';
+    const identity = account?.id || `guest-${Date.now()}`;
+    let tokenResponse;
+    try {
+      tokenResponse = await fetch('/api/livekit/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Tandem-Room-Code': String(data.roomCode || '') },
+        body: JSON.stringify({ room: roomName, identity, name: account?.name || 'Участник' }),
+      });
+    } catch {
+      toast('Не удалось связаться с сервером звонков', 'Проверьте, что последняя версия Worker опубликована.'); return;
+    }
+    let credentials;
+    try { credentials = await tokenResponse.json(); } catch { credentials = {}; }
+    if (!tokenResponse.ok) {
+      const messages = {
+        invalid_room_code: 'Проверьте код доступа у репетитора.',
+        livekit_not_configured: 'В Cloudflare ещё не настроены runtime-переменные LiveKit.',
+        origin_not_allowed: 'Адрес сайта не разрешён для этого Worker.',
+      };
+      toast('Не удалось подключиться', messages[credentials.error] || 'Сервер не выдал доступ к комнате.'); return;
+    }
+
+    const { Room, RoomEvent, Track } = window.LivekitClient;
+    const room = new Room({ adaptiveStream: true, dynacast: true });
+    room.on(RoomEvent.TrackSubscribed, (track, _publication, participant) => attachRemoteTrack(track, participant, Track));
+    room.on(RoomEvent.TrackUnsubscribed, (track) => detachRemoteTrack(track));
+    room.on(RoomEvent.ParticipantConnected, (participant) => updateRemoteParticipant(participant));
+    room.on(RoomEvent.ParticipantDisconnected, () => updateRemoteStatus());
+    room.on(RoomEvent.Disconnected, () => {
+      if (liveKitRoom === room) {
+        liveKitRoom = null; cameraEnabled = false; micEnabled = false; screenShareEnabled = false;
+        updateRoomConnection(false); resetRoomMediaButtons();
+      }
+    });
+    try {
+      await room.connect(credentials.serverUrl, credentials.token);
+      liveKitRoom = room;
+      closeModal();
+      updateRoomConnection(true);
+      room.remoteParticipants.forEach(updateRemoteParticipant);
+      toast('Вы подключились к звонку', `Комната занятия «${lesson?.title || 'Индивидуальное занятие'}».`);
+    } catch (error) {
+      room.disconnect();
+      toast('Не удалось подключиться к LiveKit', error.message || 'Проверьте адрес проекта и настройки ключей.');
+    }
+  }
+
+  function updateRoomConnection(connected) {
+    const status = document.getElementById('roomConnectionStatus');
+    if (status) { status.textContent = connected ? 'НА СВЯЗИ' : 'НЕ ПОДКЛЮЧЕНО'; status.classList.toggle('is-connected', connected); }
+  }
+
+  function updateRemoteParticipant(participant) {
+    const name = document.getElementById('remoteParticipantName');
+    const stateLabel = document.getElementById('remoteVideoState');
+    if (name) name.textContent = participant.name || participant.identity || 'Участник';
+    if (stateLabel) stateLabel.innerHTML = `${useIcon('cam')} Участник подключён`;
+  }
+
+  function updateRemoteStatus() {
+    const tile = document.getElementById('studentVideoTile');
+    const name = document.getElementById('remoteParticipantName');
+    const stateLabel = document.getElementById('remoteVideoState');
+    if (tile) tile.querySelectorAll('.livekit-remote-video,.livekit-remote-audio').forEach((element) => element.remove());
+    if (name) name.textContent = 'Участник';
+    if (stateLabel) stateLabel.innerHTML = `${useIcon('cam-off')} Ожидает подключения`;
+    const avatar = tile?.querySelector('.video-avatar'); if (avatar) avatar.hidden = false;
+  }
+
+  function attachRemoteTrack(track, participant, Track) {
+    updateRemoteParticipant(participant);
+    if (track.kind === Track.Kind.Video) {
+      const tile = document.getElementById('studentVideoTile');
+      if (!tile) return;
+      const avatar = tile.querySelector('.video-avatar'); if (avatar) avatar.hidden = true;
+      const element = track.attach();
+      element.classList.add('livekit-remote-video'); element.autoplay = true; element.playsInline = true;
+      tile.appendChild(element);
+    } else if (track.kind === Track.Kind.Audio) {
+      const element = track.attach();
+      element.classList.add('livekit-remote-audio'); element.autoplay = true;
+      document.body.appendChild(element);
+    }
+  }
+
+  function detachRemoteTrack(track) {
+    track.detach().forEach((element) => element.remove());
+    if (track.kind === 'video') {
+      const tile = document.getElementById('studentVideoTile');
+      const avatar = tile?.querySelector('.video-avatar');
+      if (avatar && !tile.querySelector('.livekit-remote-video')) avatar.hidden = false;
+    }
+  }
+
+  function resetRoomMediaButtons() {
+    document.querySelector('[data-action="toggle-camera"]')?.classList.add('is-off');
+    document.querySelector('[data-action="toggle-mic"]')?.classList.add('is-off');
+    document.querySelector('[data-action="share-screen"]')?.classList.remove('is-on');
+    const video = document.getElementById('localVideo'); if (video) { video.srcObject = null; video.hidden = true; }
+    const avatar = document.querySelector('#tutorVideoTile .video-avatar'); if (avatar) avatar.hidden = false;
+    const stateLabel = document.getElementById('tutorVideoState'); if (stateLabel) stateLabel.innerHTML = `${useIcon('cam-off')} Камера выключена`;
   }
 
   function render() {
@@ -430,7 +552,9 @@
   function submitForm(form) {
     const data = Object.fromEntries(new FormData(form).entries());
     const id = `${form.dataset.form}-${Date.now()}`;
-    if (form.dataset.form === 'account-login') {
+    if (form.dataset.form === 'livekit-join') {
+      joinLiveKit(data);
+    } else if (form.dataset.form === 'account-login') {
       const account = getAccount(data.accountId); if (!account) return;
       state.currentAccountId = account.id; currentView = 'overview'; persist(); closeModal(); render(); toast('Вы вошли в демо-кабинет', account.role === 'student' ? 'Роль: ученик' : 'Роль: репетитор');
     } else if (form.dataset.form === 'account-register') {
@@ -499,7 +623,16 @@
   }
 
   function startLesson(id) {
-    state._activeLesson = state.lessons.find((lesson) => lesson.id === id) || nextLesson() || null;
+    const requestedLesson = state.lessons.find((lesson) => lesson.id === id) || nextLesson() || null;
+    if (isStudentAccount() && requestedLesson?.studentId !== currentAccount()?.studentId) {
+      toast('Это занятие недоступно', 'Откройте урок из своего кабинета ученика.');
+      return;
+    }
+    if (!isStudentAccount() && requestedLesson && !currentTutorLessons().some((lesson) => lesson.id === requestedLesson.id)) {
+      toast('Это занятие недоступно', 'Откройте урок из своего расписания.');
+      return;
+    }
+    state._activeLesson = requestedLesson;
     if (state._activeLesson?.boardId) state.currentBoardId = state._activeLesson.boardId;
     meetingStartedAt = Date.now();
     navigate('room');
@@ -513,10 +646,25 @@
   }
   function stopRoomMedia() {
     window.clearInterval(meetingTimer); meetingTimer = null; meetingStartedAt = 0;
+    if (liveKitRoom) { const room = liveKitRoom; liveKitRoom = null; room.disconnect(); }
     [localCameraStream, localMicStream, screenStream].forEach((stream) => stream?.getTracks().forEach((track) => track.stop()));
-    localCameraStream = null; localMicStream = null; screenStream = null; cameraEnabled = false; micEnabled = false;
+    localCameraStream = null; localMicStream = null; screenStream = null; cameraEnabled = false; micEnabled = false; screenShareEnabled = false;
+    document.querySelectorAll('.livekit-remote-video,.livekit-remote-audio').forEach((element) => element.remove());
   }
   async function toggleCamera(button) {
+    if (liveKitRoom) {
+      try {
+        cameraEnabled = !cameraEnabled;
+        await liveKitRoom.localParticipant.setCameraEnabled(cameraEnabled);
+        const video = document.getElementById('localVideo');
+        const track = liveKitRoom.localParticipant.getTrackPublication(window.LivekitClient.Track.Source.Camera)?.videoTrack;
+        if (cameraEnabled && track && video) { track.attach(video); video.hidden = false; document.querySelector('#tutorVideoTile .video-avatar').hidden = true; }
+        else if (video) { video.srcObject = null; video.hidden = true; document.querySelector('#tutorVideoTile .video-avatar').hidden = false; }
+        button.classList.toggle('is-off', !cameraEnabled); button.classList.toggle('is-on', cameraEnabled); button.innerHTML = useIcon(cameraEnabled ? 'cam' : 'cam-off');
+        const stateLabel = document.getElementById('tutorVideoState'); if (stateLabel) stateLabel.innerHTML = `${useIcon(cameraEnabled ? 'cam' : 'cam-off')} ${cameraEnabled ? 'Камера включена' : 'Камера выключена'}`;
+      } catch (error) { cameraEnabled = !cameraEnabled; toast('Не удалось включить камеру', error.message || 'Проверьте разрешение браузера.'); }
+      return;
+    }
     if (cameraEnabled) {
       localCameraStream?.getTracks().forEach((track) => track.stop()); localCameraStream = null; cameraEnabled = false;
       const video = document.getElementById('localVideo'); if (video) { video.hidden = true; video.srcObject = null; }
@@ -536,6 +684,15 @@
     } catch (error) { toast('Не удалось включить камеру', error.message || 'Проверьте разрешения браузера.'); }
   }
   async function toggleMic(button) {
+    if (liveKitRoom) {
+      try {
+        micEnabled = !micEnabled;
+        await liveKitRoom.localParticipant.setMicrophoneEnabled(micEnabled);
+        button.classList.toggle('is-off', !micEnabled); button.classList.toggle('is-on', micEnabled); button.innerHTML = useIcon(micEnabled ? 'mic' : 'mic-off');
+        toast(micEnabled ? 'Микрофон включён' : 'Микрофон выключен');
+      } catch (error) { micEnabled = !micEnabled; toast('Не удалось включить микрофон', error.message || 'Проверьте разрешение браузера.'); }
+      return;
+    }
     if (micEnabled) {
       localMicStream?.getTracks().forEach((track) => track.stop()); localMicStream = null; micEnabled = false;
       button.classList.add('is-off'); button.classList.remove('is-on'); button.innerHTML = useIcon('mic-off'); toast('Микрофон выключен'); return;
@@ -548,6 +705,15 @@
     } catch (error) { toast('Не удалось включить микрофон', error.message || 'Проверьте разрешения браузера.'); }
   }
   async function shareScreen(button) {
+    if (liveKitRoom) {
+      try {
+        screenShareEnabled = !screenShareEnabled;
+        await liveKitRoom.localParticipant.setScreenShareEnabled(screenShareEnabled);
+        button.classList.toggle('is-on', screenShareEnabled);
+        toast(screenShareEnabled ? 'Демонстрация экрана включена' : 'Демонстрация экрана завершена');
+      } catch (error) { screenShareEnabled = !screenShareEnabled; toast('Не удалось показать экран', error.message || 'Выберите экран или окно для демонстрации.'); }
+      return;
+    }
     if (screenStream) { screenStream.getTracks().forEach((track) => track.stop()); screenStream = null; button.classList.remove('is-on'); restoreLocalVideo(); toast('Показ экрана завершён'); return; }
     try {
       if (!navigator.mediaDevices?.getDisplayMedia) throw new Error('Демонстрация экрана доступна в браузере через localhost или HTTPS.');
@@ -631,6 +797,7 @@
     const color = document.getElementById('boardColor'); color?.addEventListener('input', () => { boardColor = color.value; });
     const size = document.getElementById('brushSize'); size?.addEventListener('input', () => { boardWidth = Number(size.value); const label = document.getElementById('boardWidthLabel'); if (label) label.textContent = `${boardWidth}px`; });
     document.getElementById('boardSelect')?.addEventListener('change', (event) => { state.currentBoardId = event.target.value; boardHistory = []; boardSelectedId = null; persist(); renderBoard(); });
+    document.getElementById('roomLessonSelect')?.addEventListener('change', (event) => startLesson(event.target.value));
   }
 
   function pushBoardHistory(board = currentBoard()) {
@@ -741,8 +908,9 @@
     else if (action === 'toggle-camera') await toggleCamera(button);
     else if (action === 'toggle-mic') await toggleMic(button);
     else if (action === 'share-screen') await shareScreen(button);
+    else if (action === 'join-livekit') openLiveKitJoin();
     else if (action === 'open-board') { const lesson = state._activeLesson || nextLesson(); if (lesson) openLessonBoard(lesson); else navigate('board'); stopRoomMedia(); toast('Доска открыта', 'В этой доске можно продолжить работу на следующих занятиях.'); }
-    else if (action === 'leave-room') { stopRoomMedia(); navigate('overview'); toast('Вы вышли из демо-комнаты'); }
+    else if (action === 'leave-room') { stopRoomMedia(); navigate('overview'); toast('Вы вышли из комнаты'); }
     else if (action === 'board-tool') { boardTool = button.dataset.tool; boardSelectedId = null; document.querySelectorAll('[data-tool]').forEach((tool) => tool.classList.toggle('active', tool === button)); const canvas = document.getElementById('whiteboard'); if (canvas) { canvas.style.cursor = boardTool === 'select' ? 'default' : 'crosshair'; drawBoardElements(canvas.getContext('2d'), currentBoard(), canvas.clientWidth, canvas.clientHeight); } }
     else if (action === 'board-undo') undoBoard();
     else if (action === 'board-clear') clearBoard();
