@@ -1,2131 +1,555 @@
 openapi: 3.1.0
 info:
-  title: Tandem API
+  title: Tandem Java Core API
   version: 1.0.0
-  summary: API for tutoring, lesson scheduling, homework, and shared teaching materials.
+  summary: Target API for Tandem tutoring workspaces.
+  license: { name: Proprietary, identifier: LicenseRef-Proprietary }
   description: |
-    First server API contract for Tandem. Tutors manage their student relationships,
-    schedule lessons, assign homework, use reusable whiteboards, and keep a private
-    planner. Students accept tutor invitations, view their lessons and homework,
-    and join authorized lesson rooms.
+    Target contract for Java Core under /api/v1. It replaces the earlier draft and
+    is not a description of the deployed Cloudflare Worker. Java Core will own
+    durable business data and authorization.
 
-    Authentication uses short-lived Bearer access tokens and a rotated refresh token
-    in a Secure, HttpOnly cookie. All resource access is scoped to the authenticated
-    user. Never trust tutor or student identifiers supplied by a client as proof of
-    access.
+    It covers accounts, tutor-student links, lessons, tasks, planner, private notes,
+    groups, messages, videos, files, subscriptions and LiveKit room tokens. Boards
+    and realtime synchronization are deliberately outside this API version.
 
-    Payments, file submissions, and realtime whiteboard synchronization are not part
-    of this version. Subscription endpoints report plan and feature access only.
-
-    Database alignment: this API maps to the current Flyway V1 schema except for
-    invitation persistence and delivery, authentication identities/password hashes,
-    lesson cancellation metadata, task soft deletion, and resource version numbers.
-    Those gaps are called out on the affected operations and require a later migration
-    before those operations can be implemented durably. V1 does not contain secrets.
-  license:
-    name: Proprietary
-    identifier: LicenseRef-Proprietary
+    PostgreSQL V1 needs new Flyway migrations before implementation: credentials and
+    refresh sessions, email verification/change/reset tokens, OAuth identities, the
+    free plan, groups, messages, files, videos and notes. Client-supplied IDs never
+    prove resource access.
 servers:
   - url: /api/v1
-    description: Relative to the API host; locally served from port 8080.
-tags:
-  - name: Authentication
-    description: Account registration and session lifecycle.
-  - name: Account
-    description: Current account profile and plan entitlements.
-  - name: Students
-    description: Tutor-specific student relationships and private teaching notes.
-  - name: Invitations
-    description: Invitation lifecycle for connecting tutors and students.
-  - name: Lessons
-    description: Lesson scheduling, calendar queries, and status transitions.
-  - name: Tasks
-    description: Personal tasks and homework assignment/review.
-  - name: Boards
-    description: Persistent whiteboards and lesson associations.
-  - name: Planner
-    description: Private tutor planner document.
-  - name: Lesson room
-    description: Authorized LiveKit room token issuance.
-  - name: Operations
-    description: Liveness and readiness probes.
 security:
   - bearerAuth: []
+tags:
+  - { name: Authentication, description: Registration, credentials, verification and OAuth. }
+  - { name: Account, description: Current account profile and subscription. }
+  - { name: Tutor students, description: Tutor-owned relationships with verified students. }
+  - { name: Lessons, description: Scheduling, state transitions and authorized rooms. }
+  - { name: Tasks, description: Personal tasks and student homework. }
+  - { name: Planner and notes, description: Private workspace documents. }
+  - { name: Collaboration, description: Groups and direct or group messages. }
+  - { name: Learning materials, description: Video lessons and protected files. }
+  - { name: Operations, description: Liveness and service health. }
 paths:
   /auth/register:
     post:
       tags: [Authentication]
-      operationId: registerAccount
       security: []
-      summary: Register a tutor or student account
-      description: |
-        Creates a user and, for role student, its student profile atomically. A tutor
-        may not create a student account on the student's behalf. The email must not
-        already belong to an account. V1 has no credential table; password hashing
-        and verified-email state need an authentication migration before implementation.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequest'
+      operationId: registerAccount
+      summary: Register and send an email-verification link
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/RegisterRequest' } } } }
       responses:
-        '201':
-          description: Account created; refresh cookie issued.
-          headers:
-            Set-Cookie:
-              $ref: '#/components/headers/RefreshCookie'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '409':
-          description: Email already registered.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
+        '202': { $ref: '#/components/responses/Accepted' }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+        '409': { $ref: '#/components/responses/ConflictProblem' }
+        '429': { $ref: '#/components/responses/RateLimitProblem' }
   /auth/login:
     post:
       tags: [Authentication]
+      security: []
       operationId: login
-      security: []
-      summary: Sign in with email and password
-      description: Password credentials and rate limits are verified by the authentication service. V1 has no password credential storage yet.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/LoginRequest' } } } }
       responses:
-        '200':
-          description: Signed in; refresh cookie issued.
-          headers:
-            Set-Cookie:
-              $ref: '#/components/headers/RefreshCookie'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '429':
-          $ref: '#/components/responses/RateLimitProblem'
-  /auth/oauth/google:
-    post:
-      tags: [Authentication]
-      operationId: authenticateWithGoogle
-      security: []
-      summary: Authenticate with a Google ID token
-      description: The server validates the token against Google, resolves or creates the account, and issues Tandem tokens. Role is required only on first registration. V1 has no auth_identities table yet.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GoogleAuthRequest'
-      responses:
-        '200':
-          description: Existing account authenticated; refresh cookie issued.
-          headers:
-            Set-Cookie:
-              $ref: '#/components/headers/RefreshCookie'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '201':
-          description: Account created from Google identity; refresh cookie issued.
-          headers:
-            Set-Cookie:
-              $ref: '#/components/headers/RefreshCookie'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          description: Google credential is invalid or expired.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '409':
-          description: Email is already associated with an account that cannot be safely linked.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
+        '200': { description: Access token and a rotated refresh cookie., headers: { Set-Cookie: { $ref: '#/components/headers/RefreshCookie' } }, content: { application/json: { schema: { $ref: '#/components/schemas/AuthResponse' } } } }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+        '401': { $ref: '#/components/responses/UnauthorizedProblem' }
+        '403': { $ref: '#/components/responses/ForbiddenProblem' }
+        '429': { $ref: '#/components/responses/RateLimitProblem' }
   /auth/refresh:
     post:
       tags: [Authentication]
+      security: [{ refreshCookie: [] }]
       operationId: refreshAccessToken
-      security:
-        - refreshCookie: []
-      summary: Rotate refresh token and issue a new access token
+      summary: Rotate refresh cookie and issue a new access token
       responses:
-        '200':
-          description: Token refreshed; refresh cookie rotated.
-          headers:
-            Set-Cookie:
-              $ref: '#/components/headers/RefreshCookie'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TokenResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '429':
-          $ref: '#/components/responses/RateLimitProblem'
+        '200': { description: New access token and rotated cookie., headers: { Set-Cookie: { $ref: '#/components/headers/RefreshCookie' } }, content: { application/json: { schema: { $ref: '#/components/schemas/TokenResponse' } } } }
+        '401': { description: 'Missing, expired or revoked refresh cookie.', headers: { Set-Cookie: { $ref: '#/components/headers/ClearedRefreshCookie' } }, content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
   /auth/logout:
     post:
       tags: [Authentication]
+      security: [{ refreshCookie: [] }]
       operationId: logout
-      security:
-        - bearerAuth: []
-          refreshCookie: []
-      summary: Revoke the current refresh-token family
       responses:
-        '204':
-          description: Session revoked and refresh cookie cleared.
-          headers:
-            Set-Cookie:
-              $ref: '#/components/headers/ClearedRefreshCookie'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
+        '204': { description: Session revoked and refresh cookie cleared., headers: { Set-Cookie: { $ref: '#/components/headers/ClearedRefreshCookie' } } }
+  /auth/email/verify:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: verifyEmail
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/TokenRequest' } } } }
+      responses: { '204': { description: Email verified. }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /auth/email/resend-verification:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: resendEmailVerification
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EmailRequest' } } } }
+      responses: { '202': { $ref: '#/components/responses/Accepted' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '429': { $ref: '#/components/responses/RateLimitProblem' } }
+  /auth/password-reset/request:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: requestPasswordReset
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EmailRequest' } } } }
+      responses: { '202': { $ref: '#/components/responses/Accepted' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '429': { $ref: '#/components/responses/RateLimitProblem' } }
+  /auth/password-reset/confirm:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: confirmPasswordReset
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/PasswordResetRequest' } } } }
+      responses: { '204': { description: Password changed; all refresh sessions revoked. }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /auth/oauth/{provider}/start:
+    get:
+      tags: [Authentication]
+      security: []
+      operationId: startOAuth
+      summary: Start browser OAuth authorization
+      parameters: [{ $ref: '#/components/parameters/OAuthProvider' }]
+      responses: { '302': { description: Redirect to provider. }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '503': { $ref: '#/components/responses/ProviderNotConfiguredProblem' } }
+  /auth/oauth/{provider}/callback:
+    get:
+      tags: [Authentication]
+      security: []
+      operationId: completeOAuth
+      parameters: [{ $ref: '#/components/parameters/OAuthProvider' }]
+      responses: { '302': { description: Redirect to application after completion. }, '400': { $ref: '#/components/responses/ValidationProblem' }, '503': { $ref: '#/components/responses/ProviderNotConfiguredProblem' } }
   /me:
     get:
       tags: [Account]
       operationId: getCurrentUser
-      summary: Get the authenticated user's public profile
-      responses:
-        '200':
-          description: Current account profile.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CurrentUser'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
+      responses: { '200': { $ref: '#/components/responses/CurrentUser' }, '401': { $ref: '#/components/responses/UnauthorizedProblem' } }
     patch:
       tags: [Account]
       operationId: updateCurrentUser
-      summary: Update editable profile fields
-      description: Role and email are immutable here. Email changes require a separate verified-email flow not included in this contract.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateProfileRequest'
-      responses:
-        '200':
-          description: Profile updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CurrentUser'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateProfileRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/CurrentUser' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '401': { $ref: '#/components/responses/UnauthorizedProblem' } }
+  /me/email/change:
+    post:
+      tags: [Account]
+      operationId: requestEmailChange
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EmailRequest' } } } }
+      responses: { '202': { $ref: '#/components/responses/Accepted' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /me/email/confirm:
+    post:
+      tags: [Account]
+      operationId: confirmEmailChange
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/TokenRequest' } } } }
+      responses: { '204': { description: Email changed. }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
   /plans:
     get:
       tags: [Account]
+      security: []
       operationId: listPlans
-      summary: List available plans and feature entitlements
-      description: Informational only. Prices, checkout, and plan changes are not available until a payment provider and pricing are selected.
-      responses:
-        '200':
-          description: Plan catalog.
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [items]
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Plan'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
+      summary: List product plans; billing is outside this API
+      responses: { '200': { description: Catalogue., content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Plan' } } } } } }
   /me/subscription:
     get:
       tags: [Account]
       operationId: getSubscription
-      summary: Get the current tutor's plan and subscription status
-      description: Student accounts receive 403. This endpoint does not change plans or initiate payment.
-      responses:
-        '200':
-          description: Subscription state.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Subscription'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
+      responses: { '200': { $ref: '#/components/responses/Subscription' }, '401': { $ref: '#/components/responses/UnauthorizedProblem' } }
   /tutor/students:
     get:
-      tags: [Students]
+      tags: [Tutor students]
       operationId: listTutorStudents
-      summary: List students connected to the current tutor
-      description: Tutor only. Includes only active or archived links owned by the authenticated tutor.
-      parameters:
-        - $ref: '#/components/parameters/LinkStatus'
-        - $ref: '#/components/parameters/Cursor'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: Student-link page.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TutorStudentPage'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses: { '200': { $ref: '#/components/responses/TutorStudentPage' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
     post:
-      tags: [Invitations]
-      operationId: createStudentInvitation
-      summary: Invite a student by email
-      description: |
-        Tutor only; requires the extreme plan. Creates a pending invitation and sends a single-use invitation
-        link. Invitation persistence and delivery are not represented in Flyway V1;
-        implement after adding an invitations table with token hash, expiry, status,
-        inviter, invitee email, and unique pending-invitation rules.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateInvitationRequest'
-      responses:
-        '201':
-          description: Invitation created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Invitation'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '409':
-          description: Already connected, self-invitation, or pending invitation exists.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
+      tags: [Tutor students]
+      operationId: linkVerifiedStudent
+      summary: Link tutor with an existing verified student by email
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateTutorStudentRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/TutorStudent' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
   /tutor/students/{studentId}:
-    parameters:
-      - $ref: '#/components/parameters/StudentId'
     get:
-      tags: [Students]
+      tags: [Tutor students]
       operationId: getTutorStudent
-      summary: Get a student's tutor-specific profile
-      description: Tutor only; the student must be linked to the authenticated tutor.
-      responses:
-        '200':
-          description: Student relationship profile.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TutorStudent'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
+      parameters: [{ $ref: '#/components/parameters/StudentId' }]
+      responses: { '200': { $ref: '#/components/responses/TutorStudent' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
     patch:
-      tags: [Students]
+      tags: [Tutor students]
       operationId: updateTutorStudent
-      summary: Update the tutor-specific student relationship
-      description: Tutor only; requires the extreme plan. Editable fields are subject, grade, private note, progress, and active/archive status. The student cannot read this tutor-private note.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateTutorStudentRequest'
-      responses:
-        '200':
-          description: Relationship updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TutorStudent'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
+      parameters: [{ $ref: '#/components/parameters/StudentId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateTutorStudentRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/TutorStudent' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
     delete:
-      tags: [Students]
-      operationId: archiveTutorStudent
-      summary: Archive a tutor-student relationship
-      description: Archives the link; does not delete the student account or lesson/task history. Equivalent to setting status archived.
-      responses:
-        '204':
-          description: Relationship archived.
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          description: Relationship cannot be archived due to a business-state conflict.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-  /student/invitations:
-    get:
-      tags: [Invitations]
-      operationId: listStudentInvitations
-      summary: List invitations addressed to the current student
-      description: Student only. Invitation lookup is by the verified email on the authenticated account.
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [pending, accepted, declined, canceled, expired]
-        - $ref: '#/components/parameters/Cursor'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: Invitation page.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvitationPage'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-  /student/invitations/{invitationId}/accept:
-    post:
-      tags: [Invitations]
-      operationId: acceptStudentInvitation
-      summary: Accept an invitation from a tutor
-      description: Student only. The invitation must be pending, unexpired, and addressed to the authenticated verified email. Creates the tutor_students link atomically.
-      parameters:
-        - $ref: '#/components/parameters/InvitationId'
-      responses:
-        '200':
-          description: Invitation accepted and tutor-student relationship created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TutorStudent'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
-  /student/invitations/{invitationId}/decline:
-    post:
-      tags: [Invitations]
-      operationId: declineStudentInvitation
-      summary: Decline a tutor invitation
-      parameters:
-        - $ref: '#/components/parameters/InvitationId'
-      responses:
-        '204':
-          description: Invitation declined.
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
-  /tutor/invitations:
-    get:
-      tags: [Invitations]
-      operationId: listTutorInvitations
-      summary: List invitations sent by the current tutor
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [pending, accepted, declined, canceled, expired]
-        - $ref: '#/components/parameters/Cursor'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: Invitation page.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InvitationPage'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-  /tutor/invitations/{invitationId}/resend:
-    post:
-      tags: [Invitations]
-      operationId: resendTutorInvitation
-      summary: Resend a pending invitation
-      description: Issues a fresh single-use token and invalidates the prior link. Rate limited; only the sending tutor may resend.
-      parameters:
-        - $ref: '#/components/parameters/InvitationId'
-      responses:
-        '200':
-          description: Invitation resent.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Invitation'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
-        '429':
-          $ref: '#/components/responses/RateLimitProblem'
-  /tutor/invitations/{invitationId}:
-    delete:
-      tags: [Invitations]
-      operationId: cancelTutorInvitation
-      summary: Cancel a pending invitation
-      parameters:
-        - $ref: '#/components/parameters/InvitationId'
-      responses:
-        '204':
-          description: Invitation canceled.
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
+      tags: [Tutor students]
+      operationId: unlinkTutorStudent
+      parameters: [{ $ref: '#/components/parameters/StudentId' }]
+      responses: { '204': { description: Link permanently removed. }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
   /lessons:
     get:
       tags: [Lessons]
       operationId: listLessons
-      summary: List lessons visible to the current user
-      description: Tutors see their own lessons; students see lessons where they are the student. Results are ordered by startsAt ascending, then id.
-      parameters:
-        - name: from
-          in: query
-          description: Inclusive start timestamp.
-          schema:
-            type: string
-            format: date-time
-        - name: to
-          in: query
-          description: Exclusive end timestamp.
-          schema:
-            type: string
-            format: date-time
-        - name: status
-          in: query
-          schema:
-            $ref: '#/components/schemas/LessonStatus'
-        - name: studentId
-          in: query
-          description: Tutor filter; ignored for student accounts only if omitted, otherwise forbidden.
-          schema:
-            type: string
-            format: uuid
-        - $ref: '#/components/parameters/Cursor'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: Lesson page.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LessonPage'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/LessonStatus' }, { $ref: '#/components/parameters/From' }, { $ref: '#/components/parameters/To' }]
+      responses: { '200': { $ref: '#/components/responses/LessonPage' } }
     post:
       tags: [Lessons]
       operationId: createLesson
-      summary: Schedule a lesson with a linked student
-      description: Tutor only; requires the extreme plan. The student must have an active tutor_students relationship. startsAt must include a timezone offset. Overlapping lessons for the tutor return 409; prevention requires a transactional check or a database exclusion constraint not present in V1.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateLessonRequest'
-      responses:
-        '201':
-          description: Lesson scheduled.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Lesson'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateLessonRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Lesson' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
   /lessons/{lessonId}:
-    parameters:
-      - $ref: '#/components/parameters/LessonId'
     get:
       tags: [Lessons]
       operationId: getLesson
-      summary: Get a lesson
-      description: Only the tutor or student participating in the lesson may read it.
-      responses:
-        '200':
-          description: Lesson details.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Lesson'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
+      parameters: [{ $ref: '#/components/parameters/LessonId' }]
+      responses: { '200': { $ref: '#/components/responses/Lesson' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
     patch:
       tags: [Lessons]
       operationId: updateLesson
-      summary: Reschedule or edit a lesson
-      description: Tutor only; requires the extreme plan. Only scheduled lessons can be edited. A change that overlaps another tutor lesson returns 409. Status is changed through the status operation, not this endpoint.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateLessonRequest'
-      responses:
-        '200':
-          description: Lesson updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Lesson'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
+      parameters: [{ $ref: '#/components/parameters/LessonId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateLessonRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Lesson' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
   /lessons/{lessonId}/status:
     patch:
       tags: [Lessons]
       operationId: updateLessonStatus
-      summary: Start, complete, cancel, or record a missed lesson
-      description: Tutor only. Allowed transitions are scheduled→in_progress or canceled; in_progress→completed or no_show. Completed/canceled/no_show are terminal. Cancellation reason and actor are not stored in V1; add them in a later migration if audit is required.
-      parameters:
-        - $ref: '#/components/parameters/LessonId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateLessonStatusRequest'
-      responses:
-        '200':
-          description: Lesson status updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Lesson'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
+      parameters: [{ $ref: '#/components/parameters/LessonId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateLessonStatusRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Lesson' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /lessons/{lessonId}/room-token:
+    post:
+      tags: [Lessons]
+      operationId: createLessonRoomToken
+      summary: Issue a short-lived LiveKit token after server-side access checks
+      parameters: [{ $ref: '#/components/parameters/LessonId' }]
+      responses: { '200': { $ref: '#/components/responses/RoomToken' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '503': { $ref: '#/components/responses/ServiceUnavailableProblem' } }
   /tasks:
     get:
       tags: [Tasks]
       operationId: listTasks
-      summary: List tasks visible to the current user
-      description: Tutors see their personal tasks and homework they created; students see only homework assigned to them. Supports filtering by kind and status.
-      parameters:
-        - name: kind
-          in: query
-          schema:
-            $ref: '#/components/schemas/TaskKind'
-        - name: status
-          in: query
-          schema:
-            $ref: '#/components/schemas/TaskStatus'
-        - name: studentId
-          in: query
-          description: Tutor-only filter.
-          schema:
-            type: string
-            format: uuid
-        - name: dueBefore
-          in: query
-          schema:
-            type: string
-            format: date-time
-        - $ref: '#/components/parameters/Cursor'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: Task page.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskPage'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/TaskStatus' }, { $ref: '#/components/parameters/TaskKind' }]
+      responses: { '200': { $ref: '#/components/responses/TaskPage' } }
     post:
       tags: [Tasks]
       operationId: createTask
-      summary: Create tutor homework or a personal task
-      description: Tutor only; requires the extreme plan. Homework requires an active linked student; personal tasks must have no student. For personal tasks status is todo or complete.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTaskRequest'
-      responses:
-        '201':
-          description: Task created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateTaskRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Task' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
   /tasks/{taskId}:
-    parameters:
-      - $ref: '#/components/parameters/TaskId'
     get:
       tags: [Tasks]
       operationId: getTask
-      summary: Get a task
-      description: A tutor may read tasks they created; a student may read homework assigned to their account.
-      responses:
-        '200':
-          description: Task details.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      responses: { '200': { $ref: '#/components/responses/Task' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
     patch:
       tags: [Tasks]
       operationId: updateTask
-      summary: Edit a task
-      description: Tutor owner only. Student, kind, and status are immutable here; use status operation for allowed workflow transitions.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateTaskRequest'
-      responses:
-        '200':
-          description: Task updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateTaskRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Task' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
     delete:
       tags: [Tasks]
       operationId: archiveTask
-      summary: Archive a task
-      description: Tutor owner only. V1 has no deleted_at/archive field; durable archive requires a later migration. Hard deletion is not exposed to preserve history.
-      responses:
-        '204':
-          description: Task archived.
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      responses: { '204': { description: Task archived. }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
   /tasks/{taskId}/status:
     patch:
       tags: [Tasks]
       operationId: updateTaskStatus
-      summary: Submit homework or review/update a task
-      description: |
-        A student can change only their assigned homework from todo to submitted,
-        or withdraw it from submitted to todo. The tutor who created the task can
-        change homework submitted→complete, complete→todo, or todo→complete, and
-        toggle personal todo↔complete. No answer text or files are accepted in v1.
-      parameters:
-        - $ref: '#/components/parameters/TaskId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateTaskStatusRequest'
-      responses:
-        '200':
-          description: Task status updated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateTaskStatusRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Task' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
   /tasks/{taskId}/copy:
     post:
       tags: [Tasks]
       operationId: copyTask
-      summary: Copy homework to another linked student
-      description: Tutor owner only. Creates a new task with status todo; does not modify the source task.
-      parameters:
-        - $ref: '#/components/parameters/TaskId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CopyTaskRequest'
-      responses:
-        '201':
-          description: Task copy created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
-  /boards:
-    get:
-      tags: [Boards]
-      operationId: listBoards
-      summary: List boards accessible to the current user
-      description: Tutors see boards they own. Students see boards attached to their lessons.
-      parameters:
-        - $ref: '#/components/parameters/Cursor'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: Board page.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BoardPage'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-    post:
-      tags: [Boards]
-      operationId: createBoard
-      summary: Create a whiteboard
-      description: Tutor only. Whiteboards are included in Light; creating a board requires an entitled plan. A board is owned by its creator and may be reused across their lessons.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateBoardRequest'
-      responses:
-        '201':
-          description: Board created.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Board'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-  /boards/{boardId}:
-    parameters:
-      - $ref: '#/components/parameters/BoardId'
-    get:
-      tags: [Boards]
-      operationId: getBoard
-      summary: Get board metadata and elements
-      description: Tutor owner or a student participating in at least one lesson attached to the board.
-      responses:
-        '200':
-          description: Board document.
-          headers:
-            ETag:
-              $ref: '#/components/headers/ResourceETag'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Board'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-    patch:
-      tags: [Boards]
-      operationId: updateBoard
-      summary: Rename a board
-      description: Tutor owner only. Document elements are changed through PUT /elements with If-Match.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateBoardRequest'
-      responses:
-        '200':
-          description: Board renamed.
-          headers:
-            ETag:
-              $ref: '#/components/headers/ResourceETag'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Board'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-    delete:
-      tags: [Boards]
-      operationId: deleteBoard
-      summary: Delete an unreferenced board
-      description: Tutor owner only. A board attached to any lesson cannot be deleted; detach it first. Database currently has no archived state for boards.
-      responses:
-        '204':
-          description: Board deleted.
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
-  /boards/{boardId}/elements:
-    put:
-      tags: [Boards]
-      operationId: replaceBoardElements
-      summary: Replace a board's complete element document
-      description: |
-        Tutor owner only. This is an atomic document replacement, not a realtime
-        collaboration protocol. If-Match is required; stale versions return 412.
-        V1 has no version column, so durable optimistic locking needs a later schema
-        migration (recommended integer version incremented on each write).
-      parameters:
-        - $ref: '#/components/parameters/BoardId'
-        - name: If-Match
-          in: header
-          required: true
-          description: ETag returned by GET or the previous successful PUT.
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [elements]
-              properties:
-                elements:
-                  type: array
-                  maxItems: 10000
-                  items:
-                    $ref: '#/components/schemas/BoardElement'
-      responses:
-        '200':
-          description: Board elements replaced.
-          headers:
-            ETag:
-              $ref: '#/components/headers/ResourceETag'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Board'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '412':
-          description: If-Match is missing or the board has changed since it was read.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-  /lessons/{lessonId}/boards:
-    parameters:
-      - $ref: '#/components/parameters/LessonId'
-    get:
-      tags: [Boards]
-      operationId: listLessonBoards
-      summary: List boards attached to a lesson
-      description: Available to the lesson tutor and student.
-      responses:
-        '200':
-          description: Attached boards.
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [items]
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/BoardSummary'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-    post:
-      tags: [Boards]
-      operationId: attachBoardToLesson
-      summary: Attach an owned board to a lesson
-      description: Tutor for the lesson only; the board must be owned by the same tutor. Reattaching the same board is idempotent and returns 200.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [boardId]
-              properties:
-                boardId:
-                  type: string
-                  format: uuid
-      responses:
-        '200':
-          description: Board was already attached; current association returned.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LessonBoard'
-        '201':
-          description: Board attached.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LessonBoard'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          $ref: '#/components/responses/ConflictProblem'
-  /lessons/{lessonId}/boards/{boardId}:
-    delete:
-      tags: [Boards]
-      operationId: detachBoardFromLesson
-      summary: Detach a board from a lesson
-      description: Tutor for the lesson only. Board content is retained and may remain attached to other lessons.
-      parameters:
-        - $ref: '#/components/parameters/LessonId'
-        - $ref: '#/components/parameters/BoardId'
-      responses:
-        '204':
-          description: Board detached.
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CopyTaskRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Task' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
   /planner:
     get:
-      tags: [Planner]
+      tags: [Planner and notes]
       operationId: getPlanner
-      summary: Get the current tutor's private planner
-      description: Tutor only; requires the extreme plan. Planner content is private and not visible to linked students. V1 stores blocks as a JSON array.
-      responses:
-        '200':
-          description: Planner document.
-          headers:
-            ETag:
-              $ref: '#/components/headers/ResourceETag'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Planner'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
+      responses: { '200': { $ref: '#/components/responses/Planner' } }
     put:
-      tags: [Planner]
+      tags: [Planner and notes]
       operationId: replacePlanner
-      summary: Replace the current tutor's planner document
-      description: Tutor only. If-Match is required to prevent lost updates. V1 has no version column; add one before implementing durable concurrency control.
-      parameters:
-        - name: If-Match
-          in: header
-          required: true
-          schema:
-            type: string
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdatePlannerRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Planner' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /notes:
+    get:
+      tags: [Planner and notes]
+      operationId: listNotes
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses: { '200': { $ref: '#/components/responses/NotePage' } }
+    post:
+      tags: [Planner and notes]
+      operationId: createNote
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/NoteWriteRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Note' }, '400': { $ref: '#/components/responses/ValidationProblem' } }
+  /notes/{noteId}:
+    get:
+      tags: [Planner and notes]
+      operationId: getNote
+      parameters: [{ $ref: '#/components/parameters/NoteId' }]
+      responses: { '200': { $ref: '#/components/responses/Note' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    patch:
+      tags: [Planner and notes]
+      operationId: updateNote
+      parameters: [{ $ref: '#/components/parameters/NoteId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/NoteWriteRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Note' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Planner and notes]
+      operationId: deleteNote
+      parameters: [{ $ref: '#/components/parameters/NoteId' }]
+      responses: { '204': { description: Private note deleted. }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /groups:
+    get:
+      tags: [Collaboration]
+      operationId: listGroups
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses: { '200': { $ref: '#/components/responses/GroupPage' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
+    post:
+      tags: [Collaboration]
+      operationId: createGroup
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/GroupWriteRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Group' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
+  /groups/{groupId}:
+    get:
+      tags: [Collaboration]
+      operationId: getGroup
+      parameters: [{ $ref: '#/components/parameters/GroupId' }]
+      responses: { '200': { $ref: '#/components/responses/Group' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    patch:
+      tags: [Collaboration]
+      operationId: updateGroup
+      parameters: [{ $ref: '#/components/parameters/GroupId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/GroupWriteRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Group' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Collaboration]
+      operationId: deleteGroup
+      parameters: [{ $ref: '#/components/parameters/GroupId' }]
+      responses: { '204': { description: Group deleted. }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /groups/{groupId}/members:
+    put:
+      tags: [Collaboration]
+      operationId: replaceGroupMembers
+      parameters: [{ $ref: '#/components/parameters/GroupId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/StudentIdsRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Group' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /messages:
+    get:
+      tags: [Collaboration]
+      operationId: listMessages
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/CounterpartId' }, { $ref: '#/components/parameters/GroupQueryId' }]
+      responses: { '200': { $ref: '#/components/responses/MessagePage' } }
+    post:
+      tags: [Collaboration]
+      operationId: createMessage
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateMessageRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Message' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /messages/{messageId}:
+    delete:
+      tags: [Collaboration]
+      operationId: deleteMessage
+      parameters: [{ $ref: '#/components/parameters/MessageId' }]
+      responses: { '204': { description: Sender deleted message. }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /videos:
+    get:
+      tags: [Learning materials]
+      operationId: listVideos
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses: { '200': { $ref: '#/components/responses/VideoPage' } }
+    post:
+      tags: [Learning materials]
+      operationId: createVideo
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/VideoWriteRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Video' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
+  /videos/{videoId}:
+    patch:
+      tags: [Learning materials]
+      operationId: updateVideo
+      parameters: [{ $ref: '#/components/parameters/VideoId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/VideoWriteRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Video' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Learning materials]
+      operationId: deleteVideo
+      parameters: [{ $ref: '#/components/parameters/VideoId' }]
+      responses: { '204': { description: Video and assignments deleted. }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /videos/{videoId}/assignments:
+    put:
+      tags: [Learning materials]
+      operationId: replaceVideoAssignments
+      parameters: [{ $ref: '#/components/parameters/VideoId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/StudentIdsRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Video' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /files:
+    get:
+      tags: [Learning materials]
+      operationId: listFiles
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Folder' }]
+      responses: { '200': { $ref: '#/components/responses/FilePage' } }
+    post:
+      tags: [Learning materials]
+      operationId: uploadFile
+      summary: Upload a library file up to 10 MiB
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UpdatePlannerRequest'
-      responses:
-        '200':
-          description: Planner replaced.
-          headers:
-            ETag:
-              $ref: '#/components/headers/ResourceETag'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Planner'
-        '400':
-          $ref: '#/components/responses/ValidationProblem'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '412':
-          description: If-Match is missing or the planner has changed since it was read.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-  /lessons/{lessonId}/room-token:
-    post:
-      tags: [Lesson room]
-      operationId: createLessonRoomToken
-      summary: Issue a short-lived LiveKit participant token
-      description: Only the tutor or student assigned to the lesson may request a token. Room name is server-derived from lesson ID; client cannot choose room or participant identity. LiveKit credentials remain server-side. This replaces the demo shared room-code model.
-      parameters:
-        - $ref: '#/components/parameters/LessonId'
-      responses:
-        '200':
-          description: Token issued.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomToken'
-        '401':
-          $ref: '#/components/responses/UnauthorizedProblem'
-        '403':
-          $ref: '#/components/responses/ForbiddenProblem'
-        '404':
-          $ref: '#/components/responses/NotFoundProblem'
-        '409':
-          description: Lesson is canceled or otherwise not joinable.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        '503':
-          description: LiveKit service is not configured or unavailable.
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/Problem'
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary, description: Maximum 10485760 bytes. }
+                folder: { type: string, maxLength: 160, default: '' }
+      responses: { '201': { $ref: '#/components/responses/File' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '413': { $ref: '#/components/responses/TooLargeProblem' }, '415': { $ref: '#/components/responses/UnsupportedMediaTypeProblem' } }
+  /files/{fileId}:
+    get:
+      tags: [Learning materials]
+      operationId: downloadFile
+      summary: Download for owner, grantee or authorized message participant
+      parameters: [{ $ref: '#/components/parameters/FileId' }]
+      responses: { '200': { description: File stream with stored Content-Type and Content-Disposition. }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Learning materials]
+      operationId: deleteFile
+      parameters: [{ $ref: '#/components/parameters/FileId' }]
+      responses: { '204': { description: File and grants permanently deleted. }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /files/{fileId}/grants:
+    put:
+      tags: [Learning materials]
+      operationId: replaceFileGrants
+      parameters: [{ $ref: '#/components/parameters/FileId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/StudentIdsRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/File' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
   /healthz:
     get:
       tags: [Operations]
-      operationId: healthz
       security: []
-      summary: Liveness probe
-      servers:
-        - url: /
-      responses:
-        '200':
-          description: Process is alive; does not check database connectivity.
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [status]
-                properties:
-                  status:
-                    type: string
-                    const: ok
-        '404':
-          description: Route is not enabled on this server.
+      operationId: healthz
+      responses: { '200': { description: Process liveness without a database check. } }
   /actuator/health:
     get:
       tags: [Operations]
-      operationId: actuatorHealth
       security: []
-      summary: Spring Boot readiness and dependency health
-      servers:
-        - url: /
-      responses:
-        '200':
-          description: Application and configured dependencies are healthy.
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum: [UP, DOWN, OUT_OF_SERVICE, UNKNOWN]
-        '503':
-          description: Application or dependency is unavailable.
-          content:
-            application/vnd.spring-boot.actuator.v3+json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    const: DOWN
-        '404':
-          description: Actuator health endpoint is disabled on this server.
+      operationId: actuatorHealth
+      responses: { '200': { description: Spring Boot health response. }, '503': { description: Required health contributor unavailable. } }
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: Short-lived access token. Refresh tokens are never accepted as Bearer tokens.
-    refreshCookie:
-      type: apiKey
-      in: cookie
-      name: tandem_refresh
-      description: Secure, HttpOnly, SameSite=Lax refresh cookie; rotate on refresh and clear on logout.
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT, description: Short-lived access token; refresh tokens are never accepted here. }
+    refreshCookie: { type: apiKey, in: cookie, name: tandem_refresh, description: 'Secure, HttpOnly, SameSite=Lax token; rotated on refresh and cleared on logout.' }
   headers:
-    RefreshCookie:
-      description: Rotated refresh token; Secure, HttpOnly, SameSite=Lax, Path=/api/v1/auth, bounded Max-Age.
-      schema:
-        type: string
-    ClearedRefreshCookie:
-      description: Expired tandem_refresh cookie with matching Path and security attributes.
-      schema:
-        type: string
-    ResourceETag:
-      description: Opaque strong entity tag for optimistic concurrency.
-      schema:
-        type: string
+    RefreshCookie: { description: 'Rotated tandem_refresh cookie, Secure, HttpOnly, SameSite=Lax, Path=/api/v1/auth.', schema: { type: string } }
+    ClearedRefreshCookie: { description: Expired tandem_refresh cookie with matching attributes., schema: { type: string } }
   parameters:
-    Cursor:
-      name: cursor
-      in: query
-      required: false
-      description: Opaque cursor from the previous page's nextCursor.
-      schema:
-        type: string
-        maxLength: 512
-    Limit:
-      name: limit
-      in: query
-      required: false
-      description: Maximum items returned.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-    LinkStatus:
-      name: status
-      in: query
-      schema:
-        $ref: '#/components/schemas/LinkStatus'
-    StudentId:
-      name: studentId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-    InvitationId:
-      name: invitationId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-    LessonId:
-      name: lessonId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-    TaskId:
-      name: taskId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-    BoardId:
-      name: boardId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
+    Cursor: { name: cursor, in: query, schema: { type: string, maxLength: 512 }, description: Opaque cursor returned as nextCursor. }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+    OAuthProvider: { name: provider, in: path, required: true, schema: { type: string, enum: [google, yandex, vk] }, description: Yandex and VK require runtime provider configuration. }
+    StudentId: { name: studentId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    LessonId: { name: lessonId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    TaskId: { name: taskId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    NoteId: { name: noteId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    GroupId: { name: groupId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    MessageId: { name: messageId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    VideoId: { name: videoId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    FileId: { name: fileId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    LessonStatus: { name: status, in: query, schema: { $ref: '#/components/schemas/LessonStatus' } }
+    TaskStatus: { name: status, in: query, schema: { $ref: '#/components/schemas/TaskStatus' } }
+    TaskKind: { name: kind, in: query, schema: { $ref: '#/components/schemas/TaskKind' } }
+    From: { name: from, in: query, schema: { type: string, format: date-time } }
+    To: { name: to, in: query, schema: { type: string, format: date-time } }
+    CounterpartId: { name: counterpartId, in: query, schema: { $ref: '#/components/schemas/Uuid' } }
+    GroupQueryId: { name: groupId, in: query, schema: { $ref: '#/components/schemas/Uuid' } }
+    Folder: { name: folder, in: query, schema: { type: string, maxLength: 160 } }
   responses:
-    ValidationProblem:
-      description: Invalid request body, query, path, or header value.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ValidationProblem'
-    UnauthorizedProblem:
-      description: Missing, invalid, expired, or revoked credentials.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    ForbiddenProblem:
-      description: Authenticated user lacks the required role or resource access.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    NotFoundProblem:
-      description: Resource does not exist or is not visible to the caller.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    ConflictProblem:
-      description: Requested state transition or relationship conflicts with current state.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    RateLimitProblem:
-      description: Request rate limit exceeded.
-      headers:
-        Retry-After:
-          schema:
-            type: integer
-          description: Seconds until requests may be retried.
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
+    Accepted: { description: Accepted without disclosing email-account existence. }
+    CurrentUser: { description: Current account., content: { application/json: { schema: { $ref: '#/components/schemas/CurrentUser' } } } }
+    Subscription: { description: Current subscription., content: { application/json: { schema: { $ref: '#/components/schemas/Subscription' } } } }
+    TutorStudent: { description: Tutor-student link., content: { application/json: { schema: { $ref: '#/components/schemas/TutorStudent' } } } }
+    TutorStudentPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/TutorStudentPage' } } } }
+    Lesson: { description: Lesson., content: { application/json: { schema: { $ref: '#/components/schemas/Lesson' } } } }
+    LessonPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/LessonPage' } } } }
+    Task: { description: Task., content: { application/json: { schema: { $ref: '#/components/schemas/Task' } } } }
+    TaskPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/TaskPage' } } } }
+    Planner: { description: Planner., content: { application/json: { schema: { $ref: '#/components/schemas/Planner' } } } }
+    Note: { description: Private note., content: { application/json: { schema: { $ref: '#/components/schemas/Note' } } } }
+    NotePage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/NotePage' } } } }
+    Group: { description: Student group., content: { application/json: { schema: { $ref: '#/components/schemas/Group' } } } }
+    GroupPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/GroupPage' } } } }
+    Message: { description: Message., content: { application/json: { schema: { $ref: '#/components/schemas/Message' } } } }
+    MessagePage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/MessagePage' } } } }
+    Video: { description: Video lesson., content: { application/json: { schema: { $ref: '#/components/schemas/Video' } } } }
+    VideoPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/VideoPage' } } } }
+    File: { description: File metadata., content: { application/json: { schema: { $ref: '#/components/schemas/File' } } } }
+    FilePage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/FilePage' } } } }
+    RoomToken: { description: LiveKit credential., content: { application/json: { schema: { $ref: '#/components/schemas/RoomToken' } } } }
+    ValidationProblem: { description: Invalid input., content: { application/problem+json: { schema: { $ref: '#/components/schemas/ValidationProblem' } } } }
+    UnauthorizedProblem: { description: Invalid access token., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    ForbiddenProblem: { description: Insufficient role or resource access., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    NotFoundProblem: { description: Resource absent or invisible., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    ConflictProblem: { description: 'State, relation or unique-value conflict.', content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    RateLimitProblem: { description: Rate limit exceeded., headers: { Retry-After: { schema: { type: integer }, description: Seconds until retry. } }, content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    TooLargeProblem: { description: Request or upload too large., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    UnsupportedMediaTypeProblem: { description: Unsupported file content type., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    ServiceUnavailableProblem: { description: Required service unavailable or unconfigured., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    ProviderNotConfiguredProblem: { description: Provider is contractual but unconfigured in this environment., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
   schemas:
+    Uuid: { type: string, format: uuid }
     Problem:
       type: object
-      description: RFC 9457 Problem Details response.
       required: [type, title, status]
-      properties:
-        type:
-          type: string
-          format: uri-reference
-        title:
-          type: string
-        status:
-          type: integer
-          minimum: 400
-          maximum: 599
-        detail:
-          type: string
-        instance:
-          type: string
-          format: uri-reference
-        code:
-          type: string
-          description: Stable machine-readable Tandem error code.
-        traceId:
-          type: string
-          description: Correlation identifier for support and logs.
+      properties: { type: { type: string, format: uri-reference }, title: { type: string }, status: { type: integer, minimum: 400, maximum: 599 }, detail: { type: string }, instance: { type: string, format: uri-reference }, code: { type: string }, traceId: { type: string } }
       additionalProperties: true
     ValidationProblem:
       allOf:
-        - $ref: '#/components/schemas/Problem'
+        - { $ref: '#/components/schemas/Problem' }
         - type: object
-          properties:
-            errors:
-              type: array
-              items:
-                type: object
-                required: [field, code, message]
-                properties:
-                  field:
-                    type: string
-                  code:
-                    type: string
-                  message:
-                    type: string
-    UserRole:
-      type: string
-      enum: [tutor, student]
-    User:
-      type: object
-      required: [id, email, displayName, role, createdAt]
-      properties:
-        id:
-          type: string
-          format: uuid
-        email:
-          type: string
-          format: email
-        displayName:
-          type: string
-          minLength: 1
-          maxLength: 120
-        role:
-          $ref: '#/components/schemas/UserRole'
-        gradeLabel:
-          type: string
-          maxLength: 80
-          description: Present for student accounts only.
-        createdAt:
-          type: string
-          format: date-time
-    CurrentUser:
-      allOf:
-        - $ref: '#/components/schemas/User'
-        - type: object
-          properties:
-            subscription:
-              $ref: '#/components/schemas/Subscription'
-    RegisterRequest:
-      type: object
-      required: [email, password, displayName, role]
-      properties:
-        email:
-          type: string
-          format: email
-          maxLength: 254
-        password:
-          type: string
-          format: password
-          minLength: 12
-          maxLength: 128
-          writeOnly: true
-        displayName:
-          type: string
-          minLength: 1
-          maxLength: 120
-        role:
-          $ref: '#/components/schemas/UserRole'
-        gradeLabel:
-          type: string
-          maxLength: 80
-          description: Required for a student, omitted for a tutor.
-    LoginRequest:
-      type: object
-      required: [email, password]
-      properties:
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          format: password
-          writeOnly: true
-    GoogleAuthRequest:
-      type: object
-      required: [credential]
-      properties:
-        credential:
-          type: string
-          minLength: 1
-          description: Google ID token obtained by the configured frontend OAuth client.
-        role:
-          $ref: '#/components/schemas/UserRole'
-          description: Required only if this Google identity creates a new Tandem account.
-        gradeLabel:
-          type: string
-          maxLength: 80
-          description: Required for a newly created student account.
-    AuthResponse:
-      type: object
-      required: [accessToken, tokenType, expiresIn, user]
-      properties:
-        accessToken:
-          type: string
-          description: Short-lived signed access token; never contains credentials or refresh token.
-        tokenType:
-          type: string
-          const: Bearer
-        expiresIn:
-          type: integer
-          minimum: 1
-          description: Access token lifetime in seconds.
-        user:
-          $ref: '#/components/schemas/User'
-    TokenResponse:
-      type: object
-      required: [accessToken, tokenType, expiresIn]
-      properties:
-        accessToken:
-          type: string
-        tokenType:
-          type: string
-          const: Bearer
-        expiresIn:
-          type: integer
-          minimum: 1
-    UpdateProfileRequest:
-      type: object
-      minProperties: 1
-      properties:
-        displayName:
-          type: string
-          minLength: 1
-          maxLength: 120
-        gradeLabel:
-          type: [string, 'null']
-          maxLength: 80
-    Plan:
-      type: object
-      required: [code, name, features]
-      properties:
-        code:
-          type: string
-          enum: [light, extreme]
-        name:
-          type: string
-        features:
-          type: array
-          items:
-            type: string
-            enum: [video_rooms, whiteboards, student_management, lesson_scheduling, homework, personal_planner]
-        price:
-          type: 'null'
-          description: No price is published until pricing is selected.
-    Subscription:
-      type: object
-      required: [planCode, status]
-      properties:
-        planCode:
-          type: string
-          enum: [light, extreme]
-        status:
-          type: string
-          enum: [active, trialing, past_due, canceled]
-        periodEndsAt:
-          type: [string, 'null']
-          format: date-time
-    LinkStatus:
-      type: string
-      enum: [active, archived]
-    TutorStudent:
-      type: object
-      required: [student, subject, privateNote, progressPercent, status, createdAt, updatedAt]
-      properties:
-        student:
-          $ref: '#/components/schemas/User'
-        subject:
-          type: string
-          minLength: 1
-          maxLength: 120
-        gradeLabel:
-          type: [string, 'null']
-          maxLength: 80
-        privateNote:
-          type: string
-          description: Visible only to this tutor.
-        progressPercent:
-          type: integer
-          minimum: 0
-          maximum: 100
-        status:
-          $ref: '#/components/schemas/LinkStatus'
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    TutorStudentPage:
-      allOf:
-        - $ref: '#/components/schemas/Page'
-        - type: object
-          required: [items]
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/TutorStudent'
-    UpdateTutorStudentRequest:
-      type: object
-      minProperties: 1
-      properties:
-        subject:
-          type: string
-          minLength: 1
-          maxLength: 120
-        gradeLabel:
-          type: [string, 'null']
-          maxLength: 80
-        privateNote:
-          type: string
-          maxLength: 10000
-        progressPercent:
-          type: integer
-          minimum: 0
-          maximum: 100
-        status:
-          $ref: '#/components/schemas/LinkStatus'
-    InvitationStatus:
-      type: string
-      enum: [pending, accepted, declined, canceled, expired]
-    CreateInvitationRequest:
-      type: object
-      required: [email, subject]
-      properties:
-        email:
-          type: string
-          format: email
-          maxLength: 254
-        subject:
-          type: string
-          minLength: 1
-          maxLength: 120
-        gradeLabel:
-          type: [string, 'null']
-          maxLength: 80
-        privateNote:
-          type: string
-          maxLength: 10000
-    Invitation:
-      type: object
-      required: [id, email, subject, status, expiresAt, createdAt]
-      properties:
-        id:
-          type: string
-          format: uuid
-        email:
-          type: string
-          format: email
-        tutor:
-          $ref: '#/components/schemas/User'
-        subject:
-          type: string
-        gradeLabel:
-          type: [string, 'null']
-        status:
-          $ref: '#/components/schemas/InvitationStatus'
-        expiresAt:
-          type: string
-          format: date-time
-        createdAt:
-          type: string
-          format: date-time
-    InvitationPage:
-      allOf:
-        - $ref: '#/components/schemas/Page'
-        - type: object
-          required: [items]
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/Invitation'
-    LessonStatus:
-      type: string
-      enum: [scheduled, in_progress, completed, canceled, no_show]
-    Lesson:
-      type: object
-      required: [id, tutorId, studentId, title, startsAt, durationMinutes, status, createdAt, updatedAt]
-      properties:
-        id:
-          type: string
-          format: uuid
-        tutorId:
-          type: string
-          format: uuid
-        studentId:
-          type: string
-          format: uuid
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-        startsAt:
-          type: string
-          format: date-time
-          description: RFC 3339 timestamp including Z or an explicit UTC offset.
-        durationMinutes:
-          type: integer
-          minimum: 15
-          maximum: 240
-        status:
-          $ref: '#/components/schemas/LessonStatus'
-        boardIds:
-          type: array
-          items:
-            type: string
-            format: uuid
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    CreateLessonRequest:
-      type: object
-      required: [studentId, title, startsAt, durationMinutes]
-      properties:
-        studentId:
-          type: string
-          format: uuid
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-        startsAt:
-          type: string
-          format: date-time
-        durationMinutes:
-          type: integer
-          minimum: 15
-          maximum: 240
-    UpdateLessonRequest:
-      type: object
-      minProperties: 1
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-        startsAt:
-          type: string
-          format: date-time
-        durationMinutes:
-          type: integer
-          minimum: 15
-          maximum: 240
-    UpdateLessonStatusRequest:
-      type: object
-      required: [status]
-      properties:
-        status:
-          type: string
-          enum: [in_progress, completed, canceled, no_show]
-        reason:
-          type: string
-          maxLength: 500
-          description: Optional client reason; V1 cannot persist it.
-    LessonPage:
-      allOf:
-        - $ref: '#/components/schemas/Page'
-        - type: object
-          required: [items]
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/Lesson'
-    TaskKind:
-      type: string
-      enum: [homework, personal]
-    TaskStatus:
-      type: string
-      enum: [todo, submitted, complete]
-    Task:
-      type: object
-      required: [id, tutorId, kind, title, description, status, createdAt, updatedAt]
-      properties:
-        id:
-          type: string
-          format: uuid
-        tutorId:
-          type: string
-          format: uuid
-        studentId:
-          type: [string, 'null']
-          format: uuid
-        kind:
-          $ref: '#/components/schemas/TaskKind'
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-        description:
-          type: string
-        subject:
-          type: [string, 'null']
-          maxLength: 120
-        dueAt:
-          type: [string, 'null']
-          format: date-time
-        status:
-          $ref: '#/components/schemas/TaskStatus'
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    CreateTaskRequest:
-      type: object
-      required: [kind, title]
-      properties:
-        kind:
-          $ref: '#/components/schemas/TaskKind'
-        studentId:
-          type: string
-          format: uuid
-          description: Required for homework and forbidden for personal tasks.
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-        description:
-          type: string
-          maxLength: 50000
-          default: ''
-        subject:
-          type: [string, 'null']
-          maxLength: 120
-        dueAt:
-          type: [string, 'null']
-          format: date-time
-    UpdateTaskRequest:
-      type: object
-      minProperties: 1
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 200
-        description:
-          type: string
-          maxLength: 50000
-        subject:
-          type: [string, 'null']
-          maxLength: 120
-        dueAt:
-          type: [string, 'null']
-          format: date-time
-    UpdateTaskStatusRequest:
-      type: object
-      required: [status]
-      properties:
-        status:
-          $ref: '#/components/schemas/TaskStatus'
-    CopyTaskRequest:
-      type: object
-      required: [studentId]
-      properties:
-        studentId:
-          type: string
-          format: uuid
-        dueAt:
-          type: [string, 'null']
-          format: date-time
-    TaskPage:
-      allOf:
-        - $ref: '#/components/schemas/Page'
-        - type: object
-          required: [items]
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/Task'
-    Board:
-      type: object
-      required: [id, name, elements, createdAt, updatedAt]
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          minLength: 1
-          maxLength: 160
-        elements:
-          type: array
-          items:
-            $ref: '#/components/schemas/BoardElement'
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    BoardSummary:
-      type: object
-      required: [id, name, updatedAt]
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        updatedAt:
-          type: string
-          format: date-time
-    BoardElement:
-      type: object
-      description: Versioned whiteboard element document; coordinates are normalized to the 0..1 canvas range where applicable.
-      required: [id, type]
-      properties:
-        id:
-          type: string
-          maxLength: 100
-        type:
-          type: string
-          enum: [path, line, arrow, rect, ellipse, text, sticky]
-        color:
-          type: string
-          pattern: '^#[0-9A-Fa-f]{6}$'
-        width:
-          type: number
-          minimum: 0.1
-          maximum: 64
-        points:
-          type: array
-          items:
-            $ref: '#/components/schemas/Point'
-        x1:
-          type: number
-          minimum: 0
-          maximum: 1
-        y1:
-          type: number
-          minimum: 0
-          maximum: 1
-        x2:
-          type: number
-          minimum: 0
-          maximum: 1
-        y2:
-          type: number
-          minimum: 0
-          maximum: 1
-        x:
-          type: number
-          minimum: 0
-          maximum: 1
-        y:
-          type: number
-          minimum: 0
-          maximum: 1
-        w:
-          type: number
-          minimum: 0
-          maximum: 1
-        h:
-          type: number
-          minimum: 0
-          maximum: 1
-        text:
-          type: string
-          maxLength: 10000
-        fill:
-          type: string
-          pattern: '^#[0-9A-Fa-f]{6}$'
-        fontSize:
-          type: number
-          minimum: 8
-          maximum: 256
-      additionalProperties: false
-    Point:
-      type: object
-      required: [x, y]
-      properties:
-        x:
-          type: number
-          minimum: 0
-          maximum: 1
-        y:
-          type: number
-          minimum: 0
-          maximum: 1
-      additionalProperties: false
-    CreateBoardRequest:
-      type: object
-      required: [name]
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 160
-    UpdateBoardRequest:
-      type: object
-      required: [name]
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 160
-    BoardPage:
-      allOf:
-        - $ref: '#/components/schemas/Page'
-        - type: object
-          required: [items]
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/BoardSummary'
-    LessonBoard:
-      type: object
-      required: [lessonId, boardId, attachedAt]
-      properties:
-        lessonId:
-          type: string
-          format: uuid
-        boardId:
-          type: string
-          format: uuid
-        attachedAt:
-          type: string
-          format: date-time
-    Planner:
-      type: object
-      required: [title, blocks, updatedAt]
-      properties:
-        title:
-          type: string
-          maxLength: 160
-        blocks:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlannerBlock'
-        updatedAt:
-          type: string
-          format: date-time
-    PlannerBlock:
-      type: object
-      required: [id, type, text]
-      properties:
-        id:
-          type: string
-          maxLength: 100
-        type:
-          type: string
-          enum: [heading, paragraph, todo, callout]
-        text:
-          type: string
-          maxLength: 10000
-        checked:
-          type: boolean
-      additionalProperties: false
-    UpdatePlannerRequest:
-      type: object
-      required: [title, blocks]
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 160
-        blocks:
-          type: array
-          maxItems: 1000
-          items:
-            $ref: '#/components/schemas/PlannerBlock'
-    RoomToken:
-      type: object
-      required: [serverUrl, token, expiresAt, roomName]
-      properties:
-        serverUrl:
-          type: string
-          format: uri
-          description: LiveKit WebSocket server URL.
-        token:
-          type: string
-          description: Short-lived, room-scoped LiveKit JWT.
-        expiresAt:
-          type: string
-          format: date-time
-        roomName:
-          type: string
-          description: Server-derived room identifier; no client-selected room is accepted.
-    Page:
-      type: object
-      properties:
-        nextCursor:
-          type: [string, 'null']
-        hasMore:
-          type: boolean
+          properties: { errors: { type: array, items: { type: object, required: [field, code, message], properties: { field: { type: string }, code: { type: string }, message: { type: string } } } } }
+    UserRole: { type: string, enum: [tutor, student] }
+    PlanCode: { type: string, enum: [free, light, extreme] }
+    User: { type: object, required: [id, email, displayName, role, emailVerified, createdAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, email: { type: string, format: email }, displayName: { type: string, minLength: 1, maxLength: 120 }, role: { $ref: '#/components/schemas/UserRole' }, gradeLabel: { type: [string, 'null'], maxLength: 80 }, emailVerified: { type: boolean }, createdAt: { type: string, format: date-time } } }
+    CurrentUser: { allOf: [{ $ref: '#/components/schemas/User' }, { type: object, properties: { subscription: { $ref: '#/components/schemas/Subscription' } } }] }
+    RegisterRequest: { type: object, required: [email, password, displayName, role], properties: { email: { type: string, format: email, maxLength: 254 }, password: { type: string, format: password, minLength: 8, maxLength: 128, writeOnly: true }, displayName: { type: string, minLength: 1, maxLength: 120 }, role: { $ref: '#/components/schemas/UserRole' }, gradeLabel: { type: string, maxLength: 80, description: Required for a student. } } }
+    LoginRequest: { type: object, required: [email, password], properties: { email: { type: string, format: email }, password: { type: string, format: password, writeOnly: true } } }
+    EmailRequest: { type: object, required: [email], properties: { email: { type: string, format: email, maxLength: 254 } } }
+    TokenRequest: { type: object, required: [token], properties: { token: { type: string, minLength: 1, maxLength: 512 } } }
+    PasswordResetRequest: { type: object, required: [token, password], properties: { token: { type: string, minLength: 1, maxLength: 512 }, password: { type: string, format: password, minLength: 8, maxLength: 128, writeOnly: true } } }
+    AuthResponse: { type: object, required: [accessToken, tokenType, expiresIn, user], properties: { accessToken: { type: string }, tokenType: { type: string, const: Bearer }, expiresIn: { type: integer, minimum: 1 }, user: { $ref: '#/components/schemas/CurrentUser' } } }
+    TokenResponse: { type: object, required: [accessToken, tokenType, expiresIn], properties: { accessToken: { type: string }, tokenType: { type: string, const: Bearer }, expiresIn: { type: integer, minimum: 1 } } }
+    UpdateProfileRequest: { type: object, minProperties: 1, properties: { displayName: { type: string, minLength: 1, maxLength: 120 }, gradeLabel: { type: [string, 'null'], maxLength: 80 } } }
+    Plan: { type: object, required: [code, name, features], properties: { code: { $ref: '#/components/schemas/PlanCode' }, name: { type: string }, features: { type: array, items: { type: string } } } }
+    Subscription: { type: object, required: [planCode, status], properties: { planCode: { $ref: '#/components/schemas/PlanCode' }, status: { type: string, enum: [active, trialing, past_due, canceled] }, periodEndsAt: { type: [string, 'null'], format: date-time } } }
+    LinkStatus: { type: string, enum: [active, archived] }
+    TutorStudent: { type: object, required: [student, subject, privateNote, progressPercent, status, createdAt, updatedAt], properties: { student: { $ref: '#/components/schemas/User' }, subject: { type: string, maxLength: 120 }, gradeLabel: { type: [string, 'null'], maxLength: 80 }, privateNote: { type: string, maxLength: 10000 }, progressPercent: { type: integer, minimum: 0, maximum: 100 }, status: { $ref: '#/components/schemas/LinkStatus' }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    CreateTutorStudentRequest: { type: object, required: [email, subject], properties: { email: { type: string, format: email, maxLength: 254 }, subject: { type: string, minLength: 1, maxLength: 120 }, gradeLabel: { type: [string, 'null'], maxLength: 80 }, privateNote: { type: string, maxLength: 10000 } } }
+    UpdateTutorStudentRequest: { type: object, minProperties: 1, properties: { subject: { type: string, minLength: 1, maxLength: 120 }, gradeLabel: { type: [string, 'null'], maxLength: 80 }, privateNote: { type: string, maxLength: 10000 }, progressPercent: { type: integer, minimum: 0, maximum: 100 }, status: { $ref: '#/components/schemas/LinkStatus' } } }
+    LessonStatus: { type: string, enum: [scheduled, in_progress, completed, canceled, no_show] }
+    Lesson: { type: object, required: [id, tutorId, studentId, title, startsAt, durationMinutes, status, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, tutorId: { $ref: '#/components/schemas/Uuid' }, studentId: { $ref: '#/components/schemas/Uuid' }, title: { type: string, maxLength: 200 }, startsAt: { type: string, format: date-time }, durationMinutes: { type: integer, minimum: 15, maximum: 240 }, status: { $ref: '#/components/schemas/LessonStatus' }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    CreateLessonRequest: { type: object, required: [studentId, title, startsAt, durationMinutes], properties: { studentId: { $ref: '#/components/schemas/Uuid' }, title: { type: string, minLength: 1, maxLength: 200 }, startsAt: { type: string, format: date-time }, durationMinutes: { type: integer, minimum: 15, maximum: 240 } } }
+    UpdateLessonRequest: { type: object, minProperties: 1, properties: { title: { type: string, minLength: 1, maxLength: 200 }, startsAt: { type: string, format: date-time }, durationMinutes: { type: integer, minimum: 15, maximum: 240 } } }
+    UpdateLessonStatusRequest: { type: object, required: [status], properties: { status: { type: string, enum: [in_progress, completed, canceled, no_show] } } }
+    TaskKind: { type: string, enum: [homework, personal] }
+    TaskStatus: { type: string, enum: [todo, submitted, complete] }
+    Task: { type: object, required: [id, tutorId, kind, title, description, status, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, tutorId: { $ref: '#/components/schemas/Uuid' }, studentId: { type: [string, 'null'], format: uuid }, kind: { $ref: '#/components/schemas/TaskKind' }, title: { type: string, maxLength: 200 }, description: { type: string, maxLength: 50000 }, subject: { type: [string, 'null'], maxLength: 120 }, dueAt: { type: [string, 'null'], format: date-time }, status: { $ref: '#/components/schemas/TaskStatus' }, reviewStatus: { type: [string, 'null'], enum: [unchecked, correct, revision_required, null] }, reviewComment: { type: [string, 'null'], maxLength: 10000 }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    CreateTaskRequest: { type: object, required: [kind, title], properties: { kind: { $ref: '#/components/schemas/TaskKind' }, studentId: { $ref: '#/components/schemas/Uuid' }, title: { type: string, minLength: 1, maxLength: 200 }, description: { type: string, maxLength: 50000, default: '' }, subject: { type: [string, 'null'], maxLength: 120 }, dueAt: { type: [string, 'null'], format: date-time } } }
+    UpdateTaskRequest: { type: object, minProperties: 1, properties: { title: { type: string, minLength: 1, maxLength: 200 }, description: { type: string, maxLength: 50000 }, subject: { type: [string, 'null'], maxLength: 120 }, dueAt: { type: [string, 'null'], format: date-time }, reviewStatus: { type: [string, 'null'], enum: [unchecked, correct, revision_required, null] }, reviewComment: { type: [string, 'null'], maxLength: 10000 } } }
+    UpdateTaskStatusRequest: { type: object, required: [status], properties: { status: { $ref: '#/components/schemas/TaskStatus' } } }
+    CopyTaskRequest: { type: object, required: [studentId], properties: { studentId: { $ref: '#/components/schemas/Uuid' }, dueAt: { type: [string, 'null'], format: date-time } } }
+    PlannerBlock: { type: object, required: [id, type, text], properties: { id: { type: string, maxLength: 100 }, type: { type: string, enum: [heading, paragraph, todo, callout] }, text: { type: string, maxLength: 10000 }, checked: { type: boolean } }, additionalProperties: false }
+    Planner: { type: object, required: [title, blocks, updatedAt], properties: { title: { type: string, maxLength: 160 }, blocks: { type: array, maxItems: 1000, items: { $ref: '#/components/schemas/PlannerBlock' } }, updatedAt: { type: string, format: date-time } } }
+    UpdatePlannerRequest: { type: object, required: [title, blocks], properties: { title: { type: string, minLength: 1, maxLength: 160 }, blocks: { type: array, maxItems: 1000, items: { $ref: '#/components/schemas/PlannerBlock' } } } }
+    Note: { type: object, required: [id, title, body, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, title: { type: string, maxLength: 120 }, body: { type: string, maxLength: 50000 }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    NoteWriteRequest: { type: object, required: [title, body], properties: { title: { type: string, minLength: 1, maxLength: 120 }, body: { type: string, maxLength: 50000 } } }
+    Group: { type: object, required: [id, name, memberIds, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, name: { type: string, maxLength: 120 }, memberIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    GroupWriteRequest: { type: object, required: [name], properties: { name: { type: string, minLength: 1, maxLength: 120 }, studentIds: { type: array, uniqueItems: true, maxItems: 100, items: { $ref: '#/components/schemas/Uuid' } } } }
+    StudentIdsRequest: { type: object, required: [studentIds], properties: { studentIds: { type: array, uniqueItems: true, maxItems: 100, items: { $ref: '#/components/schemas/Uuid' } } } }
+    Message: { type: object, required: [id, senderId, body, attachmentIds, createdAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, senderId: { $ref: '#/components/schemas/Uuid' }, recipientId: { type: [string, 'null'], format: uuid }, groupId: { type: [string, 'null'], format: uuid }, body: { type: string, maxLength: 10000 }, attachmentIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, createdAt: { type: string, format: date-time } } }
+    CreateMessageRequest: { type: object, required: [body], properties: { recipientId: { $ref: '#/components/schemas/Uuid' }, groupId: { $ref: '#/components/schemas/Uuid' }, body: { type: string, minLength: 1, maxLength: 10000 }, attachmentIds: { type: array, uniqueItems: true, maxItems: 20, items: { $ref: '#/components/schemas/Uuid' } } }, oneOf: [{ required: [recipientId] }, { required: [groupId] }] }
+    Video: { type: object, required: [id, ownerId, title, provider, sourceUrl, embedUrl, assignedStudentIds, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, ownerId: { $ref: '#/components/schemas/Uuid' }, title: { type: string, maxLength: 200 }, provider: { type: string, enum: [youtube, rutube] }, sourceUrl: { type: string, format: uri }, embedUrl: { type: string, format: uri }, assignedStudentIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    VideoWriteRequest: { type: object, required: [title, sourceUrl], properties: { title: { type: string, minLength: 1, maxLength: 200 }, sourceUrl: { type: string, format: uri } } }
+    File: { type: object, required: [id, ownerId, name, contentType, sizeBytes, folder, createdAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, ownerId: { $ref: '#/components/schemas/Uuid' }, name: { type: string, maxLength: 255 }, contentType: { type: string, maxLength: 255 }, sizeBytes: { type: integer, minimum: 0, maximum: 10485760 }, folder: { type: string, maxLength: 160 }, grantedStudentIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, createdAt: { type: string, format: date-time } } }
+    RoomToken: { type: object, required: [serverUrl, token, expiresAt, roomName], properties: { serverUrl: { type: string, format: uri }, token: { type: string }, expiresAt: { type: string, format: date-time }, roomName: { type: string } } }
+    Page: { type: object, required: [hasMore], properties: { nextCursor: { type: [string, 'null'] }, hasMore: { type: boolean } } }
+    TutorStudentPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/TutorStudent' } } } }] }
+    LessonPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Lesson' } } } }] }
+    TaskPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Task' } } } }] }
+    NotePage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Note' } } } }] }
+    GroupPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Group' } } } }] }
+    MessagePage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Message' } } } }] }
+    VideoPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Video' } } } }] }
+    FilePage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/File' } } } }] }
