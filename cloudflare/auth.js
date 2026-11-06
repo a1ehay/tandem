@@ -6,7 +6,9 @@ const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30;
 const OAUTH_TTL_SECONDS = 60 * 10;
 const EMAIL_VERIFICATION_TTL_SECONDS = 60 * 60 * 24;
 const PASSWORD_RESET_TTL_SECONDS = 60 * 30;
-const PASSWORD_ITERATIONS = 310000;
+// Production Workers cap each PBKDF2 derivation at 100,000 iterations.
+// Local workerd does not enforce that limit.
+const PASSWORD_ITERATIONS = 100000;
 const textEncoder = new TextEncoder();
 
 function jsonResponse(body, status = 200, headers = {}) {
@@ -19,6 +21,41 @@ function jsonResponse(body, status = 200, headers = {}) {
       ...headers,
     },
   });
+}
+
+function videoFromUrl(value) {
+  try {
+    const url = new URL(String(value || '').trim());
+    if (url.protocol !== 'https:') return null;
+    const host = url.hostname.toLowerCase();
+    let id; let provider; let embedUrl;
+    if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be'].includes(host)) {
+      id = host === 'youtu.be' ? url.pathname.slice(1) : (url.pathname.startsWith('/shorts/') || url.pathname.startsWith('/embed/')) ? url.pathname.split('/')[2] : url.searchParams.get('v');
+      if (!/^[A-Za-z0-9_-]{11}$/.test(id || '')) return null;
+      provider = 'YouTube';
+      embedUrl = `https://www.youtube.com/embed/${id}`;
+    } else if (['rutube.ru', 'www.rutube.ru'].includes(host)) {
+      id = url.pathname.match(/^\/(?:video|play\/embed)\/([a-fA-F0-9]{32})\/?$/)?.[1];
+      if (!id) return null;
+      provider = 'Rutube';
+      embedUrl = `https://rutube.ru/play/embed/${id}`;
+    } else return null;
+    return { provider, sourceUrl: url.href, embedUrl };
+  } catch { return null; }
+}
+
+function videoModel(row, assignedStudentIds = []) {
+  return {
+    id: row.id,
+    ownerId: row.owner_id,
+    title: row.title,
+    provider: row.provider,
+    url: row.source_url,
+    embed: row.embed_url,
+    assignedStudentIds,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
 function cookieValue(request, name) {
@@ -90,7 +127,7 @@ async function passwordHash(password) {
 async function verifyPassword(password, storedHash) {
   const [algorithm, iterationText, saltText, expectedText] = String(storedHash || '').split('$');
   const iterations = Number(iterationText);
-  if (algorithm !== 'pbkdf2-sha256' || !Number.isInteger(iterations) || iterations < 100000 || iterations > 600000 || !saltText || !expectedText) return false;
+  if (algorithm !== 'pbkdf2-sha256' || iterations !== PASSWORD_ITERATIONS || !saltText || !expectedText) return false;
   let salt; let expected;
   try { salt = decodeBase64Url(saltText); expected = decodeBase64Url(expectedText); } catch { return false; }
   if (salt.length !== 16 || expected.length !== 32) return false;
@@ -166,9 +203,13 @@ async function createPasswordAccount(request, env, origin) {
   const name = typeof input.value?.name === 'string' ? input.value.name.trim() : '';
   const email = typeof input.value?.email === 'string' ? input.value.email.trim().toLowerCase() : '';
   const role = input.value?.role === 'student' ? 'student' : input.value?.role === 'tutor' ? 'tutor' : null;
+  const grade = typeof input.value?.grade === 'string' ? input.value.grade.trim().slice(0, 40) : '';
   const password = typeof input.value?.password === 'string' ? input.value.password : '';
-  if (name.length < 2 || name.length > 80 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || !role || password.length < 12 || password.length > 128) {
-    return jsonResponse({ error: 'invalid_registration', message: 'Проверьте имя, email, роль и пароль (не менее 12 символов).' }, 400);
+  if (name.length < 2 || name.length > 80 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || !role || password.length < 8 || password.length > 128) {
+    return jsonResponse({ error: 'invalid_registration', message: 'Проверьте имя, email, роль и пароль (не менее 8 символов).' }, 400);
+  }
+  if (!env.RESEND_API_KEY || !env.AUTH_FROM_EMAIL) {
+    return jsonResponse({ error: 'email_not_configured', message: 'Регистрация временно недоступна: отправка писем подтверждения ещё не настроена.' }, 503);
   }
   const existing = await env.DB.prepare(`SELECT ${accountFields()}, password_hash FROM accounts WHERE email = ?1 COLLATE NOCASE`).bind(email).first();
   if (existing) {
@@ -190,6 +231,10 @@ async function createPasswordAccount(request, env, origin) {
       INSERT INTO accounts (id, role, name, email, email_verified, avatar_url, plan, password_hash, created_at, updated_at)
       VALUES (?1, ?2, ?3, ?4, 0, NULL, 'light', ?5, ?6, ?6)
     `).bind(id, role, name, email, hash, now).run();
+    if (role === 'student' && grade) {
+      await env.DB.prepare('INSERT INTO account_profiles (account_id, profile_json, updated_at) VALUES (?1, ?2, ?3)')
+        .bind(id, JSON.stringify({ grade }), now).run();
+    }
   } catch {
     const duplicate = await env.DB.prepare(`SELECT ${accountFields()}, password_hash FROM accounts WHERE email = ?1 COLLATE NOCASE`).bind(email).first();
     if (duplicate) {
@@ -257,7 +302,7 @@ async function resendVerification(request, env, origin) {
   if (input.error) return input.error;
   const email = typeof input.value?.email === 'string' ? input.value.email.trim().toLowerCase() : '';
   if (!email || email.length > 254) return jsonResponse({ error: 'invalid_email' }, 400);
-  const account = await env.DB.prepare(`SELECT id, name, email, email_verified FROM accounts WHERE email = ?1 COLLATE NOCASE`).bind(email).first();
+  const account = await env.DB.prepare(`SELECT id, name, email, email_verified, password_hash FROM accounts WHERE email = ?1 COLLATE NOCASE`).bind(email).first();
   if (account && !account.email_verified && account.password_hash) {
     try { await issueEmailVerification(env.DB, env, origin, account); }
     catch (error) {
@@ -299,8 +344,8 @@ async function confirmPasswordReset(request, env) {
   if (input.error) return input.error;
   const token = typeof input.value?.token === 'string' ? input.value.token : '';
   const password = typeof input.value?.password === 'string' ? input.value.password : '';
-  if (!/^[A-Za-z0-9_-]{32,64}$/.test(token) || password.length < 12 || password.length > 128) {
-    return jsonResponse({ error: 'invalid_password_reset', message: 'Ссылка недействительна или пароль короче 12 символов.' }, 400);
+  if (!/^[A-Za-z0-9_-]{32,64}$/.test(token) || password.length < 8 || password.length > 128) {
+    return jsonResponse({ error: 'invalid_password_reset', message: 'Ссылка недействительна или пароль слишком короткий. Не менее 8 символов.' }, 400);
   }
   const now = Math.floor(Date.now() / 1000);
   const reset = await env.DB.prepare(`
@@ -635,8 +680,253 @@ async function handleAuthApi(request, env, path, origin) {
   if (path === '/api/auth/password-reset/confirm' && request.method === 'POST') return confirmPasswordReset(request, env);
   const account = await accountForRequest(request, env.DB);
 
+  if (path === '/api/plan' && request.method === 'PUT') {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (account.role !== 'tutor') return jsonResponse({ error: 'tutor_account_required' }, 403);
+    const parsed = await readJsonBody(request, 4096); if (parsed.error) return parsed.error;
+    const plan = ['free', 'light', 'extreme'].includes(parsed.value?.plan) ? parsed.value.plan : null;
+    if (!plan) return jsonResponse({ error: 'invalid_plan' }, 400);
+    await env.DB.prepare('UPDATE accounts SET plan = ?1, updated_at = ?2 WHERE id = ?3').bind(plan, Math.floor(Date.now() / 1000), account.id).run();
+    return jsonResponse({ plan });
+  }
+
+  if (path === '/api/screen-share' && (request.method === 'POST' || request.method === 'DELETE')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    const parsed = await readJsonBody(request, 4096); if (parsed.error) return parsed.error;
+    const roomId = typeof parsed.value?.roomId === 'string' && /^[A-Za-z0-9_-]{1,96}$/.test(parsed.value.roomId) ? parsed.value.roomId : null;
+    if (!roomId) return jsonResponse({ error: 'invalid_room' }, 400);
+    if (request.method === 'DELETE') { await env.DB.prepare('DELETE FROM room_screen_shares WHERE room_id = ?1 AND account_id = ?2').bind(roomId, account.id).run(); return jsonResponse({ ok: true }); }
+    if (account.plan !== 'free') return jsonResponse({ granted: true, managed: false });
+    const now = Math.floor(Date.now() / 1000); const expires = now + 45;
+    await env.DB.prepare(`INSERT INTO room_screen_shares (room_id, account_id, expires_at, updated_at) VALUES (?1, ?2, ?3, ?4)
+      ON CONFLICT(room_id) DO UPDATE SET account_id = excluded.account_id, expires_at = excluded.expires_at, updated_at = excluded.updated_at
+      WHERE room_screen_shares.expires_at < ?4 OR room_screen_shares.account_id = excluded.account_id`).bind(roomId, account.id, expires, now).run();
+    const lease = await env.DB.prepare('SELECT account_id, expires_at FROM room_screen_shares WHERE room_id = ?1').bind(roomId).first();
+    return lease?.account_id === account.id ? jsonResponse({ granted: true, managed: true, expiresAt: lease.expires_at }) : jsonResponse({ granted: false, error: 'screen_share_busy' }, 409);
+  }
+
+  if (path === '/api/groups' && (request.method === 'GET' || request.method === 'POST')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (request.method === 'GET') {
+      const query = account.role === 'tutor'
+        ? `SELECT student_groups.id, student_groups.name, student_groups.tutor_id, student_group_members.student_id
+           FROM student_groups LEFT JOIN student_group_members ON student_group_members.group_id = student_groups.id
+           WHERE student_groups.tutor_id = ?1 ORDER BY student_groups.updated_at DESC`
+        : `SELECT student_groups.id, student_groups.name, student_groups.tutor_id, student_group_members.student_id
+           FROM student_groups JOIN student_group_members AS own_membership ON own_membership.group_id = student_groups.id AND own_membership.student_id = ?1
+           LEFT JOIN student_group_members ON student_group_members.group_id = student_groups.id
+           ORDER BY student_groups.updated_at DESC`;
+      const { results } = await env.DB.prepare(query).bind(account.id).all();
+      const groups = new Map();
+      for (const row of results || []) {
+        if (!groups.has(row.id)) groups.set(row.id, { id: row.id, name: row.name, tutorId: row.tutor_id, studentIds: [] });
+        if (row.student_id) groups.get(row.id).studentIds.push(row.student_id);
+      }
+      return jsonResponse({ groups: [...groups.values()] });
+    }
+    if (account.role !== 'tutor') return jsonResponse({ error: 'tutor_account_required' }, 403);
+    const parsed = await readJsonBody(request, 16_384); if (parsed.error) return parsed.error;
+    const name = typeof parsed.value?.name === 'string' ? parsed.value.name.trim().slice(0, 80) : '';
+    const studentIds = [...new Set(Array.isArray(parsed.value?.studentIds) ? parsed.value.studentIds.filter((id) => typeof id === 'string') : [])].slice(0, 100);
+    if (!name || !studentIds.length) return jsonResponse({ error: 'invalid_group' }, 400);
+    const placeholders = studentIds.map((_, index) => `?${index + 2}`).join(',');
+    const linked = await env.DB.prepare(`SELECT student_id FROM tutor_students WHERE tutor_id = ?1 AND student_id IN (${placeholders})`).bind(account.id, ...studentIds).all();
+    if ((linked.results || []).length !== studentIds.length) return jsonResponse({ error: 'student_not_linked' }, 403);
+    const id = crypto.randomUUID(); const now = Math.floor(Date.now() / 1000);
+    await env.DB.batch([
+      env.DB.prepare('INSERT INTO student_groups (id, tutor_id, name, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?4)').bind(id, account.id, name, now),
+      ...studentIds.map((studentId) => env.DB.prepare('INSERT INTO student_group_members (group_id, student_id, created_at) VALUES (?1, ?2, ?3)').bind(id, studentId, now)),
+    ]);
+    return jsonResponse({ group: { id, name, tutorId: account.id, studentIds } }, 201);
+  }
+
+  const groupMatch = path.match(/^\/api\/groups\/([0-9a-f-]{36})$/i);
+  if (groupMatch && (request.method === 'PUT' || request.method === 'DELETE')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (account.role !== 'tutor') return jsonResponse({ error: 'tutor_account_required' }, 403);
+    const owned = await env.DB.prepare('SELECT id FROM student_groups WHERE id = ?1 AND tutor_id = ?2').bind(groupMatch[1], account.id).first();
+    if (!owned) return jsonResponse({ error: 'group_not_found' }, 404);
+    if (request.method === 'DELETE') {
+      await env.DB.prepare('DELETE FROM student_groups WHERE id = ?1 AND tutor_id = ?2').bind(groupMatch[1], account.id).run();
+      return jsonResponse({ ok: true });
+    }
+    const parsed = await readJsonBody(request, 16_384); if (parsed.error) return parsed.error;
+    const name = typeof parsed.value?.name === 'string' ? parsed.value.name.trim().slice(0, 80) : '';
+    const studentIds = [...new Set(Array.isArray(parsed.value?.studentIds) ? parsed.value.studentIds.filter((id) => typeof id === 'string') : [])].slice(0, 100);
+    if (!name || !studentIds.length) return jsonResponse({ error: 'invalid_group' }, 400);
+    const placeholders = studentIds.map((_, index) => `?${index + 2}`).join(',');
+    const linked = await env.DB.prepare(`SELECT student_id FROM tutor_students WHERE tutor_id = ?1 AND student_id IN (${placeholders})`).bind(account.id, ...studentIds).all();
+    if ((linked.results || []).length !== studentIds.length) return jsonResponse({ error: 'student_not_linked' }, 403);
+    const now = Math.floor(Date.now() / 1000);
+    await env.DB.batch([
+      env.DB.prepare('UPDATE student_groups SET name = ?1, updated_at = ?2 WHERE id = ?3 AND tutor_id = ?4').bind(name, now, groupMatch[1], account.id),
+      env.DB.prepare('DELETE FROM student_group_members WHERE group_id = ?1').bind(groupMatch[1]),
+      ...studentIds.map((studentId) => env.DB.prepare('INSERT INTO student_group_members (group_id, student_id, created_at) VALUES (?1, ?2, ?3)').bind(groupMatch[1], studentId, now)),
+    ]);
+    return jsonResponse({ group: { id: groupMatch[1], name, tutorId: account.id, studentIds } });
+  }
+
+  if (path === '/api/files' && (request.method === 'GET' || request.method === 'POST')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (!env.HOMEWORK_FILES) return jsonResponse({ error: 'file_storage_not_configured' }, 503);
+    if (request.method === 'GET') {
+      const query = account.role === 'tutor'
+        ? `SELECT teaching_files.* FROM teaching_files WHERE owner_id = ?1 ORDER BY created_at DESC`
+        : `SELECT teaching_files.* FROM teaching_files JOIN teaching_file_recipients ON teaching_file_recipients.file_id = teaching_files.id WHERE teaching_file_recipients.student_id = ?1 ORDER BY teaching_files.created_at DESC`;
+      const { results } = await env.DB.prepare(query).bind(account.id).all();
+      return jsonResponse({ files: (results || []).map((row) => ({ id: row.id, ownerId: row.owner_id, name: row.file_name, type: row.content_type, size: row.size_bytes, folder: row.folder_name || '', url: `/api/files/${row.id}`, createdAt: row.created_at })) });
+    }
+    if (account.role !== 'tutor') return jsonResponse({ error: 'tutor_account_required' }, 403);
+    if (Number(request.headers.get('Content-Length') || 0) > 10_500_000) return jsonResponse({ error: 'file_too_large', message: 'Максимальный размер файла — 10 МБ.' }, 413);
+    let form; try { form = await request.formData(); } catch { return jsonResponse({ error: 'invalid_form_data' }, 400); }
+    const file = form.get('file'); const folder = String(form.get('folder') || '').trim().slice(0, 80);
+    if (!file || typeof file.arrayBuffer !== 'function' || file.size < 1 || file.size > 10_000_000) return jsonResponse({ error: 'invalid_file', message: 'Выберите файл до 10 МБ.' }, 400);
+    const safeName = String(file.name || 'file').replace(/[\u0000-\u001f\u007f\\/]/g, '_').trim().slice(0, 180) || 'file';
+    const id = crypto.randomUUID(); const objectKey = `library/${account.id}/${id}`; const now = Math.floor(Date.now() / 1000); const type = String(file.type || 'application/octet-stream').slice(0, 150);
+    await env.HOMEWORK_FILES.put(objectKey, await file.arrayBuffer(), { metadata: { contentType: type } });
+    try { await env.DB.prepare(`INSERT INTO teaching_files (id, owner_id, object_key, file_name, content_type, size_bytes, folder_name, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)`).bind(id, account.id, objectKey, safeName, type, file.size, folder, now).run(); }
+    catch (error) { await env.HOMEWORK_FILES.delete(objectKey); throw error; }
+    return jsonResponse({ file: { id, ownerId: account.id, name: safeName, type, size: file.size, folder, url: `/api/files/${id}`, createdAt: now } }, 201);
+  }
+
+  const libraryFileMatch = path.match(/^\/api\/files\/([0-9a-f-]{36})(?:\/(grants))?$/i);
+  if (libraryFileMatch) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (!env.HOMEWORK_FILES) return jsonResponse({ error: 'file_storage_not_configured' }, 503);
+    const file = await env.DB.prepare(`SELECT teaching_files.*, EXISTS(SELECT 1 FROM teaching_file_recipients WHERE file_id = teaching_files.id AND student_id = ?2) AS can_read FROM teaching_files WHERE teaching_files.id = ?1`).bind(libraryFileMatch[1], account.id).first();
+    if (!file || (file.owner_id !== account.id && !file.can_read)) return jsonResponse({ error: 'file_not_found' }, 404);
+    if (libraryFileMatch[2] === 'grants' && request.method === 'POST') {
+      if (file.owner_id !== account.id) return jsonResponse({ error: 'file_forbidden' }, 403);
+      const parsed = await readJsonBody(request, 16_384); if (parsed.error) return parsed.error;
+      const studentIds = [...new Set(Array.isArray(parsed.value?.studentIds) ? parsed.value.studentIds.filter((id) => typeof id === 'string') : [])].slice(0, 100);
+      if (!studentIds.length) return jsonResponse({ error: 'invalid_recipients' }, 400);
+      const placeholders = studentIds.map((_, index) => `?${index + 2}`).join(',');
+      const linked = await env.DB.prepare(`SELECT student_id FROM tutor_students WHERE tutor_id = ?1 AND student_id IN (${placeholders})`).bind(account.id, ...studentIds).all();
+      if ((linked.results || []).length !== studentIds.length) return jsonResponse({ error: 'student_not_linked' }, 403);
+      await env.DB.batch(studentIds.map((studentId) => env.DB.prepare('INSERT OR IGNORE INTO teaching_file_recipients (file_id, student_id) VALUES (?1, ?2)').bind(file.id, studentId)));
+      return jsonResponse({ ok: true });
+    }
+    if (!libraryFileMatch[2] && request.method === 'PUT') {
+      if (file.owner_id !== account.id) return jsonResponse({ error: 'file_forbidden' }, 403);
+      const parsed = await readJsonBody(request, 4096); if (parsed.error) return parsed.error;
+      const folder = typeof parsed.value?.folder === 'string' ? parsed.value.folder.trim().slice(0, 80) : '';
+      await env.DB.prepare('UPDATE teaching_files SET folder_name = ?1 WHERE id = ?2 AND owner_id = ?3').bind(folder, file.id, account.id).run();
+      return jsonResponse({ ok: true, folder });
+    }
+    if (request.method === 'DELETE') {
+      if (file.owner_id !== account.id) return jsonResponse({ error: 'file_forbidden' }, 403);
+      await env.HOMEWORK_FILES.delete(file.object_key); await env.DB.prepare('DELETE FROM teaching_files WHERE id = ?1 AND owner_id = ?2').bind(file.id, account.id).run(); return jsonResponse({ ok: true });
+    }
+    if (request.method !== 'GET') return jsonResponse({ error: 'method_not_allowed' }, 405);
+    const object = await env.HOMEWORK_FILES.get(file.object_key, 'arrayBuffer'); if (!object) return jsonResponse({ error: 'file_not_found' }, 404);
+    const inline = /^image\//.test(file.content_type) || file.content_type === 'application/pdf' || /^text\//.test(file.content_type);
+    return new Response(object, { headers: { 'Content-Type': file.content_type || 'application/octet-stream', 'Content-Length': String(file.size_bytes), 'Content-Disposition': `${inline ? 'inline' : 'attachment'}; filename*=UTF-8''${encodeURIComponent(file.file_name)}`, 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' } });
+  }
+
+  if (path === '/api/messages' && (request.method === 'GET' || request.method === 'POST')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (request.method === 'GET') {
+      const [{ results: direct }, { results: grouped }] = await Promise.all([
+        env.DB.prepare(`SELECT messages.id, messages.sender_id, messages.recipient_id, messages.group_id, messages.body, messages.attachments_json, messages.created_at,
+          sender.name AS sender_name FROM messages JOIN accounts AS sender ON sender.id = messages.sender_id
+          WHERE messages.group_id IS NULL AND (messages.sender_id = ?1 OR messages.recipient_id = ?1)
+          ORDER BY messages.created_at ASC LIMIT 500`).bind(account.id).all(),
+        env.DB.prepare(`SELECT messages.id, messages.sender_id, messages.recipient_id, messages.group_id, messages.body, messages.attachments_json, messages.created_at,
+          sender.name AS sender_name FROM messages JOIN accounts AS sender ON sender.id = messages.sender_id
+          JOIN student_groups ON student_groups.id = messages.group_id
+          LEFT JOIN student_group_members ON student_group_members.group_id = student_groups.id AND student_group_members.student_id = ?1
+          WHERE student_groups.tutor_id = ?1 OR student_group_members.student_id = ?1
+          ORDER BY messages.created_at ASC LIMIT 500`).bind(account.id).all(),
+      ]);
+      return jsonResponse({ messages: [...(direct || []), ...(grouped || [])].sort((a, b) => a.created_at - b.created_at).map((row) => { let attachments = []; try { attachments = JSON.parse(row.attachments_json || '[]'); } catch { /* legacy row */ } return { id: row.id, senderId: row.sender_id, senderName: row.sender_name, recipientId: row.recipient_id, groupId: row.group_id, body: row.body, attachments: Array.isArray(attachments) ? attachments : [], createdAt: row.created_at }; }) });
+    }
+    const parsed = await readJsonBody(request, 16_384); if (parsed.error) return parsed.error;
+    const body = typeof parsed.value?.body === 'string' ? parsed.value.body.trim().slice(0, 4000) : '';
+    const recipientId = typeof parsed.value?.recipientId === 'string' ? parsed.value.recipientId : null;
+    const groupId = typeof parsed.value?.groupId === 'string' ? parsed.value.groupId : null;
+    const attachmentIds = [...new Set(Array.isArray(parsed.value?.attachmentIds) ? parsed.value.attachmentIds.filter((id) => /^[0-9a-f-]{36}$/i.test(id)) : [])].slice(0, 10);
+    if ((!body && !attachmentIds.length) || Boolean(recipientId) === Boolean(groupId)) return jsonResponse({ error: 'invalid_message' }, 400);
+    if (recipientId) {
+      const relation = await env.DB.prepare(`SELECT 1 AS linked FROM tutor_students WHERE
+        (tutor_id = ?1 AND student_id = ?2) OR (student_id = ?1 AND tutor_id = ?2)`).bind(account.id, recipientId).first();
+      if (!relation) return jsonResponse({ error: 'conversation_forbidden' }, 403);
+    } else {
+      const membership = await env.DB.prepare(`SELECT 1 AS linked FROM student_groups
+        LEFT JOIN student_group_members ON student_group_members.group_id = student_groups.id AND student_group_members.student_id = ?2
+        WHERE student_groups.id = ?1 AND (student_groups.tutor_id = ?2 OR student_group_members.student_id = ?2)`).bind(groupId, account.id).first();
+      if (!membership) return jsonResponse({ error: 'conversation_forbidden' }, 403);
+    }
+    let attachments = [];
+    if (attachmentIds.length) {
+      const placeholders = attachmentIds.map((_, index) => `?${index + 2}`).join(',');
+      const { results } = await env.DB.prepare(`SELECT teaching_files.* FROM teaching_files LEFT JOIN teaching_file_recipients ON teaching_file_recipients.file_id = teaching_files.id AND teaching_file_recipients.student_id = ?1 WHERE teaching_files.id IN (${placeholders}) AND (teaching_files.owner_id = ?1 OR teaching_file_recipients.student_id = ?1)`).bind(account.id, ...attachmentIds).all();
+      if ((results || []).length !== attachmentIds.length) return jsonResponse({ error: 'file_forbidden' }, 403);
+      attachments = results.map((row) => ({ id: row.id, name: row.file_name, type: row.content_type, size: row.size_bytes, url: `/api/files/${row.id}` }));
+      if (account.role === 'tutor') {
+        let studentIds = recipientId ? [recipientId] : [];
+        if (groupId) { const members = await env.DB.prepare('SELECT student_id FROM student_group_members WHERE group_id = ?1').bind(groupId).all(); studentIds = (members.results || []).map((row) => row.student_id); }
+        if (studentIds.length) await env.DB.batch(attachmentIds.flatMap((fileId) => studentIds.map((studentId) => env.DB.prepare('INSERT OR IGNORE INTO teaching_file_recipients (file_id, student_id) VALUES (?1, ?2)').bind(fileId, studentId))));
+      }
+    }
+    const id = crypto.randomUUID(); const now = Math.floor(Date.now() / 1000);
+    await env.DB.prepare('INSERT INTO messages (id, sender_id, recipient_id, group_id, body, attachments_json, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)')
+      .bind(id, account.id, recipientId, groupId, body, JSON.stringify(attachments), now).run();
+    return jsonResponse({ message: { id, senderId: account.id, senderName: account.name, recipientId, groupId, body, attachments, createdAt: now } }, 201);
+  }
+
+  if (path === '/api/homework-files' && request.method === 'POST') {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (account.role !== 'tutor') return jsonResponse({ error: 'tutor_account_required' }, 403);
+    if (!env.HOMEWORK_FILES) return jsonResponse({ error: 'file_storage_not_configured' }, 503);
+    if (Number(request.headers.get('Content-Length') || 0) > 10_500_000) return jsonResponse({ error: 'file_too_large', message: 'Максимальный размер файла — 10 МБ.' }, 413);
+    let form; try { form = await request.formData(); } catch { return jsonResponse({ error: 'invalid_form_data' }, 400); }
+    const file = form.get('file'); const taskId = String(form.get('taskId') || '').slice(0, 100);
+    const studentIds = [...new Set(form.getAll('studentId').map(String))].slice(0, 100);
+    if (!file || typeof file.arrayBuffer !== 'function' || !taskId || !studentIds.length || file.size < 1 || file.size > 10_000_000) return jsonResponse({ error: 'invalid_attachment', message: 'Выберите файл до 10 МБ.' }, 400);
+    const placeholders = studentIds.map((_, index) => `?${index + 2}`).join(',');
+    const linked = await env.DB.prepare(`SELECT student_id FROM tutor_students WHERE tutor_id = ?1 AND student_id IN (${placeholders})`).bind(account.id, ...studentIds).all();
+    if ((linked.results || []).length !== studentIds.length) return jsonResponse({ error: 'student_not_linked' }, 403);
+    const safeName = String(file.name || 'file').replace(/[\u0000-\u001f\u007f\\/]/g, '_').trim().slice(0, 180) || 'file';
+    const id = crypto.randomUUID(); const objectKey = `${account.id}/${id}`; const now = Math.floor(Date.now() / 1000);
+    await env.HOMEWORK_FILES.put(objectKey, await file.arrayBuffer(), { metadata: { contentType: String(file.type || 'application/octet-stream').slice(0, 150) } });
+    try {
+      await env.DB.batch([
+        env.DB.prepare(`INSERT INTO homework_attachments (id, owner_id, task_id, object_key, file_name, content_type, size_bytes, created_at)
+          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)`).bind(id, account.id, taskId, objectKey, safeName, String(file.type || 'application/octet-stream').slice(0, 150), file.size, now),
+        ...studentIds.map((studentId) => env.DB.prepare('INSERT INTO homework_attachment_recipients (attachment_id, student_id) VALUES (?1, ?2)').bind(id, studentId)),
+      ]);
+    } catch (error) { await env.HOMEWORK_FILES.delete(objectKey); throw error; }
+    return jsonResponse({ attachment: { id, taskId, name: safeName, type: String(file.type || 'application/octet-stream'), size: file.size, url: `/api/homework-files/${id}` } }, 201);
+  }
+
+  const homeworkFileMatch = path.match(/^\/api\/homework-files\/([0-9a-f-]{36})$/i);
+  if (homeworkFileMatch && (request.method === 'GET' || request.method === 'DELETE')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (!env.HOMEWORK_FILES) return jsonResponse({ error: 'file_storage_not_configured' }, 503);
+    const attachment = await env.DB.prepare(`SELECT homework_attachments.*,
+      EXISTS(SELECT 1 FROM homework_attachment_recipients WHERE attachment_id = homework_attachments.id AND student_id = ?2) AS can_read
+      FROM homework_attachments WHERE homework_attachments.id = ?1`).bind(homeworkFileMatch[1], account.id).first();
+    if (!attachment || (attachment.owner_id !== account.id && !attachment.can_read)) return jsonResponse({ error: 'attachment_not_found' }, 404);
+    if (request.method === 'DELETE') {
+      if (attachment.owner_id !== account.id) return jsonResponse({ error: 'attachment_forbidden' }, 403);
+      await env.HOMEWORK_FILES.delete(attachment.object_key);
+      await env.DB.prepare('DELETE FROM homework_attachments WHERE id = ?1 AND owner_id = ?2').bind(attachment.id, account.id).run();
+      return jsonResponse({ ok: true });
+    }
+    const object = await env.HOMEWORK_FILES.get(attachment.object_key, 'arrayBuffer'); if (!object) return jsonResponse({ error: 'attachment_not_found' }, 404);
+    const inline = /^image\//.test(attachment.content_type) || attachment.content_type === 'application/pdf' || /^text\//.test(attachment.content_type);
+    const headers = new Headers({
+      'Content-Type': attachment.content_type || 'application/octet-stream',
+      'Content-Length': String(attachment.size_bytes),
+      'Content-Disposition': `${inline ? 'inline' : 'attachment'}; filename*=UTF-8''${encodeURIComponent(attachment.file_name)}`,
+      'Cache-Control': 'private, no-store',
+      'X-Content-Type-Options': 'nosniff',
+    });
+    return new Response(object, { headers });
+  }
+
   if (path === '/api/auth/me' && request.method === 'GET') {
-    return jsonResponse({ account: account || null });
+    return jsonResponse({ account: account ? { ...account, timeZone: account.time_zone || null } : null });
   }
 
   if (path === '/api/auth/logout' && request.method === 'POST') {
@@ -665,13 +955,221 @@ async function handleAuthApi(request, env, path, origin) {
     return jsonResponse({ account: updated });
   }
 
+  if (path === '/api/profile' && (request.method === 'GET' || request.method === 'PUT')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (request.method === 'GET') {
+      const requestedId = new URL(request.url).searchParams.get('account');
+      let targetId = account.id;
+      if (requestedId && requestedId !== account.id) {
+        if (account.role !== 'tutor') return jsonResponse({ error: 'not_found' }, 404);
+        const linked = await env.DB.prepare('SELECT 1 AS linked FROM tutor_students WHERE tutor_id = ?1 AND student_id = ?2').bind(account.id, requestedId).first();
+        if (!linked) return jsonResponse({ error: 'not_found' }, 404);
+        targetId = requestedId;
+      }
+      const saved = await env.DB.prepare('SELECT profile_json FROM account_profiles WHERE account_id = ?1').bind(targetId).first();
+      let profile = {};
+      try { if (saved?.profile_json) profile = JSON.parse(saved.profile_json); } catch { return jsonResponse({ error: 'invalid_profile_data' }, 500); }
+      const target = targetId === account.id ? account : await env.DB.prepare('SELECT name, email, role FROM accounts WHERE id = ?1').bind(targetId).first();
+      return jsonResponse({ profile: { ...profile, name: target?.name, email: target?.email, role: target?.role } });
+    }
+    const parsed = await readJsonBody(request, 8192);
+    if (parsed.error) return parsed.error;
+    const input = parsed.value;
+    const requestedId = new URL(request.url).searchParams.get('account');
+    let targetId = account.id;
+    if (requestedId && requestedId !== account.id) {
+      if (account.role !== 'tutor') return jsonResponse({ error: 'not_found' }, 404);
+      const linked = await env.DB.prepare('SELECT 1 AS linked FROM tutor_students WHERE tutor_id = ?1 AND student_id = ?2').bind(account.id, requestedId).first();
+      if (!linked) return jsonResponse({ error: 'not_found' }, 404);
+      targetId = requestedId;
+    }
+    const previous = await env.DB.prepare('SELECT profile_json FROM account_profiles WHERE account_id = ?1').bind(targetId).first();
+    let oldProfile = {};
+    try { if (previous?.profile_json) oldProfile = JSON.parse(previous.profile_json); } catch { return jsonResponse({ error: 'invalid_profile_data' }, 500); }
+    const name = typeof input?.name === 'string' ? input.name.trim().slice(0, 80) : (targetId === account.id ? account.name : '');
+    const grade = typeof input?.grade === 'string' ? input.grade.trim().slice(0, 40) : (oldProfile.grade || '');
+    const target = targetId === account.id ? account : await env.DB.prepare('SELECT role FROM accounts WHERE id = ?1').bind(targetId).first();
+    if (name.length < 2) return jsonResponse({ error: 'invalid_profile' }, 400);
+    await env.DB.prepare('UPDATE accounts SET name = ?1, updated_at = ?2 WHERE id = ?3').bind(name, Math.floor(Date.now() / 1000), targetId).run();
+    const profile = { ...oldProfile, ...(input && typeof input === 'object' ? input : {}), name, ...(target?.role === 'student' ? { grade } : {}) };
+    for (const field of ['name', 'email', 'role']) delete profile[field];
+    await env.DB.prepare(`INSERT INTO account_profiles (account_id, profile_json, updated_at) VALUES (?1, ?2, ?3)
+      ON CONFLICT(account_id) DO UPDATE SET profile_json = excluded.profile_json, updated_at = excluded.updated_at`)
+      .bind(targetId, JSON.stringify(profile), Math.floor(Date.now() / 1000)).run();
+    return jsonResponse({ ok: true, profile: { ...profile, name, email: targetId === account.id ? account.email : undefined, role: target?.role } });
+  }
+
+  if (path === '/api/profile/email' && request.method === 'POST') {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (!env.RESEND_API_KEY || !env.AUTH_FROM_EMAIL) return jsonResponse({ error: 'email_not_configured' }, 503);
+    const parsed = await readJsonBody(request, 4096);
+    if (parsed.error) return parsed.error;
+    const email = typeof parsed.value?.email === 'string' ? parsed.value.email.trim().toLowerCase() : '';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || email === account.email?.toLowerCase()) return jsonResponse({ error: 'invalid_email' }, 400);
+    const occupied = await env.DB.prepare('SELECT id FROM accounts WHERE email = ?1 COLLATE NOCASE').bind(email).first();
+    if (occupied) return jsonResponse({ error: 'email_in_use' }, 409);
+    const token = randomBase64Url(); const now = Math.floor(Date.now() / 1000);
+    await env.DB.prepare('DELETE FROM email_change_tokens WHERE account_id = ?1 OR new_email = ?2').bind(account.id, email).run();
+    await env.DB.prepare('INSERT INTO email_change_tokens (token_hash, account_id, new_email, expires_at, created_at) VALUES (?1, ?2, ?3, ?4, ?5)')
+      .bind(await sha256Hex(token), account.id, email, now + EMAIL_VERIFICATION_TTL_SECONDS, now).run();
+    const link = `${emailOrigin}/?email_change=${encodeURIComponent(token)}`;
+    const mail = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: env.AUTH_FROM_EMAIL, to: [email], subject: 'Подтвердите новый email Tutdesk', text: `Чтобы изменить email аккаунта Tutdesk, откройте ссылку: ${link}. Ссылка действует 24 часа.`, html: `<p>Подтвердите новый email для Tutdesk:</p><p><a href="${link}">Подтвердить адрес</a></p><p>Ссылка действует 24 часа.</p>` }) });
+    if (!mail.ok) { await env.DB.prepare('DELETE FROM email_change_tokens WHERE account_id = ?1').bind(account.id).run(); return jsonResponse({ error: 'email_delivery_failed' }, 503); }
+    return jsonResponse({ ok: true });
+  }
+
+  if (path === '/api/profile/email/confirm' && request.method === 'POST') {
+    const parsed = await readJsonBody(request, 4096);
+    if (parsed.error) return parsed.error;
+    const token = typeof parsed.value?.token === 'string' ? parsed.value.token : '';
+    if (!/^[A-Za-z0-9_-]{32,64}$/.test(token)) return jsonResponse({ error: 'invalid_token' }, 400);
+    const pending = await env.DB.prepare('SELECT account_id, new_email FROM email_change_tokens WHERE token_hash = ?1 AND expires_at > ?2').bind(await sha256Hex(token), Math.floor(Date.now() / 1000)).first();
+    if (!pending) return jsonResponse({ error: 'invalid_token' }, 400);
+    const collision = await env.DB.prepare('SELECT id FROM accounts WHERE email = ?1 COLLATE NOCASE AND id <> ?2').bind(pending.new_email, pending.account_id).first();
+    if (collision) return jsonResponse({ error: 'email_in_use' }, 409);
+    await env.DB.batch([
+      env.DB.prepare('UPDATE accounts SET email = ?1, email_verified = 1, updated_at = ?2 WHERE id = ?3').bind(pending.new_email, Math.floor(Date.now() / 1000), pending.account_id),
+      env.DB.prepare('DELETE FROM email_change_tokens WHERE account_id = ?1').bind(pending.account_id),
+    ]);
+    return jsonResponse({ ok: true });
+  }
+
+  if (path === '/api/videos' && (request.method === 'GET' || request.method === 'POST')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (request.method === 'GET') {
+      if (account.role === 'tutor') {
+        const { results } = await env.DB.prepare(`
+          SELECT video_lessons.*, video_lesson_assignments.student_id
+          FROM video_lessons
+          LEFT JOIN video_lesson_assignments ON video_lesson_assignments.video_id = video_lessons.id
+          WHERE video_lessons.owner_id = ?1
+          ORDER BY video_lessons.updated_at DESC
+        `).bind(account.id).all();
+        const videos = new Map();
+        for (const row of results || []) {
+          if (!videos.has(row.id)) videos.set(row.id, videoModel(row));
+          if (row.student_id) videos.get(row.id).assignedStudentIds.push(row.student_id);
+        }
+        return jsonResponse({ videos: [...videos.values()] });
+      }
+      const { results } = await env.DB.prepare(`
+        SELECT DISTINCT video_lessons.*
+        FROM video_lessons
+        LEFT JOIN video_lesson_assignments ON video_lesson_assignments.video_id = video_lessons.id
+        LEFT JOIN tutor_students ON tutor_students.tutor_id = video_lesson_assignments.assigned_by
+          AND tutor_students.student_id = video_lesson_assignments.student_id
+        WHERE video_lessons.owner_id = ?1
+          OR (video_lesson_assignments.student_id = ?1 AND tutor_students.student_id IS NOT NULL)
+        ORDER BY video_lessons.updated_at DESC
+      `).bind(account.id).all();
+      return jsonResponse({ videos: (results || []).map((row) => videoModel(row)) });
+    }
+    const parsed = await readJsonBody(request, 4096);
+    if (parsed.error) return parsed.error;
+    const title = typeof parsed.value?.title === 'string' ? parsed.value.title.trim().slice(0, 100) : '';
+    const video = videoFromUrl(parsed.value?.url);
+    if (!title || !video) return jsonResponse({ error: 'invalid_video' }, 400);
+    const id = crypto.randomUUID(); const now = Math.floor(Date.now() / 1000);
+    await env.DB.prepare(`INSERT INTO video_lessons
+      (id, owner_id, title, provider, source_url, embed_url, created_at, updated_at)
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?7)`)
+      .bind(id, account.id, title, video.provider, video.sourceUrl, video.embedUrl, now).run();
+    return jsonResponse({ video: videoModel({ id, owner_id: account.id, title, provider: video.provider, source_url: video.sourceUrl, embed_url: video.embedUrl, created_at: now, updated_at: now }) }, 201);
+  }
+
+  const videoAssignmentMatch = path.match(/^\/api\/videos\/([0-9a-f-]{36})\/assignments$/i);
+  if (videoAssignmentMatch && (request.method === 'POST' || request.method === 'DELETE')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (account.role !== 'tutor') return jsonResponse({ error: 'tutor_account_required' }, 403);
+    const parsed = await readJsonBody(request, 4096);
+    if (parsed.error) return parsed.error;
+    const studentId = typeof parsed.value?.studentId === 'string' ? parsed.value.studentId : '';
+    const [owned, linked] = await Promise.all([
+      env.DB.prepare('SELECT 1 AS owned FROM video_lessons WHERE id = ?1 AND owner_id = ?2').bind(videoAssignmentMatch[1], account.id).first(),
+      env.DB.prepare('SELECT 1 AS linked FROM tutor_students WHERE tutor_id = ?1 AND student_id = ?2').bind(account.id, studentId).first(),
+    ]);
+    if (!owned) return jsonResponse({ error: 'video_not_found' }, 404);
+    if (!linked) return jsonResponse({ error: 'student_not_linked' }, 403);
+    if (request.method === 'POST') {
+      await env.DB.prepare(`INSERT OR IGNORE INTO video_lesson_assignments (video_id, student_id, assigned_by, created_at)
+        VALUES (?1, ?2, ?3, ?4)`).bind(videoAssignmentMatch[1], studentId, account.id, Math.floor(Date.now() / 1000)).run();
+    } else {
+      await env.DB.prepare('DELETE FROM video_lesson_assignments WHERE video_id = ?1 AND student_id = ?2 AND assigned_by = ?3')
+        .bind(videoAssignmentMatch[1], studentId, account.id).run();
+    }
+    return jsonResponse({ ok: true });
+  }
+
+  const videoMatch = path.match(/^\/api\/videos\/([0-9a-f-]{36})$/i);
+  if (videoMatch && request.method === 'DELETE') {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    const result = await env.DB.prepare('DELETE FROM video_lessons WHERE id = ?1 AND owner_id = ?2').bind(videoMatch[1], account.id).run();
+    if (!result.meta?.changes) return jsonResponse({ error: 'video_not_found' }, 404);
+    return jsonResponse({ ok: true });
+  }
+
+  if (path === '/api/tutor-students' && (request.method === 'GET' || request.method === 'POST' || request.method === 'DELETE')) {
+    if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
+    if (request.method === 'DELETE') {
+      if (account.role !== 'tutor') return jsonResponse({ error: 'tutor_account_required' }, 403);
+      const parsed = await readJsonBody(request, 4096);
+      if (parsed.error) return parsed.error;
+      const studentId = typeof parsed.value?.studentId === 'string' ? parsed.value.studentId : '';
+      await env.DB.batch([
+        env.DB.prepare(`DELETE FROM video_lesson_assignments
+          WHERE student_id = ?1 AND assigned_by = ?2`).bind(studentId, account.id),
+        env.DB.prepare('DELETE FROM tutor_students WHERE tutor_id = ?1 AND student_id = ?2').bind(account.id, studentId),
+      ]);
+      return jsonResponse({ ok: true });
+    }
+    if (request.method === 'POST') {
+      if (account.role !== 'tutor') return jsonResponse({ error: 'tutor_account_required' }, 403);
+      const parsed = await readJsonBody(request, 4096);
+      if (parsed.error) return parsed.error;
+      const email = typeof parsed.value?.email === 'string' ? parsed.value.email.trim().toLowerCase() : '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return jsonResponse({ error: 'invalid_email' }, 400);
+      if (email === account.email?.toLowerCase()) return jsonResponse({ error: 'cannot_link_self' }, 400);
+      const student = await env.DB.prepare(`SELECT id, role, name, email FROM accounts
+        WHERE email = ?1 AND role = 'student' AND email_verified = 1`).bind(email).first();
+      if (!student) return jsonResponse({ error: 'student_not_found' }, 404);
+      await env.DB.prepare('INSERT OR IGNORE INTO tutor_students (tutor_id, student_id, created_at) VALUES (?1, ?2, ?3)')
+        .bind(account.id, student.id, Math.floor(Date.now() / 1000)).run();
+    }
+    if (!['tutor', 'student'].includes(account.role)) return jsonResponse({ error: 'profile_setup_required' }, 403);
+    const query = account.role === 'tutor'
+      ? `SELECT accounts.id, accounts.role, accounts.name, accounts.email FROM tutor_students
+         JOIN accounts ON accounts.id = tutor_students.student_id WHERE tutor_students.tutor_id = ?1 ORDER BY accounts.name`
+      : `SELECT accounts.id, accounts.role, accounts.name, accounts.email FROM tutor_students
+         JOIN accounts ON accounts.id = tutor_students.tutor_id WHERE tutor_students.student_id = ?1 ORDER BY accounts.name`;
+    const { results } = await env.DB.prepare(query).bind(account.id).all();
+    return jsonResponse({ accounts: results || [] });
+  }
+
   if (path === '/api/account-data' && (request.method === 'GET' || request.method === 'PUT')) {
     if (!account) return jsonResponse({ error: 'not_authenticated' }, 401);
     if (request.method === 'GET') {
-      const saved = await env.DB.prepare('SELECT data_json FROM account_data WHERE account_id = ?1').bind(account.id).first();
+      const requestedId = new URL(request.url).searchParams.get('account');
+      let targetId = account.id;
+      if (requestedId && requestedId !== account.id) {
+        const relation = account.role === 'tutor'
+          ? await env.DB.prepare('SELECT 1 AS linked FROM tutor_students WHERE tutor_id = ?1 AND student_id = ?2').bind(account.id, requestedId).first()
+          : await env.DB.prepare('SELECT 1 AS linked FROM tutor_students WHERE student_id = ?1 AND tutor_id = ?2').bind(account.id, requestedId).first();
+        if (!relation) return jsonResponse({ error: 'not_found' }, 404);
+        targetId = requestedId;
+      }
+      const saved = await env.DB.prepare('SELECT data_json FROM account_data WHERE account_id = ?1').bind(targetId).first();
       if (!saved) return jsonResponse({ data: null });
-      try { return jsonResponse({ data: JSON.parse(saved.data_json) }); }
-      catch { return jsonResponse({ error: 'invalid_account_data' }, 500); }
+      try {
+        const data = JSON.parse(saved.data_json);
+        if (!requestedId || requestedId === account.id) return jsonResponse({ data });
+        if (account.role === 'tutor') return jsonResponse({ data: {} });
+        const studentModelId = `student-${account.id}`;
+        const lessons = Array.isArray(data.lessons) ? data.lessons.filter((lesson) => lesson?.studentAccountId === account.id || lesson?.studentId === studentModelId) : [];
+        const lessonIds = new Set(lessons.map((lesson) => lesson.id));
+        const tasks = Array.isArray(data.tasks) ? data.tasks.filter((task) => task?.kind !== 'personal' && task?.studentId === studentModelId) : [];
+        const boards = Array.isArray(data.boards) ? data.boards.filter((board) => Array.isArray(board?.lessonIds) && board.lessonIds.some((id) => lessonIds.has(id))).map((board) => ({ ...board, lessonIds: board.lessonIds.filter((id) => lessonIds.has(id)) })) : [];
+        return jsonResponse({ data: { lessons, tasks, boards } });
+      } catch { return jsonResponse({ error: 'invalid_account_data' }, 500); }
     }
     const parsed = await readJsonBody(request, 1_000_000);
     if (parsed.error) return parsed.error;
@@ -679,7 +1177,7 @@ async function handleAuthApi(request, env, path, origin) {
     if (!input?.data || typeof input.data !== 'object' || Array.isArray(input.data)) {
       return jsonResponse({ error: 'invalid_account_data' }, 400);
     }
-    const serialized = JSON.stringify(input.data);
+    const serialized = JSON.stringify({ ...input.data, videos: [] });
     if (textEncoder.encode(serialized).byteLength > 1_000_000) return jsonResponse({ error: 'request_too_large' }, 413);
     await env.DB.prepare(`
       INSERT INTO account_data (account_id, data_json, updated_at) VALUES (?1, ?2, ?3)
@@ -710,7 +1208,7 @@ export async function handleAuthRequest(request, env, url) {
   if (parts[0] === 'api' && parts[1] === 'auth' && parts.length === 4 && parts[3] === 'callback' && request.method === 'GET') {
     return finishOAuth(request, env, parts[2], origin);
   }
-  if ((url.pathname === '/api/auth/register' || url.pathname === '/api/auth/login' || url.pathname === '/api/auth/verify' || url.pathname === '/api/auth/resend-verification' || url.pathname === '/api/auth/password-reset/request' || url.pathname === '/api/auth/password-reset/confirm' || url.pathname === '/api/auth/me' || url.pathname === '/api/auth/logout' || url.pathname === '/api/auth/role' || url.pathname === '/api/account-data')) {
+  if ((url.pathname === '/api/auth/register' || url.pathname === '/api/auth/login' || url.pathname === '/api/auth/verify' || url.pathname === '/api/auth/resend-verification' || url.pathname === '/api/auth/password-reset/request' || url.pathname === '/api/auth/password-reset/confirm' || url.pathname === '/api/auth/me' || url.pathname === '/api/auth/logout' || url.pathname === '/api/auth/role' || url.pathname === '/api/account-data' || url.pathname === '/api/tutor-students' || url.pathname === '/api/plan' || url.pathname === '/api/screen-share' || url.pathname.startsWith('/api/profile') || url.pathname.startsWith('/api/videos') || url.pathname.startsWith('/api/groups') || url.pathname.startsWith('/api/messages') || url.pathname.startsWith('/api/files') || url.pathname.startsWith('/api/homework-files'))) {
     return handleAuthApi(request, env, url.pathname, origin);
   }
   return jsonResponse({ error: 'not_found' }, 404);

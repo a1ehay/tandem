@@ -149,12 +149,16 @@ async function issueToken(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith('/api/auth/') || url.pathname === '/api/account-data') {
+    if (url.pathname.startsWith('/api/auth/') || url.pathname === '/api/account-data' || url.pathname === '/api/tutor-students' || url.pathname === '/api/plan' || url.pathname === '/api/screen-share' || url.pathname.startsWith('/api/profile') || url.pathname.startsWith('/api/videos') || url.pathname.startsWith('/api/groups') || url.pathname.startsWith('/api/messages') || url.pathname.startsWith('/api/files') || url.pathname.startsWith('/api/homework-files')) {
       try {
         return await handleAuthRequest(request, env, url);
-      } catch {
-        console.error(JSON.stringify({ event: 'auth_request_failed', path: url.pathname }));
-        return jsonResponse({ error: 'internal_error' }, 500, env.ALLOWED_ORIGIN);
+      } catch (error) {
+        const incidentId = crypto.randomUUID();
+        const reason = /iteration counts above/.test(error?.message || '') ? 'password_hash_runtime_limit'
+          : /no such (table|column)/i.test(error?.message || '') ? 'database_schema_missing'
+          : 'unexpected_error';
+        console.error(JSON.stringify({ event: 'auth_request_failed', path: url.pathname, incidentId, reason }));
+        return jsonResponse({ error: 'internal_error', message: 'Сервис аккаунтов временно недоступен. Попробуйте позже.', incidentId }, 500, env.ALLOWED_ORIGIN);
       }
     }
     if (url.pathname === '/api/livekit/token') return issueToken(request, env);

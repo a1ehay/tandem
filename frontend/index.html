@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f5f6f4" />
+    <meta name="theme-color" content="#F3EFE7" />
     <meta name="description" content="Tutdesk — рабочее пространство репетитора и ученика: занятия, интерактивная доска, задания и планер." />
     <meta name="robots" content="noindex, nofollow" />
     <meta property="og:type" content="website" />
@@ -11,7 +11,7 @@
     <meta property="og:description" content="Занятия, интерактивная доска, задания и планер в одном рабочем пространстве." />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <title>Tutdesk — пространство для занятий</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20261106-1" />
   </head>
   <body>
     <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -47,6 +47,7 @@
       <symbol id="i-sticky" viewBox="0 0 24 24"><path d="M5 3h14v12l-6 6H5zM13 21v-6h6"/></symbol>
       <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></symbol>
       <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></symbol>
+      <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h5"/></symbol>
     </svg>
 
     <div class="app-shell">
@@ -58,15 +59,23 @@
         <div class="workspace-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
         <nav class="main-nav" id="mainNav" aria-label="Главная навигация" hidden>
           <button class="nav-item active" data-view="overview"><svg><use href="#i-grid"/></svg><span>Обзор</span></button>
+          <div class="nav-section-label">СВЯЗЬ</div>
+          <button class="nav-item" data-view="room"><svg><use href="#i-video"/></svg><span>Звонки</span></button>
+          <button class="nav-item" data-view="messages"><svg><use href="#i-message"/></svg><span>Сообщения</span></button>
+          <div class="nav-section-label">ОБУЧЕНИЕ</div>
           <button class="nav-item" data-view="students" data-nav-tutor><svg><use href="#i-users"/></svg><span>Ученики</span><span class="nav-count" id="studentCount">0</span></button>
           <button class="nav-item" data-view="lessons" data-nav-tutor><svg><use href="#i-calendar"/></svg><span>Занятия</span><span class="nav-count nav-count--extra" id="lessonTier">EXT</span></button>
           <button class="nav-item" data-view="board"><svg><use href="#i-board"/></svg><span>Интерактивная доска</span></button>
-          <button class="nav-item" data-view="tasks"><svg><use href="#i-check"/></svg><span id="taskNavLabel">Задания</span><span class="nav-count nav-count--warm" id="taskCount">0</span></button>
+          <button class="nav-item" data-view="videos"><svg><use href="#i-video"/></svg><span>Видеоуроки</span></button>
+          <button class="nav-item" id="callNav" data-view="room" hidden><svg><use href="#i-video"/></svg><span>Звонок</span><span class="call-live-dot"></span></button>
+          <button class="nav-item" data-view="homework"><svg><use href="#i-check"/></svg><span>Домашние задания</span><span class="nav-count nav-count--warm" id="taskCount">0</span></button>
+          <button class="nav-item" data-view="tasks"><svg><use href="#i-calendar"/></svg><span>Планер</span></button>
+          <button class="nav-item" data-view="notion"><svg><use href="#i-edit"/></svg><span>Notion</span></button>
         </nav>
         <div class="sidebar-bottom">
           <div class="sidebar-plan" id="sidebarPlan" hidden>
             <div class="sidebar-plan-top"><span class="plan-mini-icon"><svg><use href="#i-spark"/></svg></span><span class="eyebrow">ВАШ ТАРИФ</span><span class="plan-status-dot"></span></div>
-            <div class="sidebar-plan-name" id="sidePlanName">Light</div>
+            <div class="sidebar-plan-name" id="sidePlanName">Базовый</div>
             <p id="sidePlanDescription">Созвоны и интерактивная доска</p>
             <button class="text-link" data-view="subscription">Сравнить тарифы <svg><use href="#i-arrow"/></svg></button>
           </div>
@@ -100,6 +109,6 @@
     </div>
     <div class="toast-region" id="toastRegion" aria-live="polite"></div>
     <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.23.0/dist/livekit-client.umd.min.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=20261106-1"></script>
   </body>
 </html>

@@ -1,0 +1,5128 @@
+{
+  "metadata": {
+    "title": "365 цитат и коротких адаптаций для образовательной платформы",
+    "language": "ru",
+    "count": 365,
+    "authors_count": 20,
+    "max_text_length": 94,
+    "editorial_note": "Русские формулировки подготовлены для этой подборки по доступным англоязычным изданиям. translated_excerpt — перевод короткой выдержки; adaptation — сокращение или пересказ мысли. Это не цитирование конкретных опубликованных русских переводов. Авторство и источник указаны для каждой записи.",
+    "display_note": "Для translated_excerpt можно использовать кавычки. Для adaptation показывайте подпись «Адаптация · Автор» и не выдавайте текст за дословную цитату. У Шекспира это реплики персонажей; имя автора не означает, что фраза выражает его личную позицию.",
+    "rotation_note": "Поле day задаёт готовую последовательность на 365 дней. В високосный год для 29 февраля повторите выбранную карточку или используйте отдельную запись. Выбор дня следует рассчитывать в часовом поясе пользователя.",
+    "types_count": {
+      "translated_excerpt": 313,
+      "adaptation": 52
+    }
+  },
+  "quotes": [
+    {
+      "id": "q111",
+      "text": "Я рад учиться, чтобы учить.",
+      "author": "Луций Анней Сенека",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_6",
+        "section": "Письмо 6, § 4"
+      },
+      "day": 1,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q002",
+      "text": "Не бойся исправлять свои ошибки.",
+      "author": "Конфуций",
+      "topic": "ошибки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга I"
+      },
+      "day": 2,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q032",
+      "text": "Путь в тысячу ли начинается с одного шага.",
+      "author": "Лао-цзы",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "64"
+      },
+      "day": 3,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q290",
+      "text": "Мудрость — дочь опыта.",
+      "author": "Леонардо да Винчи",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 1150"
+      },
+      "day": 4,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q241",
+      "text": "Книги — сокровище мира.",
+      "author": "Генри Дэвид Торо",
+      "topic": "чтение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Чтение"
+      },
+      "day": 5,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q228",
+      "text": "Единственный способ иметь друга — самому быть другом.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "дружба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Дружба"
+      },
+      "day": 6,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q358",
+      "text": "Совместная жизнь сама по себе учит.",
+      "author": "Джон Дьюи",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава I"
+      },
+      "day": 7,
+      "display_attribution": "Джон Дьюи"
+    },
+    {
+      "id": "q146",
+      "text": "Лучше хорошо устроенная голова, чем хорошо наполненная.",
+      "author": "Мишель де Монтень",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 8,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q329",
+      "text": "Пример усилия пробуждает и поддерживает наши усилия.",
+      "author": "Уильям Джеймс",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "VII"
+      },
+      "day": 9,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q164",
+      "text": "Идущие медленно могут продвинуться дальше бегущих, если держатся верного пути.",
+      "author": "Рене Декарт",
+      "topic": "терпение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть I"
+      },
+      "day": 10,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q038",
+      "text": "Кто легко обещает, редко держит слово.",
+      "author": "Лао-цзы",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "63"
+      },
+      "day": 11,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q171",
+      "text": "Человек — всего лишь тростник, но тростник мыслящий.",
+      "author": "Блез Паскаль",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 347 (нумерация Brunschvicg)"
+      },
+      "day": 12,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q283",
+      "text": "Изучай природу, чтобы подтвердить практикой выученные правила.",
+      "author": "Леонардо да Винчи",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 483"
+      },
+      "day": 13,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q131",
+      "text": "Учение совершенствует природу, а опыт совершенствует учение.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 14,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q299",
+      "text": "Образование должно укреплять тело и формировать сердце.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава II"
+      },
+      "day": 15,
+      "display_attribution": "Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q248",
+      "text": "Пусть он идёт под музыку, которую слышит.",
+      "author": "Генри Дэвид Торо",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 16,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q084",
+      "text": "Сначала узнай, что тебе предстоит выдержать.",
+      "author": "Эпиктет",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XXVIII"
+      },
+      "day": 17,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q260",
+      "text": "Делай сегодня то, что собираешься делать завтра.",
+      "author": "Бенджамин Франклин",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 18,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q072",
+      "text": "Не спорь о том, каким должен быть хороший человек. Будь им.",
+      "author": "Марк Аврелий",
+      "topic": "действие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга X"
+      },
+      "day": 19,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q217",
+      "text": "Делай своё дело — и станешь сильнее.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "труд",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 20,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q047",
+      "text": "Мудрец знает себя, но не выставляет себя напоказ.",
+      "author": "Лао-цзы",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "72"
+      },
+      "day": 21,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q331",
+      "text": "Поведение состоит из привычек.",
+      "author": "Уильям Джеймс",
+      "topic": "привычки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "VIII"
+      },
+      "day": 22,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q298",
+      "text": "Научите детей мыслить — и они будут думать самостоятельно.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "преподавание",
+      "type": "adaptation",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава XII"
+      },
+      "day": 23,
+      "display_attribution": "Адаптация · Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q316",
+      "text": "История полна примеров подавленной истины.",
+      "author": "Джон Стюарт Милль",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 24,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q012",
+      "text": "Он не переносил свой гнев на других и не повторял ошибок.",
+      "author": "Конфуций",
+      "topic": "ошибки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга VI"
+      },
+      "day": 25,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q168",
+      "text": "Старайся побеждать себя, а не судьбу.",
+      "author": "Рене Декарт",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть III"
+      },
+      "day": 26,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q176",
+      "text": "Людей лучше убеждают доводы, до которых они дошли сами.",
+      "author": "Блез Паскаль",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 10 (нумерация Brunschvicg)"
+      },
+      "day": 27,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q348",
+      "text": "Наши сомнения — предатели.",
+      "author": "Уильям Шекспир",
+      "topic": "смелость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Мера за меру, I.4"
+      },
+      "day": 28,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q077",
+      "text": "Людей тревожат не вещи, а суждения о вещах.",
+      "author": "Эпиктет",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава V"
+      },
+      "day": 29,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q229",
+      "text": "Друг — человек, с которым я могу быть искренним.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "искренность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Дружба"
+      },
+      "day": 30,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q261",
+      "text": "Делай дело, а не позволяй делу делать тебя.",
+      "author": "Бенджамин Франклин",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 31,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q308",
+      "text": "Гений свободно дышит лишь в атмосфере свободы.",
+      "author": "Джон Стюарт Милль",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 32,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q245",
+      "text": "Я никогда не находил общества приятнее одиночества.",
+      "author": "Генри Дэвид Торо",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Одиночество"
+      },
+      "day": 33,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q058",
+      "text": "Красота не становится лучше или хуже от похвалы.",
+      "author": "Марк Аврелий",
+      "topic": "самооценка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга IV"
+      },
+      "day": 34,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q152",
+      "text": "Кто лишь следует за другим, не следует ничему.",
+      "author": "Мишель де Монтень",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 35,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q325",
+      "text": "Никакого восприятия без отклика.",
+      "author": "Уильям Джеймс",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "V"
+      },
+      "day": 36,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q030",
+      "text": "Богат тот, кто умеет довольствоваться.",
+      "author": "Лао-цзы",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "33"
+      },
+      "day": 37,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q136",
+      "text": "Тот, кто много спрашивает, многому научится.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "вопросы",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О беседе"
+      },
+      "day": 38,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q286",
+      "text": "Учиться можно повсюду.",
+      "author": "Леонардо да Винчи",
+      "topic": "учёба",
+      "type": "adaptation",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 504"
+      },
+      "day": 39,
+      "display_attribution": "Адаптация · Леонардо да Винчи"
+    },
+    {
+      "id": "q099",
+      "text": "Не ищи добра и зла вовне.",
+      "author": "Эпиктет",
+      "topic": "самостоятельность",
+      "type": "adaptation",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XLVIII"
+      },
+      "day": 40,
+      "display_attribution": "Адаптация · Эпиктет"
+    },
+    {
+      "id": "q250",
+      "text": "Воздушные замки не пропали: теперь подведи под них основание.",
+      "author": "Генри Дэвид Торо",
+      "topic": "действие",
+      "type": "adaptation",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 41,
+      "display_attribution": "Адаптация · Генри Дэвид Торо"
+    },
+    {
+      "id": "q054",
+      "text": "Не довольствуйся первым впечатлением.",
+      "author": "Марк Аврелий",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга I"
+      },
+      "day": 42,
+      "display_attribution": "Адаптация · Марк Аврелий"
+    },
+    {
+      "id": "q259",
+      "text": "Маленькие удары валят большие дубы.",
+      "author": "Бенджамин Франклин",
+      "topic": "настойчивость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 43,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q008",
+      "text": "Увидев достойного, думай о том, как сравняться с ним.",
+      "author": "Конфуций",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга IV"
+      },
+      "day": 44,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q161",
+      "text": "Недостаточно иметь хороший ум: главное — хорошо им пользоваться.",
+      "author": "Рене Декарт",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть I"
+      },
+      "day": 45,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q355",
+      "text": "Действие — красноречие.",
+      "author": "Уильям Шекспир",
+      "topic": "действие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Кориолан, III.2"
+      },
+      "day": 46,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q192",
+      "text": "Добродетель — состояние сознательного выбора.",
+      "author": "Аристотель",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга II"
+      },
+      "day": 47,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q160",
+      "text": "Пусть его главными уроками будут суждение и нравы.",
+      "author": "Мишель де Монтень",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 48,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q365",
+      "text": "Интерес к учению через все встречи с жизнью — нравственный интерес.",
+      "author": "Джон Дьюи",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава XXVI"
+      },
+      "day": 49,
+      "display_attribution": "Джон Дьюи"
+    },
+    {
+      "id": "q334",
+      "text": "Ты ответишь на вопрос иначе благодаря тому, о чём думаешь сейчас.",
+      "author": "Уильям Джеймс",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "III"
+      },
+      "day": 50,
+      "display_attribution": "Адаптация · Уильям Джеймс"
+    },
+    {
+      "id": "q235",
+      "text": "Нельзя научиться тому, к чему ещё не готов.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Духовные законы"
+      },
+      "day": 51,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q284",
+      "text": "Привыкай применять своё искусство и работать.",
+      "author": "Леонардо да Винчи",
+      "topic": "труд",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 483"
+      },
+      "day": 52,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q017",
+      "text": "Выбираю хорошее и следую ему.",
+      "author": "Конфуций",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга VII"
+      },
+      "day": 53,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q206",
+      "text": "Любящий мудрость не должен любить ложь.",
+      "author": "Платон",
+      "topic": "искренность",
+      "type": "adaptation",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VI"
+      },
+      "day": 54,
+      "display_attribution": "Адаптация · Платон"
+    },
+    {
+      "id": "q243",
+      "text": "Ещё немало дней ждёт своего рассвета.",
+      "author": "Генри Дэвид Торо",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 55,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q183",
+      "text": "Малое утешает нас, потому что малое огорчает.",
+      "author": "Блез Паскаль",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 136 (нумерация Brunschvicg)"
+      },
+      "day": 56,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q126",
+      "text": "Чтение делает человека знающим.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "чтение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 57,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q125",
+      "text": "Мудрость ни к кому не приходит случайно.",
+      "author": "Луций Анней Сенека",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_76",
+        "section": "Письмо 76, § 5"
+      },
+      "day": 58,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q190",
+      "text": "Играя на кифаре, становятся кифаристами.",
+      "author": "Аристотель",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга II"
+      },
+      "day": 59,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q157",
+      "text": "Все места годятся для учения.",
+      "author": "Мишель де Монтень",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 60,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q357",
+      "text": "Общение — обмен опытом, который становится общим достоянием.",
+      "author": "Джон Дьюи",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава I"
+      },
+      "day": 61,
+      "display_attribution": "Джон Дьюи"
+    },
+    {
+      "id": "q225",
+      "text": "Предположим, ты противоречишь себе. Что из этого?",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "перемены",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 62,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q080",
+      "text": "Не гордись достоинствами, которые тебе не принадлежат.",
+      "author": "Эпиктет",
+      "topic": "самооценка",
+      "type": "adaptation",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава VI"
+      },
+      "day": 63,
+      "display_attribution": "Адаптация · Эпиктет"
+    },
+    {
+      "id": "q311",
+      "text": "Первое из человеческих творений, которое следует совершенствовать, — сам человек.",
+      "author": "Джон Стюарт Милль",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 64,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q202",
+      "text": "Учение не должно быть принуждением.",
+      "author": "Платон",
+      "topic": "учёба",
+      "type": "adaptation",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VII"
+      },
+      "day": 65,
+      "display_attribution": "Адаптация · Платон"
+    },
+    {
+      "id": "q267",
+      "text": "Надеждой и ожиданием не разбогатеешь.",
+      "author": "Бенджамин Франклин",
+      "topic": "действие",
+      "type": "adaptation",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 66,
+      "display_attribution": "Адаптация · Бенджамин Франклин"
+    },
+    {
+      "id": "q121",
+      "text": "Учись, пока остаёшься в неведении.",
+      "author": "Луций Анней Сенека",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_76",
+        "section": "Письмо 76, § 3"
+      },
+      "day": 67,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q045",
+      "text": "Слабое побеждает сильное.",
+      "author": "Лао-цзы",
+      "topic": "настойчивость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "78"
+      },
+      "day": 68,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q361",
+      "text": "Рост — то, что дети делают сами.",
+      "author": "Джон Дьюи",
+      "topic": "развитие",
+      "type": "adaptation",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава IV"
+      },
+      "day": 69,
+      "display_attribution": "Адаптация · Джон Дьюи"
+    },
+    {
+      "id": "q322",
+      "text": "Знать психологию — ещё не значит быть хорошим учителем.",
+      "author": "Уильям Джеймс",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "I"
+      },
+      "day": 70,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q074",
+      "text": "Утром напоминай себе: я встаю для человеческого дела.",
+      "author": "Марк Аврелий",
+      "topic": "труд",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга V"
+      },
+      "day": 71,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q021",
+      "text": "Не делай другим того, чего не желаешь себе.",
+      "author": "Конфуций",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга XV"
+      },
+      "day": 72,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q172",
+      "text": "Всё наше достоинство заключается в мысли.",
+      "author": "Блез Паскаль",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 347 (нумерация Brunschvicg)"
+      },
+      "day": 73,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q320",
+      "text": "Если уже нечего открывать, разве ум становится ненужным?",
+      "author": "Джон Стюарт Милль",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 74,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q129",
+      "text": "Читайте, чтобы взвешивать и обдумывать.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "чтение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 75,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q094",
+      "text": "Упражняйся в выносливости ради себя, а не зрителей.",
+      "author": "Эпиктет",
+      "topic": "искренность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XLVII"
+      },
+      "day": 76,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q027",
+      "text": "Вода приносит пользу всему и ни с чем не соперничает.",
+      "author": "Лао-цзы",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "8"
+      },
+      "day": 77,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q246",
+      "text": "Мы нуждаемся в свежести дикой природы.",
+      "author": "Генри Дэвид Торо",
+      "topic": "природа",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Весна"
+      },
+      "day": 78,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q346",
+      "text": "Мы созданы из вещества сновидений.",
+      "author": "Уильям Шекспир",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Буря, IV.1"
+      },
+      "day": 79,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q060",
+      "text": "Используй настоящее разумно и справедливо.",
+      "author": "Марк Аврелий",
+      "topic": "действие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга IV"
+      },
+      "day": 80,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q106",
+      "text": "Повсюду — значит нигде.",
+      "author": "Луций Анней Сенека",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_2",
+        "section": "Письмо 2, § 2"
+      },
+      "day": 81,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q233",
+      "text": "Получая одно, мы теряем другое.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "мера",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 82,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q198",
+      "text": "Дружба помогает юным избегать ошибок.",
+      "author": "Аристотель",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга VIII"
+      },
+      "day": 83,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q083",
+      "text": "В каждом деле сначала обдумай начало и последствия.",
+      "author": "Эпиктет",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XXVIII"
+      },
+      "day": 84,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q133",
+      "text": "Математика делает ум тонким.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 85,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q269",
+      "text": "Нет выгоды без усилий.",
+      "author": "Бенджамин Франклин",
+      "topic": "труд",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 86,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q339",
+      "text": "Внимай чужим суждениям, но храни своё.",
+      "author": "Уильям Шекспир",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Гамлет, I.3"
+      },
+      "day": 87,
+      "display_attribution": "Адаптация · Уильям Шекспир"
+    },
+    {
+      "id": "q326",
+      "text": "Учитель руководит процессом усвоения.",
+      "author": "Уильям Джеймс",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "VI"
+      },
+      "day": 88,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q314",
+      "text": "Несогласие с привычным само по себе может быть полезным.",
+      "author": "Джон Стюарт Милль",
+      "topic": "самостоятельность",
+      "type": "adaptation",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 89,
+      "display_attribution": "Адаптация · Джон Стюарт Милль"
+    },
+    {
+      "id": "q291",
+      "text": "Я не желаю женщинам власти над мужчинами; я желаю им власти над собой.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава IV"
+      },
+      "day": 90,
+      "display_attribution": "Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q197",
+      "text": "Без друзей никто не выбрал бы жизнь.",
+      "author": "Аристотель",
+      "topic": "дружба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга VIII"
+      },
+      "day": 91,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q079",
+      "text": "Желай, чтобы всё происходило так, как происходит.",
+      "author": "Эпиктет",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава VIII"
+      },
+      "day": 92,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q119",
+      "text": "Пора опереться на себя.",
+      "author": "Луций Анней Сенека",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_33",
+        "section": "Письмо 33, § 7"
+      },
+      "day": 93,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q275",
+      "text": "Будь осторожен с маленькими расходами.",
+      "author": "Бенджамин Франклин",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 94,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q222",
+      "text": "В каждом гениальном произведении мы узнаём отвергнутые нами мысли.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 95,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q279",
+      "text": "Опыт — наставница тех, кто хорошо писал.",
+      "author": "Леонардо да Винчи",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 11"
+      },
+      "day": 96,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q354",
+      "text": "Наш сад — наше тело, а садовник — наша воля.",
+      "author": "Уильям Шекспир",
+      "topic": "привычки",
+      "type": "adaptation",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Отелло, I.3"
+      },
+      "day": 97,
+      "display_attribution": "Адаптация · Уильям Шекспир"
+    },
+    {
+      "id": "q013",
+      "text": "Знающий уступает любящему; любящий уступает находящему радость.",
+      "author": "Конфуций",
+      "topic": "интерес",
+      "type": "adaptation",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга VI"
+      },
+      "day": 98,
+      "display_attribution": "Адаптация · Конфуций"
+    },
+    {
+      "id": "q184",
+      "text": "Величие — охватить обе крайности и всё между ними.",
+      "author": "Блез Паскаль",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 353 (нумерация Brunschvicg)"
+      },
+      "day": 99,
+      "display_attribution": "Адаптация · Блез Паскаль"
+    },
+    {
+      "id": "q096",
+      "text": "Насколько ещё ты отложишь работу над собой?",
+      "author": "Эпиктет",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава L"
+      },
+      "day": 100,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q251",
+      "text": "Скорее, чем любви, денег и славы, дайте мне истину.",
+      "author": "Генри Дэвид Торо",
+      "topic": "искренность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 101,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q201",
+      "text": "Начало — важнейшая часть любого дела.",
+      "author": "Платон",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга II"
+      },
+      "day": 102,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q271",
+      "text": "Если хочешь иметь досуг, хорошо используй своё время.",
+      "author": "Бенджамин Франклин",
+      "topic": "время",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 103,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q066",
+      "text": "Не стыдись принимать помощь.",
+      "author": "Марк Аврелий",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VII"
+      },
+      "day": 104,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q227",
+      "text": "Великий человек всегда готов быть малым.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "скромность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Воздаяние"
+      },
+      "day": 105,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q016",
+      "text": "Среди троих идущих непременно найдётся мой учитель.",
+      "author": "Конфуций",
+      "topic": "преподавание",
+      "type": "adaptation",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга VII"
+      },
+      "day": 106,
+      "display_attribution": "Адаптация · Конфуций"
+    },
+    {
+      "id": "q154",
+      "text": "Пусть знает хотя бы то, что знает.",
+      "author": "Мишель де Монтень",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 107,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q292",
+      "text": "Невежество — хрупкая основа добродетели.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава IV"
+      },
+      "day": 108,
+      "display_attribution": "Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q278",
+      "text": "Сначала объясни теорию, затем практику.",
+      "author": "Леонардо да Винчи",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 110"
+      },
+      "day": 109,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q082",
+      "text": "Прежде всего не поддавайся первому впечатлению.",
+      "author": "Эпиктет",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XIX"
+      },
+      "day": 110,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q263",
+      "text": "Трудолюбие — мать удачи.",
+      "author": "Бенджамин Франклин",
+      "topic": "труд",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 111,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q188",
+      "text": "Тому, что нужно делать, мы учимся, делая.",
+      "author": "Аристотель",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга II"
+      },
+      "day": 112,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q238",
+      "text": "Наша жизнь растрачивается на мелочи.",
+      "author": "Генри Дэвид Торо",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Где я жил и для чего"
+      },
+      "day": 113,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q312",
+      "text": "Оригинальность необходима человеческим делам.",
+      "author": "Джон Стюарт Милль",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 114,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q036",
+      "text": "Берись за великое, пока оно мало.",
+      "author": "Лао-цзы",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "63"
+      },
+      "day": 115,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q213",
+      "text": "Простота речи связана с простотой души.",
+      "author": "Платон",
+      "topic": "общение",
+      "type": "adaptation",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга III"
+      },
+      "day": 116,
+      "display_attribution": "Адаптация · Платон"
+    },
+    {
+      "id": "q332",
+      "text": "Всё хорошее, что стоит иметь, оплачивается ежедневным усилием.",
+      "author": "Уильям Джеймс",
+      "topic": "настойчивость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "VIII"
+      },
+      "day": 117,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q153",
+      "text": "Пчёлы собирают цветы повсюду, но мёд создают свой.",
+      "author": "Мишель де Монтень",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 118,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q287",
+      "text": "Железо ржавеет без употребления.",
+      "author": "Леонардо да Винчи",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 1177"
+      },
+      "day": 119,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q132",
+      "text": "Мудрые пользуются учением.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 120,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q101",
+      "text": "Собирай и береги своё время.",
+      "author": "Луций Анней Сенека",
+      "topic": "время",
+      "type": "adaptation",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_1",
+        "section": "Письмо 1, § 1"
+      },
+      "day": 121,
+      "display_attribution": "Адаптация · Луций Анней Сенека"
+    },
+    {
+      "id": "q087",
+      "text": "По большей части молчи или говори необходимое.",
+      "author": "Эпиктет",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XXXIII"
+      },
+      "day": 122,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q194",
+      "text": "Начало — больше половины целого.",
+      "author": "Аристотель",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга I"
+      },
+      "day": 123,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q268",
+      "text": "Ключ, которым пользуются, всегда блестит.",
+      "author": "Бенджамин Франклин",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 124,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q363",
+      "text": "Образование не должно прекращаться с окончанием школы.",
+      "author": "Джон Дьюи",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава IV"
+      },
+      "day": 125,
+      "display_attribution": "Джон Дьюи"
+    },
+    {
+      "id": "q015",
+      "text": "Я не родился со знанием; я усердно ищу его.",
+      "author": "Конфуций",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга VII"
+      },
+      "day": 126,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q062",
+      "text": "Лучший способ отомстить — не уподобляться обидчику.",
+      "author": "Марк Аврелий",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VI"
+      },
+      "day": 127,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q180",
+      "text": "Приятное в речи должно рождаться из правдивого.",
+      "author": "Блез Паскаль",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 25 (нумерация Brunschvicg)"
+      },
+      "day": 128,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q255",
+      "text": "Передавай другим свою смелость, а не отчаяние.",
+      "author": "Генри Дэвид Торо",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Хозяйство"
+      },
+      "day": 129,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q343",
+      "text": "Милосердие не действует по принуждению.",
+      "author": "Уильям Шекспир",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Венецианский купец, IV.1"
+      },
+      "day": 130,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q109",
+      "text": "Достаточно иметь столько книг, сколько можешь прочесть.",
+      "author": "Луций Анней Сенека",
+      "topic": "чтение",
+      "type": "adaptation",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_2",
+        "section": "Письмо 2, § 3"
+      },
+      "day": 131,
+      "display_attribution": "Адаптация · Луций Анней Сенека"
+    },
+    {
+      "id": "q215",
+      "text": "Глаза нужно обращать к тому, что просвещает душу.",
+      "author": "Платон",
+      "topic": "познание",
+      "type": "adaptation",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VII"
+      },
+      "day": 132,
+      "display_attribution": "Адаптация · Платон"
+    },
+    {
+      "id": "q149",
+      "text": "Суди об успехах ученика по его жизни, а не памяти.",
+      "author": "Мишель де Монтень",
+      "topic": "преподавание",
+      "type": "adaptation",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 133,
+      "display_attribution": "Адаптация · Мишель де Монтень"
+    },
+    {
+      "id": "q199",
+      "text": "Счастье нуждается в деятельности.",
+      "author": "Аристотель",
+      "topic": "действие",
+      "type": "adaptation",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга I"
+      },
+      "day": 134,
+      "display_attribution": "Адаптация · Аристотель"
+    },
+    {
+      "id": "q232",
+      "text": "Всегда есть новая заря для тех, кто открыт свету.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "начало",
+      "type": "adaptation",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Круги"
+      },
+      "day": 135,
+      "display_attribution": "Адаптация · Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q069",
+      "text": "Постоянно наблюдай связь всех вещей.",
+      "author": "Марк Аврелий",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VI"
+      },
+      "day": 136,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q249",
+      "text": "Уверенно двигайся в направлении своей мечты.",
+      "author": "Генри Дэвид Торо",
+      "topic": "действие",
+      "type": "adaptation",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 137,
+      "display_attribution": "Адаптация · Генри Дэвид Торо"
+    },
+    {
+      "id": "q297",
+      "text": "Добродетель следует любить ради неё самой.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава V"
+      },
+      "day": 138,
+      "display_attribution": "Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q179",
+      "text": "Мысль меняется, когда меняется порядок слов.",
+      "author": "Блез Паскаль",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 23 (нумерация Brunschvicg)"
+      },
+      "day": 139,
+      "display_attribution": "Адаптация · Блез Паскаль"
+    },
+    {
+      "id": "q324",
+      "text": "Будущее страны находится в руках её учителей.",
+      "author": "Уильям Джеймс",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "I"
+      },
+      "day": 140,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q115",
+      "text": "Каждый день приносит мне заметный прогресс.",
+      "author": "Луций Анней Сенека",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_6",
+        "section": "Письмо 6, § 3"
+      },
+      "day": 141,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q169",
+      "text": "Изменяй свои желания скорее, чем порядок мира.",
+      "author": "Рене Декарт",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть III"
+      },
+      "day": 142,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q003",
+      "text": "Храни верность и искренность как главные принципы.",
+      "author": "Конфуций",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга I"
+      },
+      "day": 143,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q144",
+      "text": "Лучшее средство для здоровья ума — искренний совет друга.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О дружбе"
+      },
+      "day": 144,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q234",
+      "text": "Наша сила вырастает из нашей слабости.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Воздаяние"
+      },
+      "day": 145,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q266",
+      "text": "Сегодняшний день стоит двух завтрашних.",
+      "author": "Бенджамин Франклин",
+      "topic": "время",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 146,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q342",
+      "text": "Как далеко светит доброе дело в недобром мире!",
+      "author": "Уильям Шекспир",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Венецианский купец, V.1"
+      },
+      "day": 147,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q029",
+      "text": "Побеждающий других силён; побеждающий себя могуществен.",
+      "author": "Лао-цзы",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "33"
+      },
+      "day": 148,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q114",
+      "text": "Мы можем очень помочь друг другу.",
+      "author": "Луций Анней Сенека",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_6",
+        "section": "Письмо 6, § 6"
+      },
+      "day": 149,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q068",
+      "text": "Не делай ничего без цели.",
+      "author": "Марк Аврелий",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VIII"
+      },
+      "day": 150,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q335",
+      "text": "Новые привычки можно создавать.",
+      "author": "Уильям Джеймс",
+      "topic": "привычки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "VIII"
+      },
+      "day": 151,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q134",
+      "text": "История делает людей мудрыми.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 152,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q307",
+      "text": "Даже овцы различаются между собой.",
+      "author": "Джон Стюарт Милль",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 153,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q223",
+      "text": "Делай своё дело — и я узнаю тебя.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "труд",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 154,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q239",
+      "text": "Сознательным усилием человек может возвысить свою жизнь.",
+      "author": "Генри Дэвид Торо",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Где я жил и для чего"
+      },
+      "day": 155,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q195",
+      "text": "Для дружбы требуется время и привычка.",
+      "author": "Аристотель",
+      "topic": "дружба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга VIII"
+      },
+      "day": 156,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q265",
+      "text": "Спящая лиса кур не ловит.",
+      "author": "Бенджамин Франклин",
+      "topic": "действие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 157,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q039",
+      "text": "Кто считает всё лёгким, встретит много трудностей.",
+      "author": "Лао-цзы",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "63"
+      },
+      "day": 158,
+      "display_attribution": "Адаптация · Лао-цзы"
+    },
+    {
+      "id": "q108",
+      "text": "Из многих мыслей выбери одну, чтобы усвоить её за день.",
+      "author": "Луций Анней Сенека",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_2",
+        "section": "Письмо 2, § 4"
+      },
+      "day": 159,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q341",
+      "text": "Из малого огонька видно свет далеко.",
+      "author": "Уильям Шекспир",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Венецианский купец, V.1"
+      },
+      "day": 160,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q303",
+      "text": "Держи ум открытым для критики.",
+      "author": "Джон Стюарт Милль",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 161,
+      "display_attribution": "Адаптация · Джон Стюарт Милль"
+    },
+    {
+      "id": "q024",
+      "text": "Не стремись к быстрым результатам.",
+      "author": "Конфуций",
+      "topic": "терпение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга XIII"
+      },
+      "day": 162,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q218",
+      "text": "Никто не знает своих возможностей, пока не попробует.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "начало",
+      "type": "adaptation",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 163,
+      "display_attribution": "Адаптация · Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q203",
+      "text": "Пусть обучение детей будет игрой.",
+      "author": "Платон",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VII"
+      },
+      "day": 164,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q356",
+      "text": "Всякое подлинное общение воспитывает.",
+      "author": "Джон Дьюи",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава I"
+      },
+      "day": 165,
+      "display_attribution": "Джон Дьюи"
+    },
+    {
+      "id": "q088",
+      "text": "При каждой трудности ищи в себе способность справиться.",
+      "author": "Эпиктет",
+      "topic": "стойкость",
+      "type": "adaptation",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава X"
+      },
+      "day": 166,
+      "display_attribution": "Адаптация · Эпиктет"
+    },
+    {
+      "id": "q280",
+      "text": "Ничто нельзя любить или ненавидеть, прежде не узнав его.",
+      "author": "Леонардо да Винчи",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 1172"
+      },
+      "day": 167,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q163",
+      "text": "Самые великие души способны и к величайшим порокам, и к величайшим добродетелям.",
+      "author": "Рене Декарт",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть I"
+      },
+      "day": 168,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q147",
+      "text": "Пусть учитель выслушает и ученика.",
+      "author": "Мишель де Монтень",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 169,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q041",
+      "text": "Сделав дело, не держись за заслуги.",
+      "author": "Лао-цзы",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "2"
+      },
+      "day": 170,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q070",
+      "text": "Будь простым и добрым.",
+      "author": "Марк Аврелий",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VI"
+      },
+      "day": 171,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q350",
+      "text": "Люби всех, доверяй немногим, никому не причиняй зла.",
+      "author": "Уильям Шекспир",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Всё хорошо, что хорошо кончается, I.1"
+      },
+      "day": 172,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q196",
+      "text": "Друг — это другой я.",
+      "author": "Аристотель",
+      "topic": "дружба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга IX"
+      },
+      "day": 173,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q177",
+      "text": "Малое знание обо всём лучше полного знания одной вещи.",
+      "author": "Блез Паскаль",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 37 (нумерация Brunschvicg)"
+      },
+      "day": 174,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q141",
+      "text": "Делящийся радостью с другом радуется сильнее.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О дружбе"
+      },
+      "day": 175,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q220",
+      "text": "Творение тысячи лесов заключено в одном жёлуде.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "История"
+      },
+      "day": 176,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q317",
+      "text": "Ни один человек не безошибочен.",
+      "author": "Джон Стюарт Милль",
+      "topic": "ошибки",
+      "type": "adaptation",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 177,
+      "display_attribution": "Адаптация · Джон Стюарт Милль"
+    },
+    {
+      "id": "q097",
+      "text": "Не жди другого учителя, чтобы начать менять себя.",
+      "author": "Эпиктет",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава L"
+      },
+      "day": 178,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q065",
+      "text": "Загляни внутрь себя: там источник добра.",
+      "author": "Марк Аврелий",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VII"
+      },
+      "day": 179,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q273",
+      "text": "Трать время разумно, если оно дороже всего.",
+      "author": "Бенджамин Франклин",
+      "topic": "время",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 180,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q210",
+      "text": "Не отдельная часть, а целое должно быть счастливым.",
+      "author": "Платон",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга IV"
+      },
+      "day": 181,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q182",
+      "text": "Не в пространстве следует искать достоинство, а в порядке мысли.",
+      "author": "Блез Паскаль",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 348 (нумерация Brunschvicg)"
+      },
+      "day": 182,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q011",
+      "text": "Слушаю слова человека и смотрю на его поступки.",
+      "author": "Конфуций",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга V"
+      },
+      "day": 183,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q193",
+      "text": "Добродетель умеет находить середину.",
+      "author": "Аристотель",
+      "topic": "мера",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга II"
+      },
+      "day": 184,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q340",
+      "text": "Готовность — это всё.",
+      "author": "Уильям Шекспир",
+      "topic": "подготовка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Гамлет, V.2"
+      },
+      "day": 185,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q219",
+      "text": "Каждый ум должен сам пройти весь урок.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "История"
+      },
+      "day": 186,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q104",
+      "text": "Ничто не принадлежит нам, кроме времени.",
+      "author": "Луций Анней Сенека",
+      "topic": "время",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_1",
+        "section": "Письмо 1, § 3"
+      },
+      "day": 187,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q063",
+      "text": "Радуйся одному делу: переходить от доброго поступка к доброму.",
+      "author": "Марк Аврелий",
+      "topic": "действие",
+      "type": "adaptation",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VI"
+      },
+      "day": 188,
+      "display_attribution": "Адаптация · Марк Аврелий"
+    },
+    {
+      "id": "q274",
+      "text": "Небольшая течь потопит большой корабль.",
+      "author": "Бенджамин Франклин",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 189,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q293",
+      "text": "Укрепляйте женский ум, расширяя его.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава III"
+      },
+      "day": 190,
+      "display_attribution": "Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q081",
+      "text": "Не стремись казаться знающим.",
+      "author": "Эпиктет",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XIII"
+      },
+      "day": 191,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q212",
+      "text": "Знание — самое могущественное из способностей.",
+      "author": "Платон",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга V"
+      },
+      "day": 192,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q167",
+      "text": "Делай обзоры настолько полными, чтобы ничего не упустить.",
+      "author": "Рене Декарт",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть II"
+      },
+      "day": 193,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q349",
+      "text": "Из страха попробовать мы теряем то, что могли бы выиграть.",
+      "author": "Уильям Шекспир",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Мера за меру, I.4"
+      },
+      "day": 194,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q276",
+      "text": "Практика всегда должна опираться на хорошую теорию.",
+      "author": "Леонардо да Винчи",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 19"
+      },
+      "day": 195,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q301",
+      "text": "Над собственным телом и умом человек суверенен.",
+      "author": "Джон Стюарт Милль",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "I"
+      },
+      "day": 196,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q254",
+      "text": "Люби свою жизнь, какой бы бедной она ни была.",
+      "author": "Генри Дэвид Торо",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 197,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q330",
+      "text": "Наши добродетели — такие же привычки, как и пороки.",
+      "author": "Уильям Джеймс",
+      "topic": "привычки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "VIII"
+      },
+      "day": 198,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q256",
+      "text": "Потерянного времени больше не найти.",
+      "author": "Бенджамин Франклин",
+      "topic": "время",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 199,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q052",
+      "text": "Пока живёшь, пока можешь — будь добр.",
+      "author": "Марк Аврелий",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга IV"
+      },
+      "day": 200,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q122",
+      "text": "Что глупее, чем отказаться учиться потому, что давно не учился?",
+      "author": "Луций Анней Сенека",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_76",
+        "section": "Письмо 76, § 1"
+      },
+      "day": 201,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q142",
+      "text": "Делящийся горем с другом горюет меньше.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О дружбе"
+      },
+      "day": 202,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q046",
+      "text": "Чем больше отдаёшь другим, тем больше имеешь.",
+      "author": "Лао-цзы",
+      "topic": "щедрость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "81"
+      },
+      "day": 203,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q159",
+      "text": "Самый явный признак мудрости — постоянная жизнерадостность.",
+      "author": "Мишель де Монтень",
+      "topic": "радость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 204,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q305",
+      "text": "Развивать понимание — значит изучать основания собственных мнений.",
+      "author": "Джон Стюарт Милль",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 205,
+      "display_attribution": "Адаптация · Джон Стюарт Милль"
+    },
+    {
+      "id": "q009",
+      "text": "Увидев недостойного, обрати взгляд на себя.",
+      "author": "Конфуций",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга IV"
+      },
+      "day": 206,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q226",
+      "text": "Ничто не принесёт тебе покоя, кроме тебя самого.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 207,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q089",
+      "text": "Если тебя порицают, не торопись оправдываться.",
+      "author": "Эпиктет",
+      "topic": "спокойствие",
+      "type": "adaptation",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XXXIII"
+      },
+      "day": 208,
+      "display_attribution": "Адаптация · Эпиктет"
+    },
+    {
+      "id": "q102",
+      "text": "Крепко держи каждый час.",
+      "author": "Луций Анней Сенека",
+      "topic": "время",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_1",
+        "section": "Письмо 1, § 2"
+      },
+      "day": 209,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q214",
+      "text": "Музыка и ритм проникают в самые глубины души.",
+      "author": "Платон",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга III"
+      },
+      "day": 210,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q175",
+      "text": "Последний шаг разума — признать бесконечность превосходящих его вещей.",
+      "author": "Блез Паскаль",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 267 (нумерация Brunschvicg)"
+      },
+      "day": 211,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q055",
+      "text": "Не трать остаток жизни на мысли о других без общей пользы.",
+      "author": "Марк Аврелий",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга III"
+      },
+      "day": 212,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q191",
+      "text": "Справедливыми становятся, поступая справедливо.",
+      "author": "Аристотель",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга II"
+      },
+      "day": 213,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q277",
+      "text": "Практика без знания подобна кораблю без руля и компаса.",
+      "author": "Леонардо да Винчи",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 19"
+      },
+      "day": 214,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q151",
+      "text": "Пусть он пропускает всё через собственное сито.",
+      "author": "Мишель де Монтень",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 215,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q327",
+      "text": "Дети восхищаются умелым учителем.",
+      "author": "Уильям Джеймс",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "VII"
+      },
+      "day": 216,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q092",
+      "text": "За столом не рассуждай, как нужно есть: ешь как следует.",
+      "author": "Эпиктет",
+      "topic": "действие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XLVI"
+      },
+      "day": 217,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q221",
+      "text": "Природа — бесконечное сочетание немногих законов.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "История"
+      },
+      "day": 218,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q001",
+      "text": "Разве не радостно учиться и постоянно упражняться в изученном?",
+      "author": "Конфуций",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга I"
+      },
+      "day": 219,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q252",
+      "text": "Только тот день наступает, к которому мы пробудились.",
+      "author": "Генри Дэвид Торо",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 220,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q112",
+      "text": "Никакое благо не радует без друзей, с которыми можно им поделиться.",
+      "author": "Луций Анней Сенека",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_6",
+        "section": "Письмо 6, § 4"
+      },
+      "day": 221,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q281",
+      "text": "Сперва учись прилежанию, потом быстроте исполнения.",
+      "author": "Леонардо да Винчи",
+      "topic": "терпение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 492"
+      },
+      "day": 222,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q347",
+      "text": "Зрелость — это всё.",
+      "author": "Уильям Шекспир",
+      "topic": "терпение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Король Лир, V.2"
+      },
+      "day": 223,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q294",
+      "text": "Пусть женщина разделяет права — и она будет подражать добродетелям мужчины.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "равенство",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава IX"
+      },
+      "day": 224,
+      "display_attribution": "Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q067",
+      "text": "То, что не под силу тебе, ещё не невозможно человеку.",
+      "author": "Марк Аврелий",
+      "topic": "развитие",
+      "type": "adaptation",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VI"
+      },
+      "day": 225,
+      "display_attribution": "Адаптация · Марк Аврелий"
+    },
+    {
+      "id": "q364",
+      "text": "Образование — лаборатория, где философские идеи проходят проверку.",
+      "author": "Джон Дьюи",
+      "topic": "практика",
+      "type": "adaptation",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава XXIV"
+      },
+      "day": 226,
+      "display_attribution": "Адаптация · Джон Дьюи"
+    },
+    {
+      "id": "q231",
+      "text": "Наша жизнь — учение о том, что за каждым кругом можно начертить другой.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Круги"
+      },
+      "day": 227,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q128",
+      "text": "Письмо делает человека точным.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 228,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q034",
+      "text": "Девятиярусная башня начинается с горсти земли.",
+      "author": "Лао-цзы",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "64"
+      },
+      "day": 229,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q107",
+      "text": "Часто пересаживаемое растение не вырастает крепким.",
+      "author": "Луций Анней Сенека",
+      "topic": "терпение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_2",
+        "section": "Письмо 2, § 3"
+      },
+      "day": 230,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q288",
+      "text": "Так и бездействие подрывает силу ума.",
+      "author": "Леонардо да Винчи",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 1177"
+      },
+      "day": 231,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q351",
+      "text": "Не всё золото, что блестит.",
+      "author": "Уильям Шекспир",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Венецианский купец, II.7"
+      },
+      "day": 232,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q323",
+      "text": "Искусство преподавания выросло из изобретательности и внимательного наблюдения.",
+      "author": "Уильям Джеймс",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "I"
+      },
+      "day": 233,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q247",
+      "text": "Если человек не поспевает за товарищами, возможно, он слышит другого барабанщика.",
+      "author": "Генри Дэвид Торо",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 234,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q174",
+      "text": "У сердца есть основания, которых разум не знает.",
+      "author": "Блез Паскаль",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 277 (нумерация Brunschvicg)"
+      },
+      "day": 235,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q053",
+      "text": "Люби дело, которому научился, даже если оно скромно.",
+      "author": "Марк Аврелий",
+      "topic": "труд",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга IV"
+      },
+      "day": 236,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q156",
+      "text": "Мы воспитываем не душу и не тело, а человека.",
+      "author": "Мишель де Монтень",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 237,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q091",
+      "text": "Никогда не называй себя философом: показывай принципы делами.",
+      "author": "Эпиктет",
+      "topic": "действие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XLVI"
+      },
+      "day": 238,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q216",
+      "text": "Доверься себе.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 239,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q020",
+      "text": "В учении не бывает различия между людьми.",
+      "author": "Конфуций",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга XV"
+      },
+      "day": 240,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q049",
+      "text": "Будь в конце так же внимателен, как в начале.",
+      "author": "Лао-цзы",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "64"
+      },
+      "day": 241,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q123",
+      "text": "В этот класс принимают людей любого возраста.",
+      "author": "Луций Анней Сенека",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_76",
+        "section": "Письмо 76, § 2"
+      },
+      "day": 242,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q270",
+      "text": "Досуг и лень — разные вещи.",
+      "author": "Бенджамин Франклин",
+      "topic": "мера",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 243,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q319",
+      "text": "Учитель и ученик засыпают на посту, когда исчезает спор.",
+      "author": "Джон Стюарт Милль",
+      "topic": "вопросы",
+      "type": "adaptation",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 244,
+      "display_attribution": "Адаптация · Джон Стюарт Милль"
+    },
+    {
+      "id": "q236",
+      "text": "Утро наступает, когда я просыпаюсь и во мне рождается рассвет.",
+      "author": "Генри Дэвид Торо",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Где я жил и для чего"
+      },
+      "day": 245,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q078",
+      "text": "Не требуй, чтобы события происходили по твоему желанию.",
+      "author": "Эпиктет",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава VIII"
+      },
+      "day": 246,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q337",
+      "text": "Прежде всего будь верен себе.",
+      "author": "Уильям Шекспир",
+      "topic": "искренность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Гамлет, I.3"
+      },
+      "day": 247,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q170",
+      "text": "Я мыслю, следовательно, существую.",
+      "author": "Рене Декарт",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть IV"
+      },
+      "day": 248,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q285",
+      "text": "Не доверяй одной памяти, когда можно рисовать с натуры.",
+      "author": "Леонардо да Винчи",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 502"
+      },
+      "day": 249,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q139",
+      "text": "Привычка — главная управительница человеческой жизни.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "привычки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О привычке и воспитании"
+      },
+      "day": 250,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q048",
+      "text": "Мудрец любит себя, но не превозносит.",
+      "author": "Лао-цзы",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "72"
+      },
+      "day": 251,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q295",
+      "text": "Разум — способность совершенствоваться и различать истину.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава III"
+      },
+      "day": 252,
+      "display_attribution": "Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q110",
+      "text": "Беден не тот, у кого мало, а тот, кому хочется большего.",
+      "author": "Луций Анней Сенека",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_2",
+        "section": "Письмо 2, § 6"
+      },
+      "day": 253,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q061",
+      "text": "Не поступай так, словно тебе жить десять тысяч лет.",
+      "author": "Марк Аврелий",
+      "topic": "время",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга IV"
+      },
+      "day": 254,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q090",
+      "text": "У всякого дела есть две ручки.",
+      "author": "Эпиктет",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XLIII"
+      },
+      "day": 255,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q244",
+      "text": "Как научиться жить лучше, чем попробовав жить?",
+      "author": "Генри Дэвид Торо",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Хозяйство"
+      },
+      "day": 256,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q166",
+      "text": "Начинай с самого простого и лёгкого для познания.",
+      "author": "Рене Декарт",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть II"
+      },
+      "day": 257,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q007",
+      "text": "Знать, чего ты не знаешь, — тоже знание.",
+      "author": "Конфуций",
+      "topic": "познание",
+      "type": "adaptation",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга II"
+      },
+      "day": 258,
+      "display_attribution": "Адаптация · Конфуций"
+    },
+    {
+      "id": "q148",
+      "text": "Иногда открывай ученику дорогу, иногда позволяй открыть её самому.",
+      "author": "Мишель де Монтень",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 259,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q211",
+      "text": "Кто намерен по-настоящему любить учение, должен любить истину.",
+      "author": "Платон",
+      "topic": "познание",
+      "type": "adaptation",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VI"
+      },
+      "day": 260,
+      "display_attribution": "Адаптация · Платон"
+    },
+    {
+      "id": "q187",
+      "text": "Один день не делает человека счастливым.",
+      "author": "Аристотель",
+      "topic": "терпение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга I"
+      },
+      "day": 261,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q338",
+      "text": "Выслушивай каждого, но не спеши высказываться.",
+      "author": "Уильям Шекспир",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Гамлет, I.3"
+      },
+      "day": 262,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q098",
+      "text": "Считай себя достойным жить разумно уже сегодня.",
+      "author": "Эпиктет",
+      "topic": "самооценка",
+      "type": "adaptation",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава L"
+      },
+      "day": 263,
+      "display_attribution": "Адаптация · Эпиктет"
+    },
+    {
+      "id": "q302",
+      "text": "Знающий лишь свою сторону дела знает мало и о ней.",
+      "author": "Джон Стюарт Милль",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 264,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q043",
+      "text": "Преданный учению каждый день умножает знания.",
+      "author": "Лао-цзы",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "48"
+      },
+      "day": 265,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q282",
+      "text": "Ум художника должен быть ясен, как поверхность зеркала.",
+      "author": "Леонардо да Винчи",
+      "topic": "внимание",
+      "type": "adaptation",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 493"
+      },
+      "day": 266,
+      "display_attribution": "Адаптация · Леонардо да Винчи"
+    },
+    {
+      "id": "q116",
+      "text": "Истина открыта всем.",
+      "author": "Луций Анней Сенека",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_33",
+        "section": "Письмо 33, § 11"
+      },
+      "day": 267,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q205",
+      "text": "Прекрасное трудно.",
+      "author": "Платон",
+      "topic": "настойчивость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга IV"
+      },
+      "day": 268,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q064",
+      "text": "Если это неправильно — не делай; если неправда — не говори.",
+      "author": "Марк Аврелий",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга XII"
+      },
+      "day": 269,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q344",
+      "text": "Плоды невзгод бывают сладки.",
+      "author": "Уильям Шекспир",
+      "topic": "стойкость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Как вам это понравится, II.1"
+      },
+      "day": 270,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q014",
+      "text": "Учиться без пресыщения, учить других без усталости.",
+      "author": "Конфуций",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга VII"
+      },
+      "day": 271,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q138",
+      "text": "Не перебивай собеседника.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О быстроте в делах"
+      },
+      "day": 272,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q313",
+      "text": "Обычаи созданы для обычных обстоятельств.",
+      "author": "Джон Стюарт Милль",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 273,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q264",
+      "text": "Бог помогает тем, кто помогает себе.",
+      "author": "Бенджамин Франклин",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 274,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q035",
+      "text": "Берись за трудное, пока оно легко.",
+      "author": "Лао-цзы",
+      "topic": "действие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "63"
+      },
+      "day": 275,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q117",
+      "text": "Предшественники — наши проводники, а не господа.",
+      "author": "Луций Анней Сенека",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_33",
+        "section": "Письмо 33, § 11"
+      },
+      "day": 276,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q059",
+      "text": "Ничто не приходит слишком рано или поздно, если приходит вовремя.",
+      "author": "Марк Аврелий",
+      "topic": "терпение",
+      "type": "adaptation",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга IV"
+      },
+      "day": 277,
+      "display_attribution": "Адаптация · Марк Аврелий"
+    },
+    {
+      "id": "q362",
+      "text": "Человек приобретает привычку учиться.",
+      "author": "Джон Дьюи",
+      "topic": "привычки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава IV"
+      },
+      "day": 278,
+      "display_attribution": "Джон Дьюи"
+    },
+    {
+      "id": "q158",
+      "text": "Мир — зеркало, в которое нужно смотреть, чтобы узнать себя.",
+      "author": "Мишель де Монтень",
+      "topic": "самопознание",
+      "type": "adaptation",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 279,
+      "display_attribution": "Адаптация · Мишель де Монтень"
+    },
+    {
+      "id": "q127",
+      "text": "Беседа делает человека находчивым.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 280,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q006",
+      "text": "Размышлять без учения — опасно.",
+      "author": "Конфуций",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга II"
+      },
+      "day": 281,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q224",
+      "text": "Глупое постоянство — пугало маленьких умов.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "перемены",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Уверенность в себе"
+      },
+      "day": 282,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q050",
+      "text": "Правдивые слова не изысканны.",
+      "author": "Лао-цзы",
+      "topic": "искренность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "81"
+      },
+      "day": 283,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q124",
+      "text": "Даже старому человеку следует продолжать учиться.",
+      "author": "Луций Анней Сенека",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_76",
+        "section": "Письмо 76, § 3"
+      },
+      "day": 284,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q095",
+      "text": "Первое и необходимое в философии — применять её принципы.",
+      "author": "Эпиктет",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава LI"
+      },
+      "day": 285,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q240",
+      "text": "Я отправился в лес, потому что хотел жить осознанно.",
+      "author": "Генри Дэвид Торо",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Где я жил и для чего"
+      },
+      "day": 286,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q178",
+      "text": "Красноречие — живопись мысли.",
+      "author": "Блез Паскаль",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 26 (нумерация Brunschvicg)"
+      },
+      "day": 287,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q315",
+      "text": "Называть оппонентов плохими людьми — худший проступок спорщика.",
+      "author": "Джон Стюарт Милль",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 288,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q204",
+      "text": "Так легче обнаружить природные склонности.",
+      "author": "Платон",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VII"
+      },
+      "day": 289,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q023",
+      "text": "Ошибаться и не исправляться — вот настоящая ошибка.",
+      "author": "Конфуций",
+      "topic": "ошибки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга XV"
+      },
+      "day": 290,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q056",
+      "text": "Храни способность составлять собственные суждения.",
+      "author": "Марк Аврелий",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга III"
+      },
+      "day": 291,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q262",
+      "text": "Кот в перчатках мышей не ловит.",
+      "author": "Бенджамин Франклин",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 292,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q037",
+      "text": "Великие дела начинаются с малого.",
+      "author": "Лао-цзы",
+      "topic": "развитие",
+      "type": "adaptation",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "63"
+      },
+      "day": 293,
+      "display_attribution": "Адаптация · Лао-цзы"
+    },
+    {
+      "id": "q300",
+      "text": "Первейшая цель достойного честолюбия — стать человеком.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "характер",
+      "type": "adaptation",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Введение"
+      },
+      "day": 294,
+      "display_attribution": "Адаптация · Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q143",
+      "text": "Нет большего льстеца, чем мы сами для себя.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О дружбе"
+      },
+      "day": 295,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q162",
+      "text": "Чтение хороших книг — беседа с лучшими людьми прошлого.",
+      "author": "Рене Декарт",
+      "topic": "чтение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть I"
+      },
+      "day": 296,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q208",
+      "text": "Всякая душа обладает способностью учиться.",
+      "author": "Платон",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VII"
+      },
+      "day": 297,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q150",
+      "text": "Пусть ученик применит изученное сотней разных способов.",
+      "author": "Мишель де Монтень",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 298,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q304",
+      "text": "Истинность мнения — часть его полезности.",
+      "author": "Джон Стюарт Милль",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 299,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q360",
+      "text": "Мы воспитываем косвенно — через среду.",
+      "author": "Джон Дьюи",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава II"
+      },
+      "day": 300,
+      "display_attribution": "Джон Дьюи"
+    },
+    {
+      "id": "q120",
+      "text": "Для потомков ещё осталось многое, что можно открыть.",
+      "author": "Луций Анней Сенека",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_33",
+        "section": "Письмо 33, § 11"
+      },
+      "day": 301,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q085",
+      "text": "Будь одним человеком — хорошим или плохим.",
+      "author": "Эпиктет",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XXVIII"
+      },
+      "day": 302,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q051",
+      "text": "Найди время научиться чему-нибудь хорошему.",
+      "author": "Марк Аврелий",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга II"
+      },
+      "day": 303,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q336",
+      "text": "Мы знаем, кто мы, но не знаем, кем можем стать.",
+      "author": "Уильям Шекспир",
+      "topic": "возможности",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Гамлет, IV.5"
+      },
+      "day": 304,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q186",
+      "text": "Одной ласточки недостаточно, чтобы наступила весна.",
+      "author": "Аристотель",
+      "topic": "терпение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга I"
+      },
+      "day": 305,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q022",
+      "text": "Благородный человек требователен к себе.",
+      "author": "Конфуций",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга XV"
+      },
+      "day": 306,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q044",
+      "text": "Мягкое побеждает твёрдое.",
+      "author": "Лао-цзы",
+      "topic": "терпение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "78"
+      },
+      "day": 307,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q258",
+      "text": "Небольшая небрежность может привести к большой беде.",
+      "author": "Бенджамин Франклин",
+      "topic": "внимание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 308,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q113",
+      "text": "Путь наставлений долог, путь примеров — короток и действенен.",
+      "author": "Луций Анней Сенека",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_6",
+        "section": "Письмо 6, § 5"
+      },
+      "day": 309,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q100",
+      "text": "Веди себя в жизни как на пиру.",
+      "author": "Эпиктет",
+      "topic": "мера",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XV"
+      },
+      "day": 310,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q333",
+      "text": "Истина слишком велика для одного-единственного ума.",
+      "author": "Уильям Джеймс",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "Предисловие"
+      },
+      "day": 311,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q135",
+      "text": "Поэзия делает людей остроумными.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 312,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q185",
+      "text": "Любознательность нередко бывает лишь тщеславием.",
+      "author": "Блез Паскаль",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 152 (нумерация Brunschvicg)"
+      },
+      "day": 313,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q073",
+      "text": "Ты можешь начать жить заново.",
+      "author": "Марк Аврелий",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VII"
+      },
+      "day": 314,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q253",
+      "text": "Солнце — всего лишь утренняя звезда.",
+      "author": "Генри Дэвид Торо",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Заключение"
+      },
+      "day": 315,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q352",
+      "text": "Краткость — душа ума.",
+      "author": "Уильям Шекспир",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Гамлет, II.2"
+      },
+      "day": 316,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q155",
+      "text": "Молчание и скромность — полезные качества в беседе.",
+      "author": "Мишель де Монтень",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты",
+        "url": "https://www.gutenberg.org/ebooks/3600",
+        "section": "Книга I, «О воспитании детей» (I.25 в издании Cotton; I.26 в ряде других изданий)"
+      },
+      "day": 317,
+      "display_attribution": "Мишель де Монтень"
+    },
+    {
+      "id": "q018",
+      "text": "Много слушать, выбирать хорошее и следовать ему.",
+      "author": "Конфуций",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга VII"
+      },
+      "day": 318,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q165",
+      "text": "Разделяй каждую трудность на столько частей, сколько нужно для решения.",
+      "author": "Рене Декарт",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Рассуждение о методе",
+        "url": "https://www.gutenberg.org/ebooks/59",
+        "section": "Часть II"
+      },
+      "day": 319,
+      "display_attribution": "Рене Декарт"
+    },
+    {
+      "id": "q189",
+      "text": "Строителями становятся, строя.",
+      "author": "Аристотель",
+      "topic": "практика",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга II"
+      },
+      "day": 320,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q086",
+      "text": "Определи для себя характер, который хочешь сохранять.",
+      "author": "Эпиктет",
+      "topic": "характер",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XXXIII"
+      },
+      "day": 321,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q272",
+      "text": "Досуг — время для полезного дела.",
+      "author": "Бенджамин Франклин",
+      "topic": "время",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 322,
+      "display_attribution": "Бенджамин Франклин"
+    },
+    {
+      "id": "q242",
+      "text": "Сколько людей открыли новую эпоху жизни, прочитав книгу!",
+      "author": "Генри Дэвид Торо",
+      "topic": "чтение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Чтение"
+      },
+      "day": 323,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q028",
+      "text": "Знающий других проницателен; знающий себя мудр.",
+      "author": "Лао-цзы",
+      "topic": "самопознание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "33"
+      },
+      "day": 324,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q181",
+      "text": "Порядок слов меняет смысл.",
+      "author": "Блез Паскаль",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 23 (нумерация Brunschvicg)"
+      },
+      "day": 325,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q075",
+      "text": "Никто не помешает тебе жить согласно собственной природе.",
+      "author": "Марк Аврелий",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VI"
+      },
+      "day": 326,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q118",
+      "text": "Выскажи что-нибудь своё.",
+      "author": "Луций Анней Сенека",
+      "topic": "творчество",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_33",
+        "section": "Письмо 33, § 7"
+      },
+      "day": 327,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q328",
+      "text": "«Давай покажу» действует лучше, чем «делай по книге».",
+      "author": "Уильям Джеймс",
+      "topic": "преподавание",
+      "type": "adaptation",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "VII"
+      },
+      "day": 328,
+      "display_attribution": "Адаптация · Уильям Джеймс"
+    },
+    {
+      "id": "q309",
+      "text": "Совершающий что-либо только по обычаю не делает выбора.",
+      "author": "Джон Стюарт Милль",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 329,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q005",
+      "text": "Учиться без размышления — напрасный труд.",
+      "author": "Конфуций",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга II"
+      },
+      "day": 330,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q359",
+      "text": "Образование — процесс заботы, взращивания и развития.",
+      "author": "Джон Дьюи",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Демократия и образование",
+        "url": "https://www.gutenberg.org/ebooks/852",
+        "section": "Глава II"
+      },
+      "day": 331,
+      "display_attribution": "Джон Дьюи"
+    },
+    {
+      "id": "q200",
+      "text": "Благодетели любят тех, кому помогли.",
+      "author": "Аристотель",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Никомахова этика",
+        "url": "https://www.gutenberg.org/ebooks/8438",
+        "section": "Книга IX"
+      },
+      "day": 332,
+      "display_attribution": "Аристотель"
+    },
+    {
+      "id": "q033",
+      "text": "Большое дерево вырастает из крошечного ростка.",
+      "author": "Лао-цзы",
+      "topic": "развитие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "64"
+      },
+      "day": 333,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q140",
+      "text": "Всеми средствами старайся приобретать хорошие привычки.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "привычки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О привычке и воспитании"
+      },
+      "day": 334,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q353",
+      "text": "В мире больше вещей, чем снится нашей философии.",
+      "author": "Уильям Шекспир",
+      "topic": "познание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Гамлет, I.5"
+      },
+      "day": 335,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q103",
+      "text": "Пока мы откладываем, жизнь проходит.",
+      "author": "Луций Анней Сенека",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_1",
+        "section": "Письмо 1, § 2"
+      },
+      "day": 336,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q209",
+      "text": "Образование поворачивает душу к свету.",
+      "author": "Платон",
+      "topic": "преподавание",
+      "type": "adaptation",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VII"
+      },
+      "day": 337,
+      "display_attribution": "Адаптация · Платон"
+    },
+    {
+      "id": "q237",
+      "text": "Простота, простота, простота!",
+      "author": "Генри Дэвид Торо",
+      "topic": "мера",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Уолден, или Жизнь в лесу",
+        "url": "https://www.gutenberg.org/ebooks/205",
+        "section": "Где я жил и для чего"
+      },
+      "day": 338,
+      "display_attribution": "Генри Дэвид Торо"
+    },
+    {
+      "id": "q310",
+      "text": "Нет причин строить все жизни по одному образцу.",
+      "author": "Джон Стюарт Милль",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 339,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q057",
+      "text": "Всё меняется.",
+      "author": "Марк Аврелий",
+      "topic": "перемены",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга IV"
+      },
+      "day": 340,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q004",
+      "text": "Повторяя старое и узнавая новое, можно стать учителем.",
+      "author": "Конфуций",
+      "topic": "преподавание",
+      "type": "adaptation",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга II"
+      },
+      "day": 341,
+      "display_attribution": "Адаптация · Конфуций"
+    },
+    {
+      "id": "q289",
+      "text": "Учёба без интереса портит память.",
+      "author": "Леонардо да Винчи",
+      "topic": "интерес",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Записные книжки",
+        "url": "https://www.gutenberg.org/ebooks/5000",
+        "section": "Запись 1176"
+      },
+      "day": 342,
+      "display_attribution": "Леонардо да Винчи"
+    },
+    {
+      "id": "q026",
+      "text": "Высшее благо подобно воде.",
+      "author": "Лао-цзы",
+      "topic": "доброта",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "8"
+      },
+      "day": 343,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q321",
+      "text": "Психология — наука, преподавание — искусство.",
+      "author": "Уильям Джеймс",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Беседы с учителями о психологии и со студентами о некоторых идеалах жизни",
+        "url": "https://www.gutenberg.org/ebooks/16287",
+        "section": "I"
+      },
+      "day": 344,
+      "display_attribution": "Уильям Джеймс"
+    },
+    {
+      "id": "q345",
+      "text": "Всё наше прошлое — лишь пролог.",
+      "author": "Уильям Шекспир",
+      "topic": "начало",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Пьесы",
+        "url": "https://www.gutenberg.org/ebooks/100",
+        "section": "Буря, II.1"
+      },
+      "day": 345,
+      "display_attribution": "Уильям Шекспир"
+    },
+    {
+      "id": "q230",
+      "text": "Ничто великое не совершалось без воодушевления.",
+      "author": "Ральф Уолдо Эмерсон",
+      "topic": "интерес",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты. Первый сборник",
+        "url": "https://www.gutenberg.org/ebooks/2944",
+        "section": "Круги"
+      },
+      "day": 346,
+      "display_attribution": "Ральф Уолдо Эмерсон"
+    },
+    {
+      "id": "q093",
+      "text": "Не показывай принципы — показывай поступки, которыми они стали.",
+      "author": "Эпиктет",
+      "topic": "действие",
+      "type": "adaptation",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава XLVI"
+      },
+      "day": 347,
+      "display_attribution": "Адаптация · Эпиктет"
+    },
+    {
+      "id": "q137",
+      "text": "Задавай вопросы по силам собеседнику.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "общение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О беседе"
+      },
+      "day": 348,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q296",
+      "text": "Истинное изящество рождается из независимости ума.",
+      "author": "Мэри Уолстонкрафт",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "В защиту прав женщины",
+        "url": "https://www.gutenberg.org/ebooks/3420",
+        "section": "Глава V"
+      },
+      "day": 349,
+      "display_attribution": "Мэри Уолстонкрафт"
+    },
+    {
+      "id": "q071",
+      "text": "Не уставай делать то, что приносит пользу другим.",
+      "author": "Марк Аврелий",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Наедине с собой",
+        "url": "https://www.gutenberg.org/ebooks/55317",
+        "section": "Книга VII"
+      },
+      "day": 350,
+      "display_attribution": "Марк Аврелий"
+    },
+    {
+      "id": "q042",
+      "text": "Обучать можно и без слов.",
+      "author": "Лао-цзы",
+      "topic": "преподавание",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "2"
+      },
+      "day": 351,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q105",
+      "text": "Одно дело — помнить, другое — знать.",
+      "author": "Луций Анней Сенека",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Нравственные письма к Луцилию",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius/Letter_33",
+        "section": "Письмо 33, § 8"
+      },
+      "day": 352,
+      "display_attribution": "Луций Анней Сенека"
+    },
+    {
+      "id": "q318",
+      "text": "Свобода мысли нужна не только великим мыслителям.",
+      "author": "Джон Стюарт Милль",
+      "topic": "мышление",
+      "type": "adaptation",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "II"
+      },
+      "day": 353,
+      "display_attribution": "Адаптация · Джон Стюарт Милль"
+    },
+    {
+      "id": "q173",
+      "text": "Будем же учиться хорошо мыслить.",
+      "author": "Блез Паскаль",
+      "topic": "мышление",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Мысли",
+        "url": "https://www.gutenberg.org/ebooks/18269",
+        "section": "Фрагмент 347 (нумерация Brunschvicg)"
+      },
+      "day": 354,
+      "display_attribution": "Блез Паскаль"
+    },
+    {
+      "id": "q207",
+      "text": "Привычка и упражнение могут изменить человека.",
+      "author": "Платон",
+      "topic": "привычки",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Государство",
+        "url": "https://www.gutenberg.org/ebooks/1497",
+        "section": "Книга VII"
+      },
+      "day": 355,
+      "display_attribution": "Платон"
+    },
+    {
+      "id": "q019",
+      "text": "Учись так, словно не можешь достичь цели и боишься потерять достигнутое.",
+      "author": "Конфуций",
+      "topic": "учёба",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга VIII"
+      },
+      "day": 356,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q257",
+      "text": "Не теряй время: из него сделана жизнь.",
+      "author": "Бенджамин Франклин",
+      "topic": "время",
+      "type": "adaptation",
+      "source": {
+        "title": "Путь к богатству",
+        "url": "https://www.gutenberg.org/ebooks/43855",
+        "section": "Речь отца Авраама"
+      },
+      "day": 357,
+      "display_attribution": "Адаптация · Бенджамин Франклин"
+    },
+    {
+      "id": "q145",
+      "text": "Прошлое ушло и невозвратимо.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О мести"
+      },
+      "day": 358,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q031",
+      "text": "Упорно продолжающий действовать обладает волей.",
+      "author": "Лао-цзы",
+      "topic": "настойчивость",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "33"
+      },
+      "day": 359,
+      "display_attribution": "Лао-цзы"
+    },
+    {
+      "id": "q076",
+      "text": "Одни вещи зависят от нас, другие — нет.",
+      "author": "Эпиктет",
+      "topic": "спокойствие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Энхиридион",
+        "url": "https://www.gutenberg.org/ebooks/45109",
+        "section": "Глава I"
+      },
+      "day": 360,
+      "display_attribution": "Эпиктет"
+    },
+    {
+      "id": "q306",
+      "text": "Люди не похожи на овец.",
+      "author": "Джон Стюарт Милль",
+      "topic": "самостоятельность",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "О свободе",
+        "url": "https://www.gutenberg.org/ebooks/34901",
+        "section": "III"
+      },
+      "day": 361,
+      "display_attribution": "Джон Стюарт Милль"
+    },
+    {
+      "id": "q130",
+      "text": "Некоторые книги следует пробовать, другие — проглатывать, немногие — пережёвывать и усваивать.",
+      "author": "Фрэнсис Бэкон",
+      "topic": "чтение",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Опыты, или Наставления нравственные и политические",
+        "url": "https://www.gutenberg.org/ebooks/575",
+        "section": "О занятиях науками"
+      },
+      "day": 362,
+      "display_attribution": "Фрэнсис Бэкон"
+    },
+    {
+      "id": "q025",
+      "text": "Благородный человек помогает другим развивать хорошее.",
+      "author": "Конфуций",
+      "topic": "поддержка",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга XII"
+      },
+      "day": 363,
+      "display_attribution": "Конфуций"
+    },
+    {
+      "id": "q040",
+      "text": "Знающий меру не навлекает на себя беды.",
+      "author": "Лао-цзы",
+      "topic": "спокойствие",
+      "type": "adaptation",
+      "source": {
+        "title": "Дао дэ цзин",
+        "url": "https://www.gutenberg.org/ebooks/216",
+        "section": "44"
+      },
+      "day": 364,
+      "display_attribution": "Адаптация · Лао-цзы"
+    },
+    {
+      "id": "q010",
+      "text": "Благородный человек сдержан в словах и деятелен в поступках.",
+      "author": "Конфуций",
+      "topic": "действие",
+      "type": "translated_excerpt",
+      "source": {
+        "title": "Лунь юй",
+        "url": "https://www.gutenberg.org/ebooks/3330",
+        "section": "Книга XIV"
+      },
+      "day": 365,
+      "display_attribution": "Конфуций"
+    }
+  ]
+}

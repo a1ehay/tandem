@@ -11,7 +11,9 @@
   },
   "vars": {
     "ALLOWED_ORIGIN": "https://tandem.aleksejgladkih4.workers.dev",
-    "AUTH_PUBLIC_ORIGIN": "https://tandem.aleksejgladkih4.workers.dev"
+    "AUTH_PUBLIC_ORIGIN": "https://tandem.aleksejgladkih4.workers.dev",
+    "AUTH_FROM_EMAIL": "Tutdesk <noreply@tutdesk.space>",
+    "LIVEKIT_URL": "wss://tandem-ort23xrl.livekit.cloud"
   },
   "d1_databases": [
     {
@@ -19,6 +21,12 @@
       "database_name": "tandem-auth",
       "database_id": "d3dcbc38-1729-47a3-b9ae-1f8991c6a52b",
       "migrations_dir": "cloudflare/migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "HOMEWORK_FILES",
+      "id": "8fec99f48ff6438b8f7ac23f1d421a5b"
     }
   ]
 }
