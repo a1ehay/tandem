@@ -1,8 +1,16 @@
-# Go backend guidance
+# Backend guidance
 
-- Keep this service independent from the frontend build and Cloudflare Worker.
-- Use the Go standard library by default. Add third-party packages only when a task requires them.
-- Keep startup configuration explicit through environment variables, validate it before listening, and retain graceful shutdown behavior.
-- Keep HTTP routing and response behavior in `internal/httpserver`; keep environment parsing in `internal/config`; keep `cmd/tandem-api` focused on process startup and shutdown.
-- Do not add real credentials to `.env.example`; document variable names and safe defaults only.
-- From `backend/`, run `go test ./...` and `go vet ./...` after Go changes. For HTTP behavior changes, exercise the affected route and method/status responses.
+- Разрабатывать backend как независимое Java/Spring Boot приложение. Не связывать его сборку с frontend, Cloudflare Worker или Flyway runner.
+- Применять SOLID и Clean Architecture прагматично: проектировать по ответственностям и устойчивым границам, избегать speculative abstractions и универсальных слоёв без конкретной потребности.
+- Держать бизнес-правила в domain/service; HTTP, Spring MVC, JPA, JDBC и инфраструктурные SDK — во внешних слоях.
+- Направление runtime-вызовов: `http → service → repo`. Направление compile-time зависимостей держать к ядру: adapters могут реализовать порты, определённые application/domain слоем; domain не импортирует внешние слои.
+- Контроллеры не обращаются к репозиториям или EntityManager напрямую. Сервисы не принимают HTTP DTO и не возвращают HTTP-ответы. JPA entities не выдавать через API.
+- Репозитории должны решать задачи загрузки/сохранения и маппинга. Правила доступа, переходы состояний и сценарии не прятать в repository, entity callbacks или контроллерах.
+- Использовать Spring Data JPA/Hibernate для обычного доступа к сущностям; `JdbcTemplate` — для конкретных сложных запросов, которые неудобно или неэффективно выражаются ORM. Не дублировать один запрос несколькими технологиями.
+- Схему PostgreSQL менять только новой версионированной Flyway SQL migration в `database/src/main/resources/db/migration`. Не редактировать уже применённые миграции и не включать Hibernate schema generation; `ddl-auto` остаётся `validate`.
+- Границы транзакций задавать на application/service use case. Не держать транзакцию открытой во время внешних HTTP-вызовов, отправки почты или LiveKit-вызова.
+- Сохранять API-контракт в `docs/backend/api.yaml`: изменения маршрутов, DTO, статусов или ошибок должны синхронно отражаться в контракте.
+- Валидировать вход на HTTP-границе и повторно защищать целостность ограничениями БД. Отдавать ошибки в согласованном Problem Details формате; не возвращать stack trace, SQL или секреты.
+- Проверять права доступа в серверном контексте каждого use case. Не считать присланные клиентом owner/tutor/student ID доказательством доступа.
+- Хранить конфигурацию через environment/external config. Не коммитить секреты, реальные данные, локальные `.env`, `target/` и сгенерированные артефакты.
+- Версии Java и Spring задаются в `pom.xml`. После изменения backend собирать проект из `backend/` командой `mvn -DskipTests package`; для API/schema изменений дополнительно выполнять релевантные проверки, указанные в задаче.

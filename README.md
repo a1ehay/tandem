@@ -16,7 +16,21 @@ Tutdesk — рабочее пространство репетитора и уч
 py -m http.server 8000 --directory frontend
 ```
 
-Откройте <http://localhost:8000>. Чтобы собрать статические файлы:
+Откройте <http://localhost:8000>. Если команда `py` недоступна, запустите `python -m http.server 8000 --directory frontend`. Камера, микрофон и захват экрана доступны через localhost или защищённый HTTPS-сайт; браузер запросит разрешение после нажатия соответствующей кнопки.
+
+## Структура проекта
+
+- `frontend/src/client/` — клиентские ES-модули: состояние и локальное хранение, общие утилиты, шаблоны экранов, формы, геометрия доски и видеокомната.
+- `frontend/` — исходники статического сайта и точка входа браузерного приложения.
+- `cloudflare/worker.js` и `cloudflare/livekit-token.js` — маршрутизация Cloudflare Worker и выпуск временных токенов LiveKit.
+- `backend/` — независимый Java/Spring Boot API на Java 25 LTS. Инструкции запуска — в [backend/README.md](backend/README.md), контракт — в [docs/backend/api.yaml](docs/backend/api.yaml).
+- `services/realtime-service/` — подготовленная структура для будущего Go realtime-сервиса; разделение ответственности описано в [ARCHITECTURE.md](ARCHITECTURE.md).
+- `database/` — отдельный Java/Maven-проект миграций PostgreSQL с Flyway; инструкции запуска — в [database/README.md](database/README.md), проект схемы — в [docs/database/database.md](docs/database/database.md).
+- `compose.yaml` — единый Compose для PostgreSQL; переменные описаны в `.env.example`, а значения для каждого окружения задаются в локальном `.env` или в секретах production-сервера.
+
+## Сборка сайта для публикации
+
+Установите Node.js, если он ещё не установлен, затем из папки проекта выполните:
 
 ```powershell
 node .\build.mjs
@@ -85,7 +99,7 @@ Nginx будет раздавать содержимое `dist/` и прокси
 
 - `frontend/` — ванильный JavaScript, HTML и CSS сайта.
 - `cloudflare/` — Worker для аккаунтов, D1 и LiveKit.
-- `backend/` — независимый Go HTTP-сервис; пока предоставляет `/healthz` и не участвует в сборке сайта.
+- `backend/` — независимый Java/Spring Boot HTTP API; не участвует в сборке сайта.
 - `build.mjs` — копирует сайт в `dist/`.
 
-Go-сервис запускается отдельно из `backend/` командой `go run ./cmd/tandem-api`.
+Java API и миграции PostgreSQL запускаются отдельно по инструкциям в [backend/README.md](backend/README.md) и [database/README.md](database/README.md).

@@ -1,0 +1,555 @@
+openapi: 3.1.0
+info:
+  title: Tandem Java Core API
+  version: 1.0.0
+  summary: Target API for Tandem tutoring workspaces.
+  license: { name: Proprietary, identifier: LicenseRef-Proprietary }
+  description: |
+    Target contract for Java Core under /api/v1. It replaces the earlier draft and
+    is not a description of the deployed Cloudflare Worker. Java Core will own
+    durable business data and authorization.
+
+    It covers accounts, tutor-student links, lessons, tasks, planner, private notes,
+    groups, messages, videos, files, subscriptions and LiveKit room tokens. Boards
+    and realtime synchronization are deliberately outside this API version.
+
+    PostgreSQL V1 needs new Flyway migrations before implementation: credentials and
+    refresh sessions, email verification/change/reset tokens, OAuth identities, the
+    free plan, groups, messages, files, videos and notes. Client-supplied IDs never
+    prove resource access.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+tags:
+  - { name: Authentication, description: Registration, credentials, verification and OAuth. }
+  - { name: Account, description: Current account profile and subscription. }
+  - { name: Tutor students, description: Tutor-owned relationships with verified students. }
+  - { name: Lessons, description: Scheduling, state transitions and authorized rooms. }
+  - { name: Tasks, description: Personal tasks and student homework. }
+  - { name: Planner and notes, description: Private workspace documents. }
+  - { name: Collaboration, description: Groups and direct or group messages. }
+  - { name: Learning materials, description: Video lessons and protected files. }
+  - { name: Operations, description: Liveness and service health. }
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: registerAccount
+      summary: Register and send an email-verification link
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/RegisterRequest' } } } }
+      responses:
+        '202': { $ref: '#/components/responses/Accepted' }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+        '409': { $ref: '#/components/responses/ConflictProblem' }
+        '429': { $ref: '#/components/responses/RateLimitProblem' }
+  /auth/login:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: login
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/LoginRequest' } } } }
+      responses:
+        '200': { description: Access token and a rotated refresh cookie., headers: { Set-Cookie: { $ref: '#/components/headers/RefreshCookie' } }, content: { application/json: { schema: { $ref: '#/components/schemas/AuthResponse' } } } }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+        '401': { $ref: '#/components/responses/UnauthorizedProblem' }
+        '403': { $ref: '#/components/responses/ForbiddenProblem' }
+        '429': { $ref: '#/components/responses/RateLimitProblem' }
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      security: [{ refreshCookie: [] }]
+      operationId: refreshAccessToken
+      summary: Rotate refresh cookie and issue a new access token
+      responses:
+        '200': { description: New access token and rotated cookie., headers: { Set-Cookie: { $ref: '#/components/headers/RefreshCookie' } }, content: { application/json: { schema: { $ref: '#/components/schemas/TokenResponse' } } } }
+        '401': { description: 'Missing, expired or revoked refresh cookie.', headers: { Set-Cookie: { $ref: '#/components/headers/ClearedRefreshCookie' } }, content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      security: [{ refreshCookie: [] }]
+      operationId: logout
+      responses:
+        '204': { description: Session revoked and refresh cookie cleared., headers: { Set-Cookie: { $ref: '#/components/headers/ClearedRefreshCookie' } } }
+  /auth/email/verify:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: verifyEmail
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/TokenRequest' } } } }
+      responses: { '204': { description: Email verified. }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /auth/email/resend-verification:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: resendEmailVerification
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EmailRequest' } } } }
+      responses: { '202': { $ref: '#/components/responses/Accepted' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '429': { $ref: '#/components/responses/RateLimitProblem' } }
+  /auth/password-reset/request:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: requestPasswordReset
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EmailRequest' } } } }
+      responses: { '202': { $ref: '#/components/responses/Accepted' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '429': { $ref: '#/components/responses/RateLimitProblem' } }
+  /auth/password-reset/confirm:
+    post:
+      tags: [Authentication]
+      security: []
+      operationId: confirmPasswordReset
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/PasswordResetRequest' } } } }
+      responses: { '204': { description: Password changed; all refresh sessions revoked. }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /auth/oauth/{provider}/start:
+    get:
+      tags: [Authentication]
+      security: []
+      operationId: startOAuth
+      summary: Start browser OAuth authorization
+      parameters: [{ $ref: '#/components/parameters/OAuthProvider' }]
+      responses: { '302': { description: Redirect to provider. }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '503': { $ref: '#/components/responses/ProviderNotConfiguredProblem' } }
+  /auth/oauth/{provider}/callback:
+    get:
+      tags: [Authentication]
+      security: []
+      operationId: completeOAuth
+      parameters: [{ $ref: '#/components/parameters/OAuthProvider' }]
+      responses: { '302': { description: Redirect to application after completion. }, '400': { $ref: '#/components/responses/ValidationProblem' }, '503': { $ref: '#/components/responses/ProviderNotConfiguredProblem' } }
+  /me:
+    get:
+      tags: [Account]
+      operationId: getCurrentUser
+      responses: { '200': { $ref: '#/components/responses/CurrentUser' }, '401': { $ref: '#/components/responses/UnauthorizedProblem' } }
+    patch:
+      tags: [Account]
+      operationId: updateCurrentUser
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateProfileRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/CurrentUser' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '401': { $ref: '#/components/responses/UnauthorizedProblem' } }
+  /me/email/change:
+    post:
+      tags: [Account]
+      operationId: requestEmailChange
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EmailRequest' } } } }
+      responses: { '202': { $ref: '#/components/responses/Accepted' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /me/email/confirm:
+    post:
+      tags: [Account]
+      operationId: confirmEmailChange
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/TokenRequest' } } } }
+      responses: { '204': { description: Email changed. }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /plans:
+    get:
+      tags: [Account]
+      security: []
+      operationId: listPlans
+      summary: List product plans; billing is outside this API
+      responses: { '200': { description: Catalogue., content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Plan' } } } } } }
+  /me/subscription:
+    get:
+      tags: [Account]
+      operationId: getSubscription
+      responses: { '200': { $ref: '#/components/responses/Subscription' }, '401': { $ref: '#/components/responses/UnauthorizedProblem' } }
+  /tutor/students:
+    get:
+      tags: [Tutor students]
+      operationId: listTutorStudents
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses: { '200': { $ref: '#/components/responses/TutorStudentPage' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
+    post:
+      tags: [Tutor students]
+      operationId: linkVerifiedStudent
+      summary: Link tutor with an existing verified student by email
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateTutorStudentRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/TutorStudent' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /tutor/students/{studentId}:
+    get:
+      tags: [Tutor students]
+      operationId: getTutorStudent
+      parameters: [{ $ref: '#/components/parameters/StudentId' }]
+      responses: { '200': { $ref: '#/components/responses/TutorStudent' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    patch:
+      tags: [Tutor students]
+      operationId: updateTutorStudent
+      parameters: [{ $ref: '#/components/parameters/StudentId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateTutorStudentRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/TutorStudent' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Tutor students]
+      operationId: unlinkTutorStudent
+      parameters: [{ $ref: '#/components/parameters/StudentId' }]
+      responses: { '204': { description: Link permanently removed. }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /lessons:
+    get:
+      tags: [Lessons]
+      operationId: listLessons
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/LessonStatus' }, { $ref: '#/components/parameters/From' }, { $ref: '#/components/parameters/To' }]
+      responses: { '200': { $ref: '#/components/responses/LessonPage' } }
+    post:
+      tags: [Lessons]
+      operationId: createLesson
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateLessonRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Lesson' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /lessons/{lessonId}:
+    get:
+      tags: [Lessons]
+      operationId: getLesson
+      parameters: [{ $ref: '#/components/parameters/LessonId' }]
+      responses: { '200': { $ref: '#/components/responses/Lesson' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    patch:
+      tags: [Lessons]
+      operationId: updateLesson
+      parameters: [{ $ref: '#/components/parameters/LessonId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateLessonRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Lesson' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /lessons/{lessonId}/status:
+    patch:
+      tags: [Lessons]
+      operationId: updateLessonStatus
+      parameters: [{ $ref: '#/components/parameters/LessonId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateLessonStatusRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Lesson' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /lessons/{lessonId}/room-token:
+    post:
+      tags: [Lessons]
+      operationId: createLessonRoomToken
+      summary: Issue a short-lived LiveKit token after server-side access checks
+      parameters: [{ $ref: '#/components/parameters/LessonId' }]
+      responses: { '200': { $ref: '#/components/responses/RoomToken' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '503': { $ref: '#/components/responses/ServiceUnavailableProblem' } }
+  /tasks:
+    get:
+      tags: [Tasks]
+      operationId: listTasks
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/TaskStatus' }, { $ref: '#/components/parameters/TaskKind' }]
+      responses: { '200': { $ref: '#/components/responses/TaskPage' } }
+    post:
+      tags: [Tasks]
+      operationId: createTask
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateTaskRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Task' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
+  /tasks/{taskId}:
+    get:
+      tags: [Tasks]
+      operationId: getTask
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      responses: { '200': { $ref: '#/components/responses/Task' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    patch:
+      tags: [Tasks]
+      operationId: updateTask
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateTaskRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Task' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Tasks]
+      operationId: archiveTask
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      responses: { '204': { description: Task archived. }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /tasks/{taskId}/status:
+    patch:
+      tags: [Tasks]
+      operationId: updateTaskStatus
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateTaskStatusRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Task' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /tasks/{taskId}/copy:
+    post:
+      tags: [Tasks]
+      operationId: copyTask
+      parameters: [{ $ref: '#/components/parameters/TaskId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CopyTaskRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Task' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /planner:
+    get:
+      tags: [Planner and notes]
+      operationId: getPlanner
+      responses: { '200': { $ref: '#/components/responses/Planner' } }
+    put:
+      tags: [Planner and notes]
+      operationId: replacePlanner
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdatePlannerRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Planner' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '409': { $ref: '#/components/responses/ConflictProblem' } }
+  /notes:
+    get:
+      tags: [Planner and notes]
+      operationId: listNotes
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses: { '200': { $ref: '#/components/responses/NotePage' } }
+    post:
+      tags: [Planner and notes]
+      operationId: createNote
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/NoteWriteRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Note' }, '400': { $ref: '#/components/responses/ValidationProblem' } }
+  /notes/{noteId}:
+    get:
+      tags: [Planner and notes]
+      operationId: getNote
+      parameters: [{ $ref: '#/components/parameters/NoteId' }]
+      responses: { '200': { $ref: '#/components/responses/Note' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    patch:
+      tags: [Planner and notes]
+      operationId: updateNote
+      parameters: [{ $ref: '#/components/parameters/NoteId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/NoteWriteRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Note' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Planner and notes]
+      operationId: deleteNote
+      parameters: [{ $ref: '#/components/parameters/NoteId' }]
+      responses: { '204': { description: Private note deleted. }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /groups:
+    get:
+      tags: [Collaboration]
+      operationId: listGroups
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses: { '200': { $ref: '#/components/responses/GroupPage' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
+    post:
+      tags: [Collaboration]
+      operationId: createGroup
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/GroupWriteRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Group' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
+  /groups/{groupId}:
+    get:
+      tags: [Collaboration]
+      operationId: getGroup
+      parameters: [{ $ref: '#/components/parameters/GroupId' }]
+      responses: { '200': { $ref: '#/components/responses/Group' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    patch:
+      tags: [Collaboration]
+      operationId: updateGroup
+      parameters: [{ $ref: '#/components/parameters/GroupId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/GroupWriteRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Group' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Collaboration]
+      operationId: deleteGroup
+      parameters: [{ $ref: '#/components/parameters/GroupId' }]
+      responses: { '204': { description: Group deleted. }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /groups/{groupId}/members:
+    put:
+      tags: [Collaboration]
+      operationId: replaceGroupMembers
+      parameters: [{ $ref: '#/components/parameters/GroupId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/StudentIdsRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Group' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /messages:
+    get:
+      tags: [Collaboration]
+      operationId: listMessages
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/CounterpartId' }, { $ref: '#/components/parameters/GroupQueryId' }]
+      responses: { '200': { $ref: '#/components/responses/MessagePage' } }
+    post:
+      tags: [Collaboration]
+      operationId: createMessage
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateMessageRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Message' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /messages/{messageId}:
+    delete:
+      tags: [Collaboration]
+      operationId: deleteMessage
+      parameters: [{ $ref: '#/components/parameters/MessageId' }]
+      responses: { '204': { description: Sender deleted message. }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /videos:
+    get:
+      tags: [Learning materials]
+      operationId: listVideos
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }]
+      responses: { '200': { $ref: '#/components/responses/VideoPage' } }
+    post:
+      tags: [Learning materials]
+      operationId: createVideo
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/VideoWriteRequest' } } } }
+      responses: { '201': { $ref: '#/components/responses/Video' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' } }
+  /videos/{videoId}:
+    patch:
+      tags: [Learning materials]
+      operationId: updateVideo
+      parameters: [{ $ref: '#/components/parameters/VideoId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/VideoWriteRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Video' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Learning materials]
+      operationId: deleteVideo
+      parameters: [{ $ref: '#/components/parameters/VideoId' }]
+      responses: { '204': { description: Video and assignments deleted. }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /videos/{videoId}/assignments:
+    put:
+      tags: [Learning materials]
+      operationId: replaceVideoAssignments
+      parameters: [{ $ref: '#/components/parameters/VideoId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/StudentIdsRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/Video' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /files:
+    get:
+      tags: [Learning materials]
+      operationId: listFiles
+      parameters: [{ $ref: '#/components/parameters/Cursor' }, { $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Folder' }]
+      responses: { '200': { $ref: '#/components/responses/FilePage' } }
+    post:
+      tags: [Learning materials]
+      operationId: uploadFile
+      summary: Upload a library file up to 10 MiB
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary, description: Maximum 10485760 bytes. }
+                folder: { type: string, maxLength: 160, default: '' }
+      responses: { '201': { $ref: '#/components/responses/File' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '413': { $ref: '#/components/responses/TooLargeProblem' }, '415': { $ref: '#/components/responses/UnsupportedMediaTypeProblem' } }
+  /files/{fileId}:
+    get:
+      tags: [Learning materials]
+      operationId: downloadFile
+      summary: Download for owner, grantee or authorized message participant
+      parameters: [{ $ref: '#/components/parameters/FileId' }]
+      responses: { '200': { description: File stream with stored Content-Type and Content-Disposition. }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+    delete:
+      tags: [Learning materials]
+      operationId: deleteFile
+      parameters: [{ $ref: '#/components/parameters/FileId' }]
+      responses: { '204': { description: File and grants permanently deleted. }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /files/{fileId}/grants:
+    put:
+      tags: [Learning materials]
+      operationId: replaceFileGrants
+      parameters: [{ $ref: '#/components/parameters/FileId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/StudentIdsRequest' } } } }
+      responses: { '200': { $ref: '#/components/responses/File' }, '400': { $ref: '#/components/responses/ValidationProblem' }, '403': { $ref: '#/components/responses/ForbiddenProblem' }, '404': { $ref: '#/components/responses/NotFoundProblem' } }
+  /healthz:
+    get:
+      tags: [Operations]
+      security: []
+      operationId: healthz
+      responses: { '200': { description: Process liveness without a database check. } }
+  /actuator/health:
+    get:
+      tags: [Operations]
+      security: []
+      operationId: actuatorHealth
+      responses: { '200': { description: Spring Boot health response. }, '503': { description: Required health contributor unavailable. } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT, description: Short-lived access token; refresh tokens are never accepted here. }
+    refreshCookie: { type: apiKey, in: cookie, name: tandem_refresh, description: 'Secure, HttpOnly, SameSite=Lax token; rotated on refresh and cleared on logout.' }
+  headers:
+    RefreshCookie: { description: 'Rotated tandem_refresh cookie, Secure, HttpOnly, SameSite=Lax, Path=/api/v1/auth.', schema: { type: string } }
+    ClearedRefreshCookie: { description: Expired tandem_refresh cookie with matching attributes., schema: { type: string } }
+  parameters:
+    Cursor: { name: cursor, in: query, schema: { type: string, maxLength: 512 }, description: Opaque cursor returned as nextCursor. }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+    OAuthProvider: { name: provider, in: path, required: true, schema: { type: string, enum: [google, yandex, vk] }, description: Yandex and VK require runtime provider configuration. }
+    StudentId: { name: studentId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    LessonId: { name: lessonId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    TaskId: { name: taskId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    NoteId: { name: noteId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    GroupId: { name: groupId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    MessageId: { name: messageId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    VideoId: { name: videoId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    FileId: { name: fileId, in: path, required: true, schema: { $ref: '#/components/schemas/Uuid' } }
+    LessonStatus: { name: status, in: query, schema: { $ref: '#/components/schemas/LessonStatus' } }
+    TaskStatus: { name: status, in: query, schema: { $ref: '#/components/schemas/TaskStatus' } }
+    TaskKind: { name: kind, in: query, schema: { $ref: '#/components/schemas/TaskKind' } }
+    From: { name: from, in: query, schema: { type: string, format: date-time } }
+    To: { name: to, in: query, schema: { type: string, format: date-time } }
+    CounterpartId: { name: counterpartId, in: query, schema: { $ref: '#/components/schemas/Uuid' } }
+    GroupQueryId: { name: groupId, in: query, schema: { $ref: '#/components/schemas/Uuid' } }
+    Folder: { name: folder, in: query, schema: { type: string, maxLength: 160 } }
+  responses:
+    Accepted: { description: Accepted without disclosing email-account existence. }
+    CurrentUser: { description: Current account., content: { application/json: { schema: { $ref: '#/components/schemas/CurrentUser' } } } }
+    Subscription: { description: Current subscription., content: { application/json: { schema: { $ref: '#/components/schemas/Subscription' } } } }
+    TutorStudent: { description: Tutor-student link., content: { application/json: { schema: { $ref: '#/components/schemas/TutorStudent' } } } }
+    TutorStudentPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/TutorStudentPage' } } } }
+    Lesson: { description: Lesson., content: { application/json: { schema: { $ref: '#/components/schemas/Lesson' } } } }
+    LessonPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/LessonPage' } } } }
+    Task: { description: Task., content: { application/json: { schema: { $ref: '#/components/schemas/Task' } } } }
+    TaskPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/TaskPage' } } } }
+    Planner: { description: Planner., content: { application/json: { schema: { $ref: '#/components/schemas/Planner' } } } }
+    Note: { description: Private note., content: { application/json: { schema: { $ref: '#/components/schemas/Note' } } } }
+    NotePage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/NotePage' } } } }
+    Group: { description: Student group., content: { application/json: { schema: { $ref: '#/components/schemas/Group' } } } }
+    GroupPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/GroupPage' } } } }
+    Message: { description: Message., content: { application/json: { schema: { $ref: '#/components/schemas/Message' } } } }
+    MessagePage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/MessagePage' } } } }
+    Video: { description: Video lesson., content: { application/json: { schema: { $ref: '#/components/schemas/Video' } } } }
+    VideoPage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/VideoPage' } } } }
+    File: { description: File metadata., content: { application/json: { schema: { $ref: '#/components/schemas/File' } } } }
+    FilePage: { description: Cursor page., content: { application/json: { schema: { $ref: '#/components/schemas/FilePage' } } } }
+    RoomToken: { description: LiveKit credential., content: { application/json: { schema: { $ref: '#/components/schemas/RoomToken' } } } }
+    ValidationProblem: { description: Invalid input., content: { application/problem+json: { schema: { $ref: '#/components/schemas/ValidationProblem' } } } }
+    UnauthorizedProblem: { description: Invalid access token., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    ForbiddenProblem: { description: Insufficient role or resource access., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    NotFoundProblem: { description: Resource absent or invisible., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    ConflictProblem: { description: 'State, relation or unique-value conflict.', content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    RateLimitProblem: { description: Rate limit exceeded., headers: { Retry-After: { schema: { type: integer }, description: Seconds until retry. } }, content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    TooLargeProblem: { description: Request or upload too large., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    UnsupportedMediaTypeProblem: { description: Unsupported file content type., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    ServiceUnavailableProblem: { description: Required service unavailable or unconfigured., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+    ProviderNotConfiguredProblem: { description: Provider is contractual but unconfigured in this environment., content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } }
+  schemas:
+    Uuid: { type: string, format: uuid }
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties: { type: { type: string, format: uri-reference }, title: { type: string }, status: { type: integer, minimum: 400, maximum: 599 }, detail: { type: string }, instance: { type: string, format: uri-reference }, code: { type: string }, traceId: { type: string } }
+      additionalProperties: true
+    ValidationProblem:
+      allOf:
+        - { $ref: '#/components/schemas/Problem' }
+        - type: object
+          properties: { errors: { type: array, items: { type: object, required: [field, code, message], properties: { field: { type: string }, code: { type: string }, message: { type: string } } } } }
+    UserRole: { type: string, enum: [tutor, student] }
+    PlanCode: { type: string, enum: [free, light, extreme] }
+    User: { type: object, required: [id, email, displayName, role, emailVerified, createdAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, email: { type: string, format: email }, displayName: { type: string, minLength: 1, maxLength: 120 }, role: { $ref: '#/components/schemas/UserRole' }, gradeLabel: { type: [string, 'null'], maxLength: 80 }, emailVerified: { type: boolean }, createdAt: { type: string, format: date-time } } }
+    CurrentUser: { allOf: [{ $ref: '#/components/schemas/User' }, { type: object, properties: { subscription: { $ref: '#/components/schemas/Subscription' } } }] }
+    RegisterRequest: { type: object, required: [email, password, displayName, role], properties: { email: { type: string, format: email, maxLength: 254 }, password: { type: string, format: password, minLength: 8, maxLength: 128, writeOnly: true }, displayName: { type: string, minLength: 1, maxLength: 120 }, role: { $ref: '#/components/schemas/UserRole' }, gradeLabel: { type: string, maxLength: 80, description: Required for a student. } } }
+    LoginRequest: { type: object, required: [email, password], properties: { email: { type: string, format: email }, password: { type: string, format: password, writeOnly: true } } }
+    EmailRequest: { type: object, required: [email], properties: { email: { type: string, format: email, maxLength: 254 } } }
+    TokenRequest: { type: object, required: [token], properties: { token: { type: string, minLength: 1, maxLength: 512 } } }
+    PasswordResetRequest: { type: object, required: [token, password], properties: { token: { type: string, minLength: 1, maxLength: 512 }, password: { type: string, format: password, minLength: 8, maxLength: 128, writeOnly: true } } }
+    AuthResponse: { type: object, required: [accessToken, tokenType, expiresIn, user], properties: { accessToken: { type: string }, tokenType: { type: string, const: Bearer }, expiresIn: { type: integer, minimum: 1 }, user: { $ref: '#/components/schemas/CurrentUser' } } }
+    TokenResponse: { type: object, required: [accessToken, tokenType, expiresIn], properties: { accessToken: { type: string }, tokenType: { type: string, const: Bearer }, expiresIn: { type: integer, minimum: 1 } } }
+    UpdateProfileRequest: { type: object, minProperties: 1, properties: { displayName: { type: string, minLength: 1, maxLength: 120 }, gradeLabel: { type: [string, 'null'], maxLength: 80 } } }
+    Plan: { type: object, required: [code, name, features], properties: { code: { $ref: '#/components/schemas/PlanCode' }, name: { type: string }, features: { type: array, items: { type: string } } } }
+    Subscription: { type: object, required: [planCode, status], properties: { planCode: { $ref: '#/components/schemas/PlanCode' }, status: { type: string, enum: [active, trialing, past_due, canceled] }, periodEndsAt: { type: [string, 'null'], format: date-time } } }
+    LinkStatus: { type: string, enum: [active, archived] }
+    TutorStudent: { type: object, required: [student, subject, privateNote, progressPercent, status, createdAt, updatedAt], properties: { student: { $ref: '#/components/schemas/User' }, subject: { type: string, maxLength: 120 }, gradeLabel: { type: [string, 'null'], maxLength: 80 }, privateNote: { type: string, maxLength: 10000 }, progressPercent: { type: integer, minimum: 0, maximum: 100 }, status: { $ref: '#/components/schemas/LinkStatus' }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    CreateTutorStudentRequest: { type: object, required: [email, subject], properties: { email: { type: string, format: email, maxLength: 254 }, subject: { type: string, minLength: 1, maxLength: 120 }, gradeLabel: { type: [string, 'null'], maxLength: 80 }, privateNote: { type: string, maxLength: 10000 } } }
+    UpdateTutorStudentRequest: { type: object, minProperties: 1, properties: { subject: { type: string, minLength: 1, maxLength: 120 }, gradeLabel: { type: [string, 'null'], maxLength: 80 }, privateNote: { type: string, maxLength: 10000 }, progressPercent: { type: integer, minimum: 0, maximum: 100 }, status: { $ref: '#/components/schemas/LinkStatus' } } }
+    LessonStatus: { type: string, enum: [scheduled, in_progress, completed, canceled, no_show] }
+    Lesson: { type: object, required: [id, tutorId, studentId, title, startsAt, durationMinutes, status, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, tutorId: { $ref: '#/components/schemas/Uuid' }, studentId: { $ref: '#/components/schemas/Uuid' }, title: { type: string, maxLength: 200 }, startsAt: { type: string, format: date-time }, durationMinutes: { type: integer, minimum: 15, maximum: 240 }, status: { $ref: '#/components/schemas/LessonStatus' }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    CreateLessonRequest: { type: object, required: [studentId, title, startsAt, durationMinutes], properties: { studentId: { $ref: '#/components/schemas/Uuid' }, title: { type: string, minLength: 1, maxLength: 200 }, startsAt: { type: string, format: date-time }, durationMinutes: { type: integer, minimum: 15, maximum: 240 } } }
+    UpdateLessonRequest: { type: object, minProperties: 1, properties: { title: { type: string, minLength: 1, maxLength: 200 }, startsAt: { type: string, format: date-time }, durationMinutes: { type: integer, minimum: 15, maximum: 240 } } }
+    UpdateLessonStatusRequest: { type: object, required: [status], properties: { status: { type: string, enum: [in_progress, completed, canceled, no_show] } } }
+    TaskKind: { type: string, enum: [homework, personal] }
+    TaskStatus: { type: string, enum: [todo, submitted, complete] }
+    Task: { type: object, required: [id, tutorId, kind, title, description, status, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, tutorId: { $ref: '#/components/schemas/Uuid' }, studentId: { type: [string, 'null'], format: uuid }, kind: { $ref: '#/components/schemas/TaskKind' }, title: { type: string, maxLength: 200 }, description: { type: string, maxLength: 50000 }, subject: { type: [string, 'null'], maxLength: 120 }, dueAt: { type: [string, 'null'], format: date-time }, status: { $ref: '#/components/schemas/TaskStatus' }, reviewStatus: { type: [string, 'null'], enum: [unchecked, correct, revision_required, null] }, reviewComment: { type: [string, 'null'], maxLength: 10000 }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    CreateTaskRequest: { type: object, required: [kind, title], properties: { kind: { $ref: '#/components/schemas/TaskKind' }, studentId: { $ref: '#/components/schemas/Uuid' }, title: { type: string, minLength: 1, maxLength: 200 }, description: { type: string, maxLength: 50000, default: '' }, subject: { type: [string, 'null'], maxLength: 120 }, dueAt: { type: [string, 'null'], format: date-time } } }
+    UpdateTaskRequest: { type: object, minProperties: 1, properties: { title: { type: string, minLength: 1, maxLength: 200 }, description: { type: string, maxLength: 50000 }, subject: { type: [string, 'null'], maxLength: 120 }, dueAt: { type: [string, 'null'], format: date-time }, reviewStatus: { type: [string, 'null'], enum: [unchecked, correct, revision_required, null] }, reviewComment: { type: [string, 'null'], maxLength: 10000 } } }
+    UpdateTaskStatusRequest: { type: object, required: [status], properties: { status: { $ref: '#/components/schemas/TaskStatus' } } }
+    CopyTaskRequest: { type: object, required: [studentId], properties: { studentId: { $ref: '#/components/schemas/Uuid' }, dueAt: { type: [string, 'null'], format: date-time } } }
+    PlannerBlock: { type: object, required: [id, type, text], properties: { id: { type: string, maxLength: 100 }, type: { type: string, enum: [heading, paragraph, todo, callout] }, text: { type: string, maxLength: 10000 }, checked: { type: boolean } }, additionalProperties: false }
+    Planner: { type: object, required: [title, blocks, updatedAt], properties: { title: { type: string, maxLength: 160 }, blocks: { type: array, maxItems: 1000, items: { $ref: '#/components/schemas/PlannerBlock' } }, updatedAt: { type: string, format: date-time } } }
+    UpdatePlannerRequest: { type: object, required: [title, blocks], properties: { title: { type: string, minLength: 1, maxLength: 160 }, blocks: { type: array, maxItems: 1000, items: { $ref: '#/components/schemas/PlannerBlock' } } } }
+    Note: { type: object, required: [id, title, body, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, title: { type: string, maxLength: 120 }, body: { type: string, maxLength: 50000 }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    NoteWriteRequest: { type: object, required: [title, body], properties: { title: { type: string, minLength: 1, maxLength: 120 }, body: { type: string, maxLength: 50000 } } }
+    Group: { type: object, required: [id, name, memberIds, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, name: { type: string, maxLength: 120 }, memberIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    GroupWriteRequest: { type: object, required: [name], properties: { name: { type: string, minLength: 1, maxLength: 120 }, studentIds: { type: array, uniqueItems: true, maxItems: 100, items: { $ref: '#/components/schemas/Uuid' } } } }
+    StudentIdsRequest: { type: object, required: [studentIds], properties: { studentIds: { type: array, uniqueItems: true, maxItems: 100, items: { $ref: '#/components/schemas/Uuid' } } } }
+    Message: { type: object, required: [id, senderId, body, attachmentIds, createdAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, senderId: { $ref: '#/components/schemas/Uuid' }, recipientId: { type: [string, 'null'], format: uuid }, groupId: { type: [string, 'null'], format: uuid }, body: { type: string, maxLength: 10000 }, attachmentIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, createdAt: { type: string, format: date-time } } }
+    CreateMessageRequest: { type: object, required: [body], properties: { recipientId: { $ref: '#/components/schemas/Uuid' }, groupId: { $ref: '#/components/schemas/Uuid' }, body: { type: string, minLength: 1, maxLength: 10000 }, attachmentIds: { type: array, uniqueItems: true, maxItems: 20, items: { $ref: '#/components/schemas/Uuid' } } }, oneOf: [{ required: [recipientId] }, { required: [groupId] }] }
+    Video: { type: object, required: [id, ownerId, title, provider, sourceUrl, embedUrl, assignedStudentIds, createdAt, updatedAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, ownerId: { $ref: '#/components/schemas/Uuid' }, title: { type: string, maxLength: 200 }, provider: { type: string, enum: [youtube, rutube] }, sourceUrl: { type: string, format: uri }, embedUrl: { type: string, format: uri }, assignedStudentIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }
+    VideoWriteRequest: { type: object, required: [title, sourceUrl], properties: { title: { type: string, minLength: 1, maxLength: 200 }, sourceUrl: { type: string, format: uri } } }
+    File: { type: object, required: [id, ownerId, name, contentType, sizeBytes, folder, createdAt], properties: { id: { $ref: '#/components/schemas/Uuid' }, ownerId: { $ref: '#/components/schemas/Uuid' }, name: { type: string, maxLength: 255 }, contentType: { type: string, maxLength: 255 }, sizeBytes: { type: integer, minimum: 0, maximum: 10485760 }, folder: { type: string, maxLength: 160 }, grantedStudentIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, createdAt: { type: string, format: date-time } } }
+    RoomToken: { type: object, required: [serverUrl, token, expiresAt, roomName], properties: { serverUrl: { type: string, format: uri }, token: { type: string }, expiresAt: { type: string, format: date-time }, roomName: { type: string } } }
+    Page: { type: object, required: [hasMore], properties: { nextCursor: { type: [string, 'null'] }, hasMore: { type: boolean } } }
+    TutorStudentPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/TutorStudent' } } } }] }
+    LessonPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Lesson' } } } }] }
+    TaskPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Task' } } } }] }
+    NotePage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Note' } } } }] }
+    GroupPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Group' } } } }] }
+    MessagePage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Message' } } } }] }
+    VideoPage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/Video' } } } }] }
+    FilePage: { allOf: [{ $ref: '#/components/schemas/Page' }, { type: object, required: [items], properties: { items: { type: array, items: { $ref: '#/components/schemas/File' } } } }] }
