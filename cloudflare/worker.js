@@ -1,3 +1,5 @@
+import { getAuthenticatedAccount, handleAuthRequest } from './auth.js';
+
 const textEncoder = new TextEncoder();
 
 function jsonResponse(body, status, origin) {
@@ -10,10 +12,35 @@ function jsonResponse(body, status, origin) {
   if (origin) {
     headers.set('Access-Control-Allow-Origin', origin);
     headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    headers.set('Access-Control-Allow-Headers', 'Content-Type, X-Tandem-Room-Code');
+    headers.set('Access-Control-Allow-Headers', 'Content-Type, X-Tutdesk-Room-Code, X-Tandem-Room-Code');
     headers.set('Access-Control-Max-Age', '600');
   }
   return new Response(status === 204 ? null : JSON.stringify(body), { status, headers });
+}
+
+async function readJsonBody(request, maxBytes) {
+  if (Number(request.headers.get('Content-Length') || 0) > maxBytes) return { error: 'request_too_large' };
+  if (!request.body) return { error: 'invalid_json' };
+  const reader = request.body.getReader();
+  const chunks = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) {
+        reader.cancel().catch(() => {});
+        return { error: 'request_too_large' };
+      }
+      chunks.push(value);
+    }
+  } catch { return { error: 'invalid_json' }; }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+  try { return { value: JSON.parse(new TextDecoder().decode(bytes)) }; }
+  catch { return { error: 'invalid_json' }; }
 }
 
 function base64Url(bytes) {
@@ -77,28 +104,27 @@ async function issueToken(request, env) {
 
   if (request.method === 'OPTIONS') return jsonResponse({}, 204, env.ALLOWED_ORIGIN);
   if (request.method !== 'POST') return jsonResponse({ error: 'method_not_allowed' }, 405, env.ALLOWED_ORIGIN);
-  if (!env.LIVEKIT_API_KEY || !env.LIVEKIT_API_SECRET || !env.LIVEKIT_URL || !env.LIVEKIT_DEMO_ROOM_CODE) {
+  if (!env.LIVEKIT_API_KEY || !env.LIVEKIT_API_SECRET || !env.LIVEKIT_URL) {
     return jsonResponse({ error: 'livekit_not_configured' }, 503, env.ALLOWED_ORIGIN);
   }
 
-  const suppliedCode = request.headers.get('X-Tandem-Room-Code') || '';
-  if (!sameSecret(suppliedCode, env.LIVEKIT_DEMO_ROOM_CODE)) {
-    return jsonResponse({ error: 'invalid_room_code' }, 401, env.ALLOWED_ORIGIN);
+  const suppliedCode = request.headers.get('X-Tutdesk-Room-Code') || request.headers.get('X-Tandem-Room-Code') || '';
+  const hasDemoAccess = sameSecret(suppliedCode, env.LIVEKIT_DEMO_ROOM_CODE);
+  const account = !hasDemoAccess && env.DB ? await getAuthenticatedAccount(request, env.DB) : null;
+  if (!account && !hasDemoAccess) {
+    const error = env.LIVEKIT_DEMO_ROOM_CODE ? 'invalid_room_code' : 'authentication_required';
+    return jsonResponse({ error }, 401, env.ALLOWED_ORIGIN);
   }
 
-  const contentLength = Number(request.headers.get('Content-Length') || 0);
-  if (contentLength > 4096) return jsonResponse({ error: 'request_too_large' }, 413, env.ALLOWED_ORIGIN);
-
-  let input;
-  try {
-    input = await request.json();
-  } catch {
-    return jsonResponse({ error: 'invalid_json' }, 400, env.ALLOWED_ORIGIN);
-  }
+  const parsed = await readJsonBody(request, 4096);
+  if (parsed.error) return jsonResponse({ error: parsed.error }, parsed.error === 'request_too_large' ? 413 : 400, env.ALLOWED_ORIGIN);
+  const input = parsed.value;
 
   const room = input?.room;
-  const identity = input?.identity;
-  const name = typeof input?.name === 'string' ? input.name.trim().slice(0, 80) : '';
+  const identity = account ? `participant-${crypto.randomUUID()}` : input?.identity;
+  const name = account
+    ? String(account.name || 'Участник').trim().slice(0, 80)
+    : (typeof input?.name === 'string' ? input.name.trim().slice(0, 80) : '');
   if (!validIdentifier(room) || !validIdentifier(identity) || !name) {
     return jsonResponse({ error: 'invalid_participant' }, 400, env.ALLOWED_ORIGIN);
   }
@@ -123,6 +149,18 @@ async function issueToken(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith('/api/auth/') || url.pathname === '/api/account-data' || url.pathname === '/api/tutor-students' || url.pathname === '/api/plan' || url.pathname === '/api/screen-share' || url.pathname.startsWith('/api/profile') || url.pathname.startsWith('/api/videos') || url.pathname.startsWith('/api/groups') || url.pathname.startsWith('/api/messages') || url.pathname.startsWith('/api/files') || url.pathname.startsWith('/api/homework-files')) {
+      try {
+        return await handleAuthRequest(request, env, url);
+      } catch (error) {
+        const incidentId = crypto.randomUUID();
+        const reason = /iteration counts above/.test(error?.message || '') ? 'password_hash_runtime_limit'
+          : /no such (table|column)/i.test(error?.message || '') ? 'database_schema_missing'
+          : 'unexpected_error';
+        console.error(JSON.stringify({ event: 'auth_request_failed', path: url.pathname, incidentId, reason }));
+        return jsonResponse({ error: 'internal_error', message: 'Сервис аккаунтов временно недоступен. Попробуйте позже.', incidentId }, 500, env.ALLOWED_ORIGIN);
+      }
+    }
     if (url.pathname === '/api/livekit/token') return issueToken(request, env);
     if (url.pathname.startsWith('/api/')) return jsonResponse({ error: 'not_found' }, 404, env.ALLOWED_ORIGIN);
     return env.ASSETS.fetch(request);

@@ -8,6 +8,7 @@ const outputDirectory = join(projectRoot, 'dist');
 const publicFiles = [
   'index.html',
   'styles.css',
+  'quotes_365_ru.json',
   'app.js',
   'favicon.svg',
   'robots.txt',
